@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="core_explore_keyword_app",
-    version="1.0.0-alpha1",
+    version="1.0.0-alpha2",
     description=("core explore keyword Django package",),
     author="no_author",
     author_email="contact@example.com",
