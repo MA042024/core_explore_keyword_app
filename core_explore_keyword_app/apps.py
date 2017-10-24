@@ -1,6 +1,8 @@
 """ Apps file for setting core package when app is ready
 """
 from django.apps import AppConfig
+
+from core_explore_keyword_app.permissions import discover
 from core_main_app.utils.databases.pymongo_database import init_text_index
 
 
@@ -16,3 +18,4 @@ class ExploreKeywordAppConfig(AppConfig):
 
         """
         init_text_index('data')
+        discover.init_permissions(self.apps)

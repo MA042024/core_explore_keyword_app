@@ -2,6 +2,10 @@
 """
 import json
 
+from django.core.urlresolvers import reverse_lazy
+
+import core_explore_keyword_app.permissions.rights as rights
+import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_keyword_app.forms import KeywordForm
@@ -10,6 +14,8 @@ from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
 
 
+@decorators.permission_required(content_type=rights.explore_keyword_content_type,
+                                permission=rights.explore_keyword_access, login_url=reverse_lazy("core_main_app_login"))
 def keyword_search(request):
     """ Explore by keyword search view
 
