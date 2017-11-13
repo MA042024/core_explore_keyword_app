@@ -1,1 +1,1 @@
-core-explore-common-app==1.0.0-alpha4
+core-explore-common-app==1.0.0-alpha5
