@@ -1,11 +1,10 @@
-<form action="{% url 'core_explore_keyword_app_search' %}" method="POST">
-    {% csrf_token %}
+
     <div class="col-sm-10">
         {{data.search_form.keywords}}
         {{data.search_form.query_id}}
+        {{data.search_form.user_id}}
         {%if data.error%}<div class="text-danger">{{data.error}}</div>{%endif%}
     </div>
     <div class="col-sm">
         <input type="submit" value="Search" class="button primary"/>
     </div>
-</form>

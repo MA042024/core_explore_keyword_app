@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
+from core_main_app.components.template import api as template_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.commons.exceptions import DoesNotExist
@@ -56,13 +57,16 @@ def keyword_search(request):
     error = None
 
     if request.method == 'POST':
-        search_form = KeywordForm(request.POST)
+        search_form = KeywordForm(data=request.POST)
         # validate form
         if search_form.is_valid():
             try:
                 # get form values
-                query_id = request.POST.get('query_id', None)
-                keywords = request.POST.get('keywords', None)
+                query_id = search_form.cleaned_data.get('query_id', None)
+                keywords = search_form.cleaned_data.get('keywords', None)
+                global_templates = search_form.cleaned_data.get('global_templates', [])
+                user_templates = search_form.cleaned_data.get('user_templates', [])
+                template_ids = global_templates + user_templates
 
                 if query_id is None or keywords is None:
                     error = "Expected parameters are not provided"
@@ -73,6 +77,7 @@ def keyword_search(request):
                         error = "Please select at least 1 data source."
                     else:
                         # update query
+                        query.templates = [template_api.get(template_id) for template_id in template_ids]
                         query.content = json.dumps(get_full_text_query(keywords))
                         query_api.upsert(query)
             except DoesNotExist:
@@ -85,15 +90,15 @@ def keyword_search(request):
         # create query
         query = Query(user_id=str(request.user.id), templates=[])
         query_api.upsert(query)
-        # create form
-        search_form = KeywordForm({'query_id': str(query.id)})
+        # create keyword form
+        search_form = KeywordForm(data={'query_id': str(query.id), 'user_id':str(request.user.id)})
 
     context = {
         'search_form': search_form,
         'query_id': search_form.data['query_id'],
         'error': error,
         'local_query_url': 'core_explore_common_local_query',
-        'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html'
+        'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
     }
 
     return render(request,

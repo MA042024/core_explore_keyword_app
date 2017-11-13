@@ -1,15 +1,21 @@
 <div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-          {% include 'core_explore_keyword_app/user/search_bar.html' %}
+    <form action="{% url 'core_explore_keyword_app_search' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-12">
+              {% include 'core_explore_keyword_app/user/search_bar.html' %}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-3">
-            {% include data.data_sources_selector_template %}
+        <div class="row">
+            <div class="col-sm-3">
+                {% include data.data_sources_selector_template %}
+                {% include 'core_explore_keyword_app/user/template_filter.html' %}
+            </div>
+            <div class="col-sm">
+                {% include "core_explore_common_app/user/results/results.html" %}
+            </div>
         </div>
-        <div class="col-sm">
-            {% include "core_explore_common_app/user/results/results.html" %}
-        </div>
-    </div>
+    </form>
 </div>
+
+
