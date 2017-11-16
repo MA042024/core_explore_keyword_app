@@ -13,6 +13,7 @@ from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.commons.exceptions import DoesNotExist
 from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
+from core_explore_example_app.settings import INSTALLED_APPS
 
 
 @decorators.permission_required(content_type=rights.explore_keyword_content_type,
@@ -91,7 +92,7 @@ def keyword_search(request):
         query = Query(user_id=str(request.user.id), templates=[])
         query_api.upsert(query)
         # create keyword form
-        search_form = KeywordForm(data={'query_id': str(query.id), 'user_id':str(request.user.id)})
+        search_form = KeywordForm(data={'query_id': str(query.id), 'user_id': str(request.user.id)})
 
     context = {
         'search_form': search_form,
@@ -100,6 +101,19 @@ def keyword_search(request):
         'local_query_url': 'core_explore_common_local_query',
         'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
     }
+
+    if 'core_exporters_app' in INSTALLED_APPS:
+        # add all assets needed
+        assets['js'].extend([{
+            "path": 'core_exporters_app/user/js/exporters/list/modals/list_exporters_selector.js',
+            "is_raw": False
+        }])
+        # add the modal
+        modals.extend([
+            "core_exporters_app/user/exporters/list/modals/list_exporters_selector.html"
+        ])
+
+        context['exporter_app'] = True
 
     return render(request,
                   'core_explore_keyword_app/user/index.html',
