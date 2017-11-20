@@ -44,11 +44,21 @@ def keyword_search(request):
             {
                 "path": 'core_main_app/common/js/modals/error_page_modal.js',
                 "is_raw": True
+            },
+            {
+                "path": 'core_explore_keyword_app/libs/tag-it/2.0/js/tag-it.js',
+                "is_raw": True
+            },
+            {
+                "path": 'core_explore_keyword_app/user/js/search/search.js',
+                "is_raw": True
             }
         ],
         "css": ["core_explore_example_app/user/css/query_result.css",
                 "core_main_app/common/css/XMLTree.css",
-                "core_explore_common_app/user/css/results.css"],
+                "core_explore_common_app/user/css/results.css",
+                "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
+                'core_explore_keyword_app/user/css/search/search.css'],
     }
 
     modals = [

@@ -1,0 +1,18 @@
+.search_button {
+    height:2em;
+    line-height: 0em;
+    min-width: 0em;
+}
+
+ul.tagit {
+    margin: 0;
+}
+
+ul.tagit li.tagit-choice-editable {
+    height:1.65em;
+    padding: .0em 18px .0em .0em;
+}
+
+li.tagit-new{
+    width: 20em;
+}
