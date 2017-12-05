@@ -23,10 +23,10 @@ class KeywordForm(forms.Form):
         super(KeywordForm, self).__init__(*args, **kwargs)
 
         # initialize template filters
-        global_templates = [(template_version_manager.current, template_version_manager.title)
+        global_templates = [(template_version_manager.id, template_version_manager.title)
                             for template_version_manager
                             in template_version_manager_api.get_active_global_version_manager()]
-        user_templates = [(template_version_manager.current, template_version_manager.title)
+        user_templates = [(template_version_manager.id, template_version_manager.title)
                           for template_version_manager
                           in template_version_manager_api.get_active_version_manager_by_user_id(self.data['user_id'])]
         self.fields['global_templates'].choices = global_templates

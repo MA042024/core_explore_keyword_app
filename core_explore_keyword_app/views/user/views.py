@@ -7,13 +7,14 @@ from django.core.urlresolvers import reverse_lazy
 import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_main_app.components.template import api as template_api
 from core_explore_common_app.components.query.models import Query
+from core_explore_example_app.settings import INSTALLED_APPS
 from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.commons.exceptions import DoesNotExist
+from core_main_app.components.template import api as template_api
 from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
-from core_explore_example_app.settings import INSTALLED_APPS
+import core_main_app.components.version_manager.api as version_manager_api
 
 
 @decorators.permission_required(content_type=rights.explore_keyword_content_type,
@@ -77,8 +78,13 @@ def keyword_search(request):
                 keywords = search_form.cleaned_data.get('keywords', None)
                 global_templates = search_form.cleaned_data.get('global_templates', [])
                 user_templates = search_form.cleaned_data.get('user_templates', [])
-                template_ids = global_templates + user_templates
-
+                # get all template version manager ids
+                template_version_manager_ids = global_templates + user_templates
+                # from ids, get all version manager
+                version_manager_list = version_manager_api.get_by_id_list(template_version_manager_ids)
+                # from all version manager, build a list of all version (template)
+                template_ids = []
+                map(lambda x: template_ids.extend(x.versions), version_manager_list)
                 if query_id is None or keywords is None:
                     error = "Expected parameters are not provided"
                 else:
@@ -88,7 +94,7 @@ def keyword_search(request):
                         error = "Please select at least 1 data source."
                     else:
                         # update query
-                        query.templates = [template_api.get(template_id) for template_id in template_ids]
+                        query.templates = template_api.get_all_by_id_list(template_ids)
                         query.content = json.dumps(get_full_text_query(keywords))
                         query_api.upsert(query)
             except DoesNotExist:
