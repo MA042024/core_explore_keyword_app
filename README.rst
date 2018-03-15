@@ -1,4 +1,5 @@
-core_explore_keyword_app
+========================
+Core Explore Keyword App
 ========================
 
 Exploration by keywords for the curator core project.
