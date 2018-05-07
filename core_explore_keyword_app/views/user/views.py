@@ -204,7 +204,6 @@ class KeywordSearchView(View):
             'search_form': search_form,
             'query_id': search_form.data['query_id'],
             'error': error,
-            'local_query_url': 'core_explore_common_local_query',
             'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
             'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
             'display_persistent_query_button': display_persistent_query_button
