@@ -16,3 +16,12 @@ ul.tagit li.tagit-choice-editable {
 li.tagit-new{
     width: 20em;
 }
+
+.tagit-close{
+    text-decoration: none;
+    border: 0;
+}
+
+.tagit-label {
+    margin-left: 0.2em;
+}
