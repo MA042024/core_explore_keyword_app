@@ -13,8 +13,8 @@ import core_explore_keyword_app.components.persistent_query_keyword.api as persi
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
-from core_explore_example_app.settings import INSTALLED_APPS
-from core_explore_example_app.views.user.views import ResultQueryRedirectView
+from core_explore_keyword_app.settings import INSTALLED_APPS
+from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.commons.exceptions import DoesNotExist
 from core_main_app.components.template import api as template_api
@@ -167,7 +167,7 @@ class KeywordSearchView(View):
                             "is_raw": False
                         },
                     ],
-                    "css": ["core_explore_example_app/user/css/query_result.css",
+                    "css": ["core_explore_common_app/user/css/query_result.css",
                             "core_main_app/common/css/XMLTree.css",
                             "core_explore_common_app/user/css/results.css",
                             "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
