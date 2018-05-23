@@ -224,3 +224,7 @@ class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
     @staticmethod
     def _get_reversed_url(query):
         return reverse("core_explore_keyword_app_search", kwargs={'query_id': query.id})
+
+    @staticmethod
+    def _get_reversed_url_if_failed():
+        return reverse("core_explore_keyword_app_search")
