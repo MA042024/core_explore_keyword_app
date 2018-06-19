@@ -24,28 +24,88 @@ from core_main_app.utils.rendering import render
 
 class KeywordSearchView(View):
 
+    def __init__(self, **kwargs):
+        self.assets = self._load_assets()
+        self.modals = self._load_modals()
+
     @method_decorator(decorators.
                       permission_required(content_type=rights.explore_keyword_content_type,
                                           permission=rights.explore_keyword_access,
                                           login_url=reverse_lazy("core_main_app_login")))
     def get(self, request, *args, **kwargs):
+        """ GET
+
+        Args:
+            request:
+            *args:
+            **kwargs:
+
+        Returns:
+
+        """
+        query_id = str(kwargs['query_id']) if 'query_id' in kwargs else None
+
+        # assets / modals / forms
+        context = self._get(request.user, query_id)
+
+        return render(request,
+                      'core_explore_keyword_app/user/index.html',
+                      assets=self.assets,
+                      modals=self.modals,
+                      context=context)
+
+    @method_decorator(decorators.
+                      permission_required(content_type=rights.explore_keyword_content_type,
+                                          permission=rights.explore_keyword_access,
+                                          login_url=reverse_lazy("core_main_app_login")))
+    def post(self, request, *args, **kwargs):
+        """ POST
+
+        Args:
+            request:
+            *args:
+            **kwargs:
+
+        Returns:
+
+        """
+
+        # assets / modals / forms
+        context = self._post(request)
+
+        return render(request,
+                      'core_explore_keyword_app/user/index.html',
+                      assets=self.assets,
+                      modals=self.modals,
+                      context=context)
+
+    def _get(self, user, query_id):
+        """ Prepare the GET context
+
+        Args:
+            user:
+            query_id:
+
+        Returns:
+
+        """
         error = None
-        data_form = None
+        keywords_data_form = None
         display_persistent_query_button = False
-        if 'query_id' not in kwargs:
+        if query_id is None:
             # create query
-            query = Query(user_id=str(request.user.id), templates=[])
+            query = Query(user_id=str(user.id), templates=[])
             query_api.upsert(query)
             # create keyword form
             # create all data for select values in forms
-            data_form = {
+            keywords_data_form = {
                 'query_id': str(query.id),
                 'user_id': query.user_id,
             }
         else:
             try:
                 # get the query id
-                query = query_api.get_by_id(str(kwargs['query_id']))
+                query = query_api.get_by_id(query_id)
                 user_id = query.user_id
                 # get all keywords back
                 query_json = json.loads(query.content)
@@ -57,7 +117,7 @@ class KeywordSearchView(View):
                 for template in query.templates:
                     version_managers.append(str(version_manager_api.get_from_version(template).id))
                 # create all data for select values in forms
-                data_form = {
+                keywords_data_form = {
                     'query_id': str(query.id),
                     'user_id': user_id,
                     'keywords': keywords,
@@ -68,24 +128,18 @@ class KeywordSearchView(View):
             except Exception, e:
                 error = "An unexpected error occurred while loading the query: {}.".format(e.message)
 
-        # re-init the form
-        search_form = KeywordForm(data=data_form)
-        assets = self._load_assets()
-        modals = self._load_modals()
+        search_form = KeywordForm(data=keywords_data_form)
+        return _format_keyword_search_context(search_form, error, display_persistent_query_button)
 
-        context = self._load_context(search_form, error, display_persistent_query_button)
+    def _post(self, request):
+        """ Prepare the POST context
 
-        return render(request,
-                      'core_explore_keyword_app/user/index.html',
-                      assets=assets,
-                      modals=modals,
-                      context=context)
+        Args:
+            request:
 
-    @method_decorator(decorators.
-                      permission_required(content_type=rights.explore_keyword_content_type,
-                                          permission=rights.explore_keyword_access,
-                                          login_url=reverse_lazy("core_main_app_login")))
-    def post(self, request, *args, **kwargs):
+        Returns:
+
+        """
         error = None
         search_form = KeywordForm(data=request.POST)
         display_persistent_query_button = False
@@ -124,18 +178,14 @@ class KeywordSearchView(View):
         else:
             error = "An unexpected error occurred: the form is not valid."
 
-        assets = self._load_assets()
-        modals = self._load_modals()
-        context = self._load_context(search_form, error, display_persistent_query_button)
+        return _format_keyword_search_context(search_form, error, display_persistent_query_button)
 
-        return render(request,
-                      'core_explore_keyword_app/user/index.html',
-                      assets=assets,
-                      modals=modals,
-                      context=context)
+    def _load_assets(self):
+        """ Return assets structure
 
-    @staticmethod
-    def _load_assets():
+        Returns:
+
+        """
         assets = {
                     "js": [
                         {
@@ -183,8 +233,12 @@ class KeywordSearchView(View):
 
         return assets
 
-    @staticmethod
-    def _load_modals():
+    def _load_modals(self):
+        """ Return modals structure
+
+        Returns:
+
+        """
         modals = [
                     "core_main_app/common/modals/error_page_modal.html",
                     "core_explore_common_app/user/persistent_query/modals/persistent_query_modal.html"
@@ -198,21 +252,31 @@ class KeywordSearchView(View):
 
         return modals
 
-    @staticmethod
-    def _load_context(search_form, error, display_persistent_query_button):
-        context = {
-            'search_form': search_form,
-            'query_id': search_form.data['query_id'],
-            'error': error,
-            'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
-            'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
-            'display_persistent_query_button': display_persistent_query_button
-        }
 
-        if 'core_exporters_app' in INSTALLED_APPS:
-            context['exporter_app'] = True
+def _format_keyword_search_context(search_form, error, display_persistent_query_button):
+    """ Format the context for the keyword research page
 
-        return context
+    Args:
+        search_form:
+        error:
+        display_persistent_query_button:
+
+    Returns:
+
+    """
+    context = {
+        'search_form': search_form,
+        'query_id': search_form.data['query_id'],
+        'error': error,
+        'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
+        'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
+        'display_persistent_query_button': display_persistent_query_button
+    }
+
+    if 'core_exporters_app' in INSTALLED_APPS:
+        context['exporter_app'] = True
+
+    return context
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
