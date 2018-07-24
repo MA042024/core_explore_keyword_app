@@ -2,24 +2,24 @@
 """
 import json
 
+import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.utils.decorators as decorators
+from core_main_app.commons.exceptions import DoesNotExist
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.pymongo_database import get_full_text_query
+from core_main_app.utils.rendering import render
 from django.core.urlresolvers import reverse_lazy
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
-import core_main_app.utils.decorators as decorators
+import core_explore_keyword_app.permissions.rights as rights
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
-from core_explore_keyword_app.settings import INSTALLED_APPS
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
-from core_main_app.commons.exceptions import DoesNotExist
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
-from core_main_app.utils.rendering import render
+from core_explore_keyword_app.settings import INSTALLED_APPS
 
 
 class KeywordSearchView(View):
@@ -210,7 +210,7 @@ class KeywordSearchView(View):
                         },
                         {
                             "path": 'core_explore_keyword_app/user/js/search/search.js',
-                            "is_raw": True
+                            "is_raw": False
                         },
                         {
                             "path": 'core_explore_common_app/user/js/button_persistent_query.js',

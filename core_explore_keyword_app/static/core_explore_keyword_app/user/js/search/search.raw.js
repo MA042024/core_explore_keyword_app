@@ -1,0 +1,1 @@
+var suggestionsURL = "{% url 'core_explore_keyword_suggestions' %}";
