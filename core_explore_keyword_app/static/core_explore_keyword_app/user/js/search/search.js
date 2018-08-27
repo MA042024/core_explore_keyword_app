@@ -1,7 +1,10 @@
-/***
+/**
  * Search
  */
 
+/**
+ * Show / hide placeholder
+ */
 function showHidePlaceholder($tagit){
    var $input = $tagit.data("ui-tagit").tagInput,
        placeholderText = $tagit.data("ui-tagit").options.placeholderText;
@@ -13,8 +16,21 @@ function showHidePlaceholder($tagit){
     }
 }
 
+/**
+ * Initialize auto submission
+ */
+var initAutoSubmit = function() {
+    $("#id_keywords").tagit({
+        onTagAdded: function(event, ui) {
+            fancyTreeSelectDelaySubmit();
+        }
+    });
+}
 
-initAutocomplete = function () {
+/**
+ * Initialize autocomplete
+ */
+var initAutocomplete = function () {
     $("#id_keywords").tagit({
         allowSpaces: false,
         placeholderText: 'Enter keywords, or leave blank to retrieve all records',
@@ -35,7 +51,6 @@ initAutocomplete = function () {
                 this.value = ui.item.label;
             },
             source: function (request, response) {
-
                 $.ajax({
                     type: 'POST',
                     url: suggestionsURL,
@@ -64,6 +79,17 @@ initAutocomplete = function () {
     })
 };
 
+/**
+ * Called after any selection in the tree
+ */
+var fancyTreeSelectDelaySubmit = function(event, data){
+    // clear the timer
+    clearTimeout(timer);
+    // submit the form after 3 sec
+    timer = setTimeout(submitForm, 3000);
+}
+
 $(document).ready(function() {
     initAutocomplete();
+    initAutoSubmit();
 });
