@@ -1,26 +1,56 @@
 """Explore keyword app Ajax views
 """
 import json
-import re
 import logging
+import re
 
+import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.utils.decorators as decorators
+from core_explore_common_app.components.query import api as query_api
+from core_explore_common_app.constants import LOCAL_QUERY_NAME
+from core_explore_common_app.utils.query.query import send
+from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
+from core_explore_common_app.views.user.ajax import create_local_data_source
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
-import core_main_app.utils.decorators as decorators
-from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.utils.query.query import send
-from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
-from core_explore_common_app.views.user.ajax import create_local_data_source
 from core_explore_keyword_app.components.persistent_query_keyword.models import PersistentQueryKeyword
 from core_explore_keyword_app.forms import KeywordForm
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
+
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
+
+
+def _is_local_in_data_source(query):
+    """ Check if there is a data source that is local.
+
+    Args:
+        query:
+
+    Returns:
+    """
+    # If we find a data source that is local
+    for data_source in query.data_sources:
+        # find local data source
+        if data_source.name == LOCAL_QUERY_NAME:
+            return True
+    return False
+
+
+def check_data_source(query):
+    """ Check the data sources. We will not provide suggestions if there are data sources selected but none of them is local.
+
+    Args:
+        query:
+
+    Returns:
+    """
+
+    return len(query.data_sources) == 0 or _is_local_in_data_source(query)
 
 
 class SuggestionsKeywordSearchView(View):
@@ -63,24 +93,42 @@ class SuggestionsKeywordSearchView(View):
                 if query_id is not None and keywords is not None:
                     # get query
                     query = query_api.get_by_id(query_id)
-                    # update query
-                    query.templates = template_api.get_all_by_id_list(template_ids)
-                    #TODO: improve query to get better results
-                    query.content = json.dumps(get_full_text_query(keywords))
 
-                    # Data source is local
-                    query.data_sources.append(create_local_data_source(request))
+                    # Check the selected data sources
+                    if check_data_source(query):
 
-                    # Send query
-                    dict_results = send(request, query, len(query.data_sources) - 1, 1)
+                        # Prepare query
+                        query = self._get_query_prepared(keywords, query, request, template_ids)
 
-                    if dict_results['count'] > 0:
-                        self._extract_suggestion_from_results(dict_results, keywords, suggestions)
+                        # Send query
+                        dict_results = send(request, query, len(query.data_sources) - 1, 1)
+
+                        if dict_results['count'] > 0:
+                            self._extract_suggestion_from_results(dict_results, keywords, suggestions)
 
             except Exception, e:
                 logger.error("Exception while generating suggestions: "+ e.message)
 
         return HttpResponse(json.dumps({'suggestions': suggestions}), content_type='application/javascript')
+
+    def _get_query_prepared(self, keywords, query, request, template_ids):
+        """ Prepare the query for suggestions.
+
+        Args:
+            keywords:
+            query:
+            request:
+            template_ids:
+        Returns:
+        """
+
+        # update query
+        query.templates = template_api.get_all_by_id_list(template_ids)
+        # TODO: improve query to get better results
+        query.content = json.dumps(get_full_text_query(keywords))
+        # Data source is local
+        query.data_sources.append(create_local_data_source(request))
+        return query
 
     def _extract_suggestion_from_results(self, dict_results, keywords, suggestions):
         """ Extract suggestion from
