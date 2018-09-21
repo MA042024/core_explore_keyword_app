@@ -127,7 +127,7 @@ class SuggestionsKeywordSearchView(View):
         # TODO: improve query to get better results
         query.content = json.dumps(get_full_text_query(keywords))
         # Data source is local
-        query.data_sources.append(create_local_data_source(request))
+        query.data_sources = [create_local_data_source(request)]
         return query
 
     def _extract_suggestion_from_results(self, dict_results, keywords, suggestions):
