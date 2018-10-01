@@ -22,7 +22,7 @@ chdir(normpath(join(abspath(__file__), pardir)))
 
 setup(
     name="core_explore_keyword_app",
-    version="1.0.0-beta5",
+    version="1.0.0-rc1",
     description="Exploration by keywords for the curator core project",
     long_description=long_desc,
     author="NIST IT Lab",
