@@ -1,13 +1,14 @@
 /**
  * Search
  */
+var timer;
 
 /**
  * Show / hide placeholder
  */
 function showHidePlaceholder($tagit){
-   var $input = $tagit.data("ui-tagit").tagInput,
-       placeholderText = $tagit.data("ui-tagit").options.placeholderText;
+   var $input = $tagit.data("ui-tagit").tagInput;
+   placeholderText = $tagit.data("ui-tagit").options.placeholderText;
 
     if ($tagit.tagit("assignedTags").length > 0) {
         $input.removeAttr('placeholder');
@@ -24,6 +25,14 @@ var initAutoSubmit = function() {
         onTagAdded: function(event, ui) {
             fancyTreeSelectDelaySubmit();
         }
+    });
+
+    $('#id_keywords').tagit().next('ul').find('li input.ui-widget-content').focus(function(e) {
+        if (!e.originalEvent) return;
+        // clear the timer when the tag it input is focused
+        // avoiding unwanted submission
+        clearTimeout(timer);
+        timer = null;
     });
 }
 
@@ -76,17 +85,33 @@ var initAutocomplete = function () {
                 return false;
             }
         })
-    })
+    });
 };
 
 /**
  * Called after any selection in the tree
  */
-var fancyTreeSelectDelaySubmit = function(event, data){
+var fancyTreeSelectDelaySubmit = function(force=true){
+    if (force) {
+        delaySubmission();
+    } else {
+        if (timer)
+            delaySubmission();
+    }
+}
+
+var delaySubmission = function() {
     // clear the timer
     clearTimeout(timer);
     // submit the form after 3 sec
     timer = setTimeout(submitForm, 3000);
+}
+
+/**
+ * Submit the form
+ */
+var submitForm = function () {
+    $("#form_search").submit();
 }
 
 $(document).ready(function() {
