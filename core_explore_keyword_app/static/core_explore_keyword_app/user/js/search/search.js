@@ -2,6 +2,9 @@
  * Search
  */
 var timer;
+const SELECT_ALL_LABEL = "Select All";
+const UNSELECT_ALL_LABEL = "Unselect All";
+
 
 /**
  * Show / hide placeholder
@@ -89,6 +92,52 @@ var initAutocomplete = function () {
 };
 
 /**
+ * Initialize select template all button
+ */
+var initSelectAllTemplate = function() {
+    $(".selectAllTemplateButton").on("click", selectAllTemplate);
+    $("input[id^='id_global_templates']").each(function(i) {
+        $(this).on("change", checkIfAllTemplateSelected);
+    });
+    checkIfAllTemplateSelected();
+}
+
+/**
+ * check if all templates are selected
+ */
+var checkIfAllTemplateSelected = function() {
+    var allSelected = true;
+    $("input[id^='id_global_templates']").each(function(i) {
+        if($(this).prop("checked") == false) {
+            allSelected = false;
+            return false;
+        }
+    });
+
+    if (allSelected) {
+        $(".selectAllTemplateButton").html(UNSELECT_ALL_LABEL);
+    } else {
+        $(".selectAllTemplateButton").html(SELECT_ALL_LABEL);
+    }
+}
+
+/**
+ * Select all Template function
+ */
+var selectAllTemplate = function() {
+    var selectAll = false;
+    if ($(".selectAllTemplateButton").html().trim() == SELECT_ALL_LABEL) {
+        selectAll = true;
+        $(".selectAllTemplateButton").html(UNSELECT_ALL_LABEL);
+    } else {
+        $(".selectAllTemplateButton").html(SELECT_ALL_LABEL);
+    }
+    $("input[id^='id_global_templates']").each(function(i) {
+        $(this).prop("checked", selectAll);
+    });
+}
+
+/**
  * Called after any selection in the tree
  */
 var fancyTreeSelectDelaySubmit = function(force=true){
@@ -100,6 +149,9 @@ var fancyTreeSelectDelaySubmit = function(force=true){
     }
 }
 
+/**
+ * Delay submission
+ */
 var delaySubmission = function() {
     // clear the timer
     clearTimeout(timer);
@@ -117,4 +169,5 @@ var submitForm = function () {
 $(document).ready(function() {
     initAutocomplete();
     initAutoSubmit();
+    initSelectAllTemplate();
 });

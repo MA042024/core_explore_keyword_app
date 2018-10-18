@@ -5,6 +5,10 @@
     width: 100%;
 }
 
+.selectAllTemplateButton {
+    font-size: 0.7em;
+}
+
 ul.tagit {
     margin: 0;
 }
