@@ -2,12 +2,6 @@
 """
 import json
 
-import core_main_app.components.version_manager.api as version_manager_api
-import core_main_app.utils.decorators as decorators
-from core_main_app.commons.exceptions import DoesNotExist
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
-from core_main_app.utils.rendering import render
 from django.core.urlresolvers import reverse_lazy
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -15,11 +9,17 @@ from django.views.generic import View
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_explore_keyword_app.permissions.rights as rights
+import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.components.query.models import Query
+from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import INSTALLED_APPS
+from core_main_app.commons.exceptions import DoesNotExist
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.pymongo_database import get_full_text_query
+from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(View):
@@ -46,7 +46,7 @@ class KeywordSearchView(View):
         query_id = str(kwargs['query_id']) if 'query_id' in kwargs else None
 
         # assets / modals / forms
-        context = self._get(request.user, query_id)
+        context = self._get(request, query_id)
 
         return render(request,
                       'core_explore_keyword_app/user/index.html',
@@ -79,7 +79,7 @@ class KeywordSearchView(View):
                       modals=self.modals,
                       context=context)
 
-    def _get(self, user, query_id):
+    def _get(self, request, query_id):
         """ Prepare the GET context
 
         Args:
@@ -94,7 +94,8 @@ class KeywordSearchView(View):
         display_persistent_query_button = False
         if query_id is None:
             # create query
-            query = Query(user_id=str(user.id), templates=[])
+            query = create_default_query(request, [])
+            # upsert the query
             query_api.upsert(query)
             # create keyword form
             # create all data for select values in forms

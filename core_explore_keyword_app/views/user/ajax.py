@@ -4,23 +4,22 @@ import json
 import logging
 import re
 
-import core_main_app.components.version_manager.api as version_manager_api
-import core_main_app.utils.decorators as decorators
-from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.constants import LOCAL_QUERY_NAME
-from core_explore_common_app.utils.query.query import send
-from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
-from core_explore_common_app.views.user.ajax import create_local_data_source
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 import core_explore_keyword_app.permissions.rights as rights
+import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.utils.decorators as decorators
+from core_explore_common_app.components.query import api as query_api
+from core_explore_common_app.constants import LOCAL_QUERY_NAME
+from core_explore_common_app.utils.query.query import send, create_local_data_source
+from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
 from core_explore_keyword_app.components.persistent_query_keyword.models import PersistentQueryKeyword
 from core_explore_keyword_app.forms import KeywordForm
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.pymongo_database import get_full_text_query
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
