@@ -91,7 +91,7 @@ class KeywordSearchView(View):
         """
         error = None
         keywords_data_form = None
-        display_persistent_query_button = False
+        display_persistent_query_button = True
         if query_id is None:
             # create query
             query = create_default_query(request, [])
@@ -125,7 +125,6 @@ class KeywordSearchView(View):
                     'global_templates': version_managers,
                     'user_templates': version_managers
                 }
-                display_persistent_query_button = True
             except Exception, e:
                 error = "An unexpected error occurred while loading the query: {}.".format(e.message)
 
