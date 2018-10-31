@@ -5,8 +5,12 @@
     width: 100%;
 }
 
-.selectAllTemplateButton {
-    font-size: 0.7em;
+.selectAllGlobalTemplateButton {
+    font-size: 0.6em;
+}
+
+.selectAllUserTemplateButton {
+    font-size: 0.6em;
 }
 
 ul.tagit {

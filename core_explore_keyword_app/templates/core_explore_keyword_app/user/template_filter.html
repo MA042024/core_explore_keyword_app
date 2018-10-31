@@ -4,7 +4,7 @@
     <div class="panel-heading">
         Filter by Template
         <div class="pull-right">
-            <a class="selectAllTemplateButton" href="javascript:void(0)">
+            <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
                 Select All
             </a>
         </div>
@@ -14,7 +14,14 @@
     </div>
     {% endif %}
     {% if data.search_form.user_templates|length > 0 %}
-    <div class="panel-heading">Filter by User Template</div>
+    <div class="panel-heading">
+        Filter by User Template
+        <div class="pull-right">
+            <a class="selectAllUserTemplateButton" href="javascript:void(0)">
+                Select All
+            </a>
+        </div>
+    </div>
     <div class="panel-body">
         {{ data.search_form.user_templates }}
     </div>

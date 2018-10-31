@@ -5,6 +5,15 @@ var timer;
 const SELECT_ALL_LABEL = "Select All";
 const UNSELECT_ALL_LABEL = "Unselect All";
 
+const global_event = {
+    input_id: 'id_global_templates',
+    button_selector: '.selectAllGlobalTemplateButton'
+}
+
+const user_event = {
+    input_id: 'id_user_templates',
+    button_selector: '.selectAllUserTemplateButton'
+}
 
 /**
  * Show / hide placeholder
@@ -95,19 +104,24 @@ var initAutocomplete = function () {
  * Initialize select template all button
  */
 var initSelectAllTemplate = function() {
-    $(".selectAllTemplateButton").on("click", selectAllTemplate);
+    $(".selectAllGlobalTemplateButton").on("click", global_event, selectAllTemplate);
+    $(".selectAllUserTemplateButton").on("click", user_event, selectAllTemplate);
     $("input[id^='id_global_templates']").each(function(i) {
-        $(this).on("change", checkIfAllTemplateSelected);
+        $(this).on("change", global_event, checkIfAllTemplateSelected);
     });
-    checkIfAllTemplateSelected();
+    $("input[id^='id_user_templates']").each(function(i) {
+        $(this).on("change", user_event, checkIfAllTemplateSelected);
+    });
+    checkIfAllTemplateSelected({ data: global_event });
+    checkIfAllTemplateSelected({ data: user_event });
 }
 
 /**
  * check if all templates are selected
  */
-var checkIfAllTemplateSelected = function() {
+var checkIfAllTemplateSelected = function(event) {
     var allSelected = true;
-    $("input[id^='id_global_templates']").each(function(i) {
+    $("input[id^=" + event.data.input_id + "]").each(function(i) {
         if($(this).prop("checked") == false) {
             allSelected = false;
             return false;
@@ -115,24 +129,24 @@ var checkIfAllTemplateSelected = function() {
     });
 
     if (allSelected) {
-        $(".selectAllTemplateButton").html(UNSELECT_ALL_LABEL);
+        $(event.data.button_selector).html(UNSELECT_ALL_LABEL);
     } else {
-        $(".selectAllTemplateButton").html(SELECT_ALL_LABEL);
+        $(event.data.button_selector).html(SELECT_ALL_LABEL);
     }
 }
 
 /**
  * Select all Template function
  */
-var selectAllTemplate = function() {
+var selectAllTemplate = function(event) {
     var selectAll = false;
-    if ($(".selectAllTemplateButton").html().trim() == SELECT_ALL_LABEL) {
+    if ($(event.data.button_selector).html().trim() == SELECT_ALL_LABEL) {
         selectAll = true;
-        $(".selectAllTemplateButton").html(UNSELECT_ALL_LABEL);
+        $(event.data.button_selector).html(UNSELECT_ALL_LABEL);
     } else {
-        $(".selectAllTemplateButton").html(SELECT_ALL_LABEL);
+        $(event.data.button_selector).html(SELECT_ALL_LABEL);
     }
-    $("input[id^='id_global_templates']").each(function(i) {
+    $("input[id^=" + event.data.input_id + "]").each(function(i) {
         $(this).prop("checked", selectAll);
     });
 }
