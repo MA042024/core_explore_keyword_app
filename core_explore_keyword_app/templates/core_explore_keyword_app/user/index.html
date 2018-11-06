@@ -1,4 +1,9 @@
 <div class="container">
+{% if data.error %}
+    <div class="alert alert-danger"><i class="fa fa-times-circle"></i>
+        {{ data.error }}
+    </div>
+{% else %}
     <form id="form_search" action="{% url 'core_explore_keyword_app_search' %}" method="POST">
         {% csrf_token %}
         <div class="row_index">
@@ -34,6 +39,5 @@
             </div>
         </div>
     </form>
+{% endif %}
 </div>
-
-

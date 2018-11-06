@@ -127,6 +127,7 @@ class KeywordSearchView(View):
                 }
             except Exception, e:
                 error = "An unexpected error occurred while loading the query: {}.".format(e.message)
+                return {'error': error}
 
         search_form = KeywordForm(data=keywords_data_form)
         return _format_keyword_search_context(search_form, error, display_persistent_query_button)
