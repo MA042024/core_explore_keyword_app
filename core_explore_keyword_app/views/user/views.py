@@ -90,7 +90,6 @@ class KeywordSearchView(View):
 
         """
         error = None
-        keywords_data_form = None
         display_persistent_query_button = True
         if query_id is None:
             # create query
@@ -130,7 +129,7 @@ class KeywordSearchView(View):
                 return {'error': error}
 
         search_form = KeywordForm(data=keywords_data_form)
-        return _format_keyword_search_context(search_form, error, display_persistent_query_button)
+        return _format_keyword_search_context(search_form, error, None, display_persistent_query_button)
 
     def _post(self, request):
         """ Prepare the POST context
@@ -142,6 +141,7 @@ class KeywordSearchView(View):
 
         """
         error = None
+        warning = None
         search_form = KeywordForm(data=request.POST)
         display_persistent_query_button = False
         # validate form
@@ -165,7 +165,7 @@ class KeywordSearchView(View):
                     # get query
                     query = query_api.get_by_id(query_id)
                     if len(query.data_sources) == 0:
-                        error = "Please select at least 1 data source."
+                        warning = "Please select at least 1 data source."
                     else:
                         # update query
                         query.templates = template_api.get_all_by_id_list(template_ids)
@@ -179,7 +179,7 @@ class KeywordSearchView(View):
         else:
             error = "An unexpected error occurred: the form is not valid."
 
-        return _format_keyword_search_context(search_form, error, display_persistent_query_button)
+        return _format_keyword_search_context(search_form, error, warning, display_persistent_query_button)
 
     def _load_assets(self):
         """ Return assets structure
@@ -254,7 +254,7 @@ class KeywordSearchView(View):
         return modals
 
 
-def _format_keyword_search_context(search_form, error, display_persistent_query_button):
+def _format_keyword_search_context(search_form, error, warning, display_persistent_query_button):
     """ Format the context for the keyword research page
 
     Args:
@@ -269,6 +269,7 @@ def _format_keyword_search_context(search_form, error, display_persistent_query_
         'search_form': search_form,
         'query_id': search_form.data['query_id'],
         'error': error,
+        'warning': warning,
         'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
         'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
         'display_persistent_query_button': display_persistent_query_button
