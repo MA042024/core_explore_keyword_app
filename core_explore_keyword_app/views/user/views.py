@@ -232,6 +232,13 @@ class KeywordSearchView(View):
                 "is_raw": False
             }])
 
+        if "core_file_preview_app" in INSTALLED_APPS:
+            assets["js"].append({
+                "path": 'core_file_preview_app/user/js/file_preview.js',
+                "is_raw": False
+            })
+            assets["css"].append("core_file_preview_app/user/css/file_preview.css")
+
         return assets
 
     def _load_modals(self):
@@ -250,6 +257,9 @@ class KeywordSearchView(View):
             modals.extend([
                 "core_exporters_app/user/exporters/list/modals/list_exporters_selector.html"
             ])
+
+        if "core_file_preview_app" in INSTALLED_APPS:
+            modals.append("core_file_preview_app/user/file_preview_modal.html")
 
         return modals
 
