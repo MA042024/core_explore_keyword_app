@@ -10,7 +10,7 @@
     <form id="search_form" action="{% url 'core_explore_keyword_app_search' %}" method="POST">
         {% csrf_token %}
         <div class="row">
-            <div class="col-sm-offset-2 col-sm-9">
+            <div class="col-sm-12">
               {% include 'core_explore_keyword_app/user/search_bar.html' %}
             </div>
         </div>

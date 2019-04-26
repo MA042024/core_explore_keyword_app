@@ -24,8 +24,10 @@ function showHidePlaceholder($tagit){
 
     if ($tagit.tagit("assignedTags").length > 0) {
         $input.removeAttr('placeholder');
+        $(".tagit-new").css({"width": "auto"});
     } else {
         $input.attr('placeholder', placeholderText);
+        $(".tagit-new").css({"width": "100%"});
     }
 }
 
@@ -58,7 +60,7 @@ var initAutocomplete = function () {
         afterTagRemoved: function (event, ui) {
             showHidePlaceholder($(this));
         },
-        onTagAdded: function (event, ui) {
+        afterTagAdded: function (event, ui) {
             showHidePlaceholder($(this));
         },
         autocomplete: ({
@@ -88,7 +90,6 @@ var initAutocomplete = function () {
                         }));
                     }
                 });
-
             },
             minLength: 2,
             select: function (event, ui) {
@@ -98,7 +99,9 @@ var initAutocomplete = function () {
             }
         })
     });
+    showHidePlaceholder($("#id_keywords").tagit());
 };
+
 
 /**
  * Initialize select template all button
