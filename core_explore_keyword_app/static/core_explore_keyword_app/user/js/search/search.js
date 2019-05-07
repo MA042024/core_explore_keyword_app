@@ -37,14 +37,20 @@ function showHidePlaceholder($tagit){
 var initAutoSubmit = function() {
     $("#id_keywords").tagit({
         onTagAdded: function(event, ui) {
+            // delay submission after a tag is added
             fancyTreeSelectDelaySubmit();
         }
     });
 
     $('#id_keywords').tagit().next('ul').find('li input.ui-widget-content').focus(function(e) {
         if (!e.originalEvent) return;
-        // clear the timer when the tag it input is focused
-        // avoiding unwanted submission
+        // avoid submission when a tag is focused
+        clearTimeout(timer);
+        timer = null;
+    });
+
+    $(".ui-autocomplete-input").on("keypress", () => {
+        // avoid submission when user is typing
         clearTimeout(timer);
         timer = null;
     });
@@ -99,6 +105,7 @@ var initAutocomplete = function () {
             }
         })
     });
+    // init the place holder and calc his width
     showHidePlaceholder($("#id_keywords").tagit());
 };
 

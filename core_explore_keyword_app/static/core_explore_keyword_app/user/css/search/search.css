@@ -24,6 +24,10 @@ ul.tagit li.tagit-choice-editable {
     padding: .0em 18px .0em .0em;
 }
 
+.tagit {
+    cursor: text;
+}
+
 .tagit-close {
     text-decoration: none;
     border: 0;
