@@ -6,6 +6,7 @@ from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_common_app.views.user.ajax import add_local_data_source
 from core_explore_keyword_app.forms import KeywordForm
+from core_explore_keyword_registry_app.views.user.views import set_visibility_to_query
 
 register = template.Library()
 
@@ -25,16 +26,22 @@ def show_search_bar(context):
 
     # create Query
     query = Query(user_id=str(request.user.id), templates=[])
-    query_api.upsert(query)
 
     # add local data source to the query
     add_local_data_source(request, query)
+
+    # set visibility
+    set_visibility_to_query(query)
+
+    # upset the query
+    query_api.upsert(query)
 
     # create keyword form
     data_form = {
         'query_id': str(query.id),
         'user_id': query.user_id,
     }
+
     search_form = KeywordForm(data=data_form)
 
     context = {
