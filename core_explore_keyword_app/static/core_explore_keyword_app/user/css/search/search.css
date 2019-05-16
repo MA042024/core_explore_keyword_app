@@ -7,12 +7,12 @@
 
 .selectAllGlobalTemplateButton {
     color: #0043de;
-    font-size: 0.6em;
+    font-size: 0.5em;
 }
 
 .selectAllUserTemplateButton {
     color: #0043de;
-    font-size: 0.6em;
+    font-size: 0.5em;
 }
 
 ul.tagit {
@@ -48,4 +48,12 @@ ul.tagit li.tagit-choice-editable {
 
 .panel-body {
     overflow-y: scroll;
+}
+
+.panel-template ul {
+    margin: 0;
+}
+
+.panel-template input {
+    margin-right: 8px;
 }
