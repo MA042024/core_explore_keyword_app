@@ -105,7 +105,7 @@ class SuggestionsKeywordSearchView(View):
                         if dict_results['count'] > 0:
                             self._extract_suggestion_from_results(dict_results, keywords, suggestions)
 
-            except Exception, e:
+            except Exception as e:
                 logger.error("Exception while generating suggestions: "+ e.message)
 
         return HttpResponse(json.dumps({'suggestions': suggestions}), content_type='application/javascript')

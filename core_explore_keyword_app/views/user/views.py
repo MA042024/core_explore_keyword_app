@@ -124,7 +124,7 @@ class KeywordSearchView(View):
                     'global_templates': version_managers,
                     'user_templates': version_managers
                 }
-            except Exception, e:
+            except Exception as e:
                 error = "An unexpected error occurred while loading the query: {}.".format(e.message)
                 return {'error': error}
 
@@ -174,7 +174,7 @@ class KeywordSearchView(View):
                         display_persistent_query_button = True
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
-            except Exception, e:
+            except Exception as e:
                 error = "An unexpected error occurred: {}.".format(e.message)
         else:
             error = "An unexpected error occurred: the form is not valid."
