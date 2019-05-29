@@ -1,5 +1,6 @@
 """Explore keyword app Ajax views
 """
+from builtins import map
 import json
 import logging
 import re
@@ -87,7 +88,7 @@ class SuggestionsKeywordSearchView(View):
 
                 # from all version manager, build a list of all version (template)
                 template_ids = []
-                map(lambda x: template_ids.extend(x.versions), version_manager_list)
+                list([template_ids.extend(x.versions) for x in version_manager_list])
 
                 if query_id is not None and keywords is not None:
                     # get query

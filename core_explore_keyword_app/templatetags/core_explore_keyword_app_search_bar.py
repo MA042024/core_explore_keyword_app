@@ -1,5 +1,7 @@
 """Template tag to include the search bar
 """
+from builtins import str
+
 from django import template
 
 from core_explore_common_app.components.query import api as query_api

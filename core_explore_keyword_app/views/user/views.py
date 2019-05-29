@@ -1,6 +1,7 @@
 """Core Explore Keyword App views
 """
 import json
+from builtins import str
 
 from django.core.urlresolvers import reverse_lazy
 from django.urls import reverse
@@ -158,7 +159,7 @@ class KeywordSearchView(View):
                 version_manager_list = version_manager_api.get_by_id_list(template_version_manager_ids)
                 # from all version manager, build a list of all version (template)
                 template_ids = []
-                map(lambda x: template_ids.extend(x.versions), version_manager_list)
+                list([template_ids.extend(x.versions) for x in version_manager_list])
                 if query_id is None or keywords is None:
                     error = "Expected parameters are not provided"
                 else:
