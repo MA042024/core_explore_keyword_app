@@ -24,4 +24,4 @@ def init_permissions(apps):
         # add permissions to default group
         default_group.permissions.add(explore_access_perm)
     except Exception as e:
-        print('ERROR : Impossible to init the permissions for core_explore_keyword_app : ' + e.message)
+        print('ERROR : Impossible to init the permissions for core_explore_keyword_app : ' + str(e))

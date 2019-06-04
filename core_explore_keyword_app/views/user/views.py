@@ -126,7 +126,7 @@ class KeywordSearchView(View):
                     'user_templates': version_managers
                 }
             except Exception as e:
-                error = "An unexpected error occurred while loading the query: {}.".format(e.message)
+                error = "An unexpected error occurred while loading the query: {}.".format(str(e))
                 return {'error': error}
 
         search_form = KeywordForm(data=keywords_data_form)
@@ -176,7 +176,7 @@ class KeywordSearchView(View):
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
             except Exception as e:
-                error = "An unexpected error occurred: {}.".format(e.message)
+                error = "An unexpected error occurred: {}.".format(str(e))
         else:
             error = "An unexpected error occurred: the form is not valid."
 

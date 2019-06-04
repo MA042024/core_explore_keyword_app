@@ -107,7 +107,7 @@ class SuggestionsKeywordSearchView(View):
                             self._extract_suggestion_from_results(dict_results, keywords, suggestions)
 
             except Exception as e:
-                logger.error("Exception while generating suggestions: "+ e.message)
+                logger.error("Exception while generating suggestions: " + str(e))
 
         return HttpResponse(json.dumps({'suggestions': suggestions}), content_type='application/javascript')
 
