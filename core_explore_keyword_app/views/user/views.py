@@ -1,7 +1,6 @@
 """Core Explore Keyword App views
 """
 import json
-from builtins import str
 
 from django.core.urlresolvers import reverse_lazy
 from django.urls import reverse

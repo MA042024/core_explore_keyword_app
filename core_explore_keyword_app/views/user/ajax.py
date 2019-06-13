@@ -1,6 +1,5 @@
 """Explore keyword app Ajax views
 """
-from builtins import map
 import json
 import logging
 import re
