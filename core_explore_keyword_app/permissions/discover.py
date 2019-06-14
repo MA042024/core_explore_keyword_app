@@ -1,15 +1,18 @@
-""" Discover rules for core explore keyword app
+""" Discover rules for core explore keyword app.
 """
-from __future__ import print_function
+import logging
+
 from core_explore_keyword_app.permissions import rights as explore_keyword_rights
 from core_main_app.permissions import rights as main_rights
 
+logger = logging.getLogger(__name__)
+
 
 def init_permissions(apps):
-    """Initialization of groups and permissions
+    """Initialization of groups and permissions.
 
-    Returns:
-
+    Args:
+        apps (Apps): List of applications to init
     """
     try:
         group = apps.get_model("auth", "Group")
@@ -19,9 +22,11 @@ def init_permissions(apps):
         default_group, created = group.objects.get_or_create(name=main_rights.default_group)
 
         # Get explore keyword permissions
-        explore_access_perm = permission.objects.get(codename=explore_keyword_rights.explore_keyword_access)
+        explore_access_perm = permission.objects.get(
+            codename=explore_keyword_rights.explore_keyword_access
+        )
 
-        # add permissions to default group
+        # Add permissions to default group
         default_group.permissions.add(explore_access_perm)
     except Exception as e:
-        print('ERROR : Impossible to init the permissions for core_explore_keyword_app : ' + str(e))
+        logger.error("Impossible to init explore_keyword permissions: %s" % str(e))
