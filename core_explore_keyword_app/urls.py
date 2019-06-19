@@ -2,6 +2,7 @@
 """
 
 from django.conf.urls import url
+
 from core_explore_keyword_app.views.user import views as user_views, ajax as user_ajax
 
 urlpatterns = [
