@@ -57,3 +57,17 @@ ul.tagit li.tagit-choice-editable {
 .panel-template input {
     margin-right: 8px;
 }
+
+.tools-menu li {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 10px;
+}
+
+.tools-menu i {
+    padding-right: 5px;
+}
+
+.tools-menu a {
+    display: contents !important;
+}
