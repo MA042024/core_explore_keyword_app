@@ -172,4 +172,5 @@ class CreatePersistentQueryUrlKeywordView(CreatePersistentQueryUrlView):
         return PersistentQueryKeyword(user_id=query.user_id,
                                       content=query.content,
                                       templates=query.templates,
-                                      data_sources=query.data_sources)
+                                      data_sources=query.data_sources,
+                                      order_by_field=query.order_by_field)

@@ -20,6 +20,7 @@ from core_main_app.commons.exceptions import DoesNotExist
 from core_main_app.components.template import api as template_api
 from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
+from core_main_app.settings import DATA_SORTING_FIELDS
 
 
 class KeywordSearchView(View):
@@ -90,6 +91,7 @@ class KeywordSearchView(View):
 
         """
         error = None
+        default_order = None
         display_persistent_query_button = True
         if query_id is None:
             # create query
@@ -102,6 +104,8 @@ class KeywordSearchView(View):
                 'query_id': str(query.id),
                 'user_id': query.user_id,
             }
+            # set the correct default ordering for the context
+            default_order = ','.join(DATA_SORTING_FIELDS) if DATA_SORTING_FIELDS else ''
         else:
             try:
                 # get the query id
@@ -122,14 +126,17 @@ class KeywordSearchView(View):
                     'user_id': user_id,
                     'keywords': keywords,
                     'global_templates': version_managers,
+                    'order_by_field': query.order_by_field,
                     'user_templates': version_managers
                 }
+                # set the correct ordering for the context
+                default_order = ','.join(DATA_SORTING_FIELDS) if query.order_by_field == None else query.order_by_field
             except Exception as e:
                 error = "An unexpected error occurred while loading the query: {}.".format(str(e))
                 return {'error': error}
 
         search_form = KeywordForm(data=keywords_data_form)
-        return _format_keyword_search_context(search_form, error, None, display_persistent_query_button)
+        return _format_keyword_search_context(search_form, error, None, display_persistent_query_button, default_order)
 
     def _post(self, request):
         """ Prepare the POST context
@@ -144,6 +151,7 @@ class KeywordSearchView(View):
         warning = None
         search_form = KeywordForm(data=request.POST)
         display_persistent_query_button = False
+        default_order = ','.join(DATA_SORTING_FIELDS) if DATA_SORTING_FIELDS else ''
         # validate form
         if search_form.is_valid():
             try:
@@ -152,6 +160,8 @@ class KeywordSearchView(View):
                 keywords = search_form.cleaned_data.get('keywords', None)
                 global_templates = search_form.cleaned_data.get('global_templates', [])
                 user_templates = search_form.cleaned_data.get('user_templates', [])
+                order_by_field = search_form.cleaned_data.get('order_by_field', '')
+                default_order = order_by_field
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
@@ -170,6 +180,7 @@ class KeywordSearchView(View):
                         # update query
                         query.templates = template_api.get_all_by_id_list(template_ids)
                         query.content = json.dumps(get_full_text_query(keywords))
+                        query.order_by_field = order_by_field
                         query_api.upsert(query)
                         display_persistent_query_button = True
             except DoesNotExist:
@@ -179,7 +190,7 @@ class KeywordSearchView(View):
         else:
             error = "An unexpected error occurred: the form is not valid."
 
-        return _format_keyword_search_context(search_form, error, warning, display_persistent_query_button)
+        return _format_keyword_search_context(search_form, error, warning, display_persistent_query_button, default_order)
 
     def _load_assets(self):
         """ Return assets structure
@@ -266,13 +277,14 @@ class KeywordSearchView(View):
         return modals
 
 
-def _format_keyword_search_context(search_form, error, warning, display_persistent_query_button):
+def _format_keyword_search_context(search_form, error, warning, display_persistent_query_button, default_order=''):
     """ Format the context for the keyword research page
 
     Args:
         search_form:
         error:
         display_persistent_query_button:
+        default_order:
 
     Returns:
 
@@ -284,7 +296,8 @@ def _format_keyword_search_context(search_form, error, warning, display_persiste
         'warning': warning,
         'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
         'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
-        'display_persistent_query_button': display_persistent_query_button
+        'display_persistent_query_button': display_persistent_query_button,
+        'data_sorting_fields': default_order
     }
 
     if 'core_exporters_app' in INSTALLED_APPS:
