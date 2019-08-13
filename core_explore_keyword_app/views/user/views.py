@@ -221,6 +221,10 @@ class KeywordSearchView(View):
                             "is_raw": True
                         },
                         {
+                            "path": "core_main_app/common/js/debounce.js",
+                            "is_raw": True
+                        },
+                        {
                             "path": 'core_explore_keyword_app/user/js/search/search.js',
                             "is_raw": False
                         },

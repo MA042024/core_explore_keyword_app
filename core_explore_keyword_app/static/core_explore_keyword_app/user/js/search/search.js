@@ -1,6 +1,7 @@
 /**
  * Search
  */
+var SUBMIT_DELAY = 3000;
 var timer;
 const SELECT_ALL_LABEL = "Select All";
 const UNSELECT_ALL_LABEL = "Unselect All";
@@ -180,7 +181,7 @@ var delaySubmission = function() {
     // clear the timer
     clearTimeout(timer);
     // submit the form after 3 sec
-    timer = setTimeout(submitForm, 3000);
+    timer = setTimeout(submitForm, SUBMIT_DELAY);
 }
 
 /**
@@ -190,8 +191,26 @@ var submitForm = function () {
     $("#form_search").submit();
 }
 
+var initSortingAutoSubmit = function() {
+    // waiting for the end of the AJAX call result DOM injection
+    var MAX_INTERVAL_ITER = 10;
+    var iteration = 0;
+
+    var interval = setInterval(function() {
+        iteration++;
+        if (iteration >= MAX_INTERVAL_ITER) clearInterval(interval);
+        if ($(".filter-dropdown-menu").length > 0) {
+            clearInterval(interval);
+            $(".dropdown-menu.tools-menu.filter-dropdown-menu li").click(debounce(function() {
+                submitForm();
+            }, SUBMIT_DELAY));
+        }
+    }, 500);
+}
+
 $(document).ready(function() {
     initAutocomplete();
     initAutoSubmit();
     initSelectAllTemplate();
+    initSortingAutoSubmit();
 });
