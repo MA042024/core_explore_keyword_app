@@ -42,7 +42,6 @@ ul.tagit li.tagit-choice-editable {
 }
 
 .panel-body .glyphicon {
-    line-height: inherit;
     top: inherit;
 }
 
@@ -70,4 +69,8 @@ ul.tagit li.tagit-choice-editable {
 
 .tools-menu a {
     display: contents !important;
+}
+
+span.fancytree-title {
+    width: 12em;
 }
