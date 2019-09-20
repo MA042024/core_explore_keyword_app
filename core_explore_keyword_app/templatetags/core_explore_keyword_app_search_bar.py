@@ -7,6 +7,7 @@ from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_common_app.views.user.ajax import add_local_data_source
 from core_explore_keyword_app.forms import KeywordForm
+from core_main_app.settings import DATA_SORTING_FIELDS
 
 register = template.Library()
 
@@ -40,6 +41,7 @@ def show_search_bar(context):
     data_form = {
         'query_id': str(query.id),
         'user_id': query.user_id,
+        'order_by_field': ','.join(DATA_SORTING_FIELDS),
     }
 
     search_form = KeywordForm(data=data_form)
