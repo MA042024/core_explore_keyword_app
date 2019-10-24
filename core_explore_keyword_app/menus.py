@@ -1,7 +1,7 @@
 """ Add Explore Keyword in main menu
 """
 
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from menu import Menu, MenuItem
 
 from core_explore_keyword_app.settings import EXPLORE_MENU_NAME

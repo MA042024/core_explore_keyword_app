@@ -2,7 +2,8 @@
 """
 import json
 
-from django.urls import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -17,9 +18,9 @@ from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import INSTALLED_APPS
 from core_main_app.commons.exceptions import DoesNotExist
 from core_main_app.components.template import api as template_api
-from core_main_app.settings import DATA_SORTING_FIELDS
 from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
+from core_main_app.settings import DATA_SORTING_FIELDS
 
 
 class KeywordSearchView(View):

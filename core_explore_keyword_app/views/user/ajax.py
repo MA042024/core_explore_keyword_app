@@ -4,7 +4,7 @@ import json
 import logging
 import re
 
-from django.urls import reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
