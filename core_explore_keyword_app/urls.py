@@ -1,19 +1,19 @@
 """ Url router for the explore keyword application
 """
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from core_explore_keyword_app.views.user import views as user_views, ajax as user_ajax
 
 urlpatterns = [
-    url(r'^$', user_views.KeywordSearchView.as_view(),
-        name='core_explore_keyword_app_search'),
-    url(r'^suggestions$', user_ajax.SuggestionsKeywordSearchView.as_view(),
-        name='core_explore_keyword_suggestions'),
-    url(r'^get-persistent-query-url$', user_ajax.CreatePersistentQueryUrlKeywordView.as_view(),
-        name='core_explore_keyword_get_persistent_query_url'),
-    url(r'^results-redirect/(?P<persistent_query_id>\w+)', user_views.ResultQueryRedirectKeywordView.as_view(),
-        name='core_explore_keyword_results_redirect'),
-    url(r'^(?P<query_id>\w+)$', user_views.KeywordSearchView.as_view(),
-        name='core_explore_keyword_app_search'),
+    re_path(r'^$', user_views.KeywordSearchView.as_view(),
+            name='core_explore_keyword_app_search'),
+    re_path(r'^suggestions$', user_ajax.SuggestionsKeywordSearchView.as_view(),
+            name='core_explore_keyword_suggestions'),
+    re_path(r'^get-persistent-query-url$', user_ajax.CreatePersistentQueryUrlKeywordView.as_view(),
+            name='core_explore_keyword_get_persistent_query_url'),
+    re_path(r'^results-redirect/(?P<persistent_query_id>\w+)', user_views.ResultQueryRedirectKeywordView.as_view(),
+            name='core_explore_keyword_results_redirect'),
+    re_path(r'^(?P<query_id>\w+)$', user_views.KeywordSearchView.as_view(),
+            name='core_explore_keyword_app_search'),
 ]
