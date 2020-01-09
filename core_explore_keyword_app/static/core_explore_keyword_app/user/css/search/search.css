@@ -46,7 +46,7 @@ ul.tagit li.tagit-choice-editable {
 }
 
 .panel-body {
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .panel-template ul {
