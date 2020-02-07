@@ -11,6 +11,7 @@ import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.components.version_manager.api as version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
+from core_explore_common_app.settings import DISPLAY_LAST_MODIFICATION_DATE
 from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
@@ -234,6 +235,7 @@ class KeywordSearchView(View):
                     ],
                     "css": ["core_explore_common_app/user/css/query_result.css",
                             "core_main_app/common/css/XMLTree.css",
+                            "core_explore_common_app/user/css/toggle.css",
                             "core_explore_common_app/user/css/results.css",
                             "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
                             'core_explore_keyword_app/user/css/search/search.css'],
@@ -300,7 +302,8 @@ def _format_keyword_search_context(search_form, error, warning, display_persiste
         'data_sources_selector_template': 'core_explore_common_app/user/selector/data_sources_selector.html',
         'get_shareable_link_url': reverse("core_explore_keyword_get_persistent_query_url"),
         'display_persistent_query_button': display_persistent_query_button,
-        'data_sorting_fields': default_order
+        'data_sorting_fields': default_order,
+        'display_last_modification_date': 'true' if DISPLAY_LAST_MODIFICATION_DATE else 'false'
     }
 
     if 'core_exporters_app' in INSTALLED_APPS:
