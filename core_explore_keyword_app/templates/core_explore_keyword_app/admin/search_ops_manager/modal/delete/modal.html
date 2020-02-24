@@ -1,0 +1,24 @@
+{% extends "core_main_app/_render/admin/theme/tools/modal.html" %}
+
+{% block modal_id %}operator-delete-modal{% endblock %}
+{% block modal_title %}Delete Search Operator <span class="operator-name"></span>?{% endblock %}
+
+{% block modal_body %}
+<p>
+    The search operator will be deleted from the system and users won't be able to
+    use it in their search.
+</p>
+<p>
+    Are you sure you want to delete the operator <span class="operator-name"></span>?
+</p>
+<input type="hidden" id="operator-id"/>
+{% endblock %}
+
+{% block modal_footer %}
+<a class="btn btn-default pull-left" data-dismiss="modal">
+    <i class="fa fa-times"></i> Cancel
+</a>
+<a id="btn-delete-operator" class="btn btn-danger">
+    <i class="fa fa-check"></i> Delete
+</a>
+{% endblock %}

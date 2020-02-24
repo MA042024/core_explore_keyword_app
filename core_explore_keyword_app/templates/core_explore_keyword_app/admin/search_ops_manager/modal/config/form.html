@@ -1,0 +1,24 @@
+<form>
+    {% csrf_token %}
+    {% for field in form.visible_fields %}
+        <div
+            {% if field.errors %}
+            class="form-group has-error"
+            {% else %}
+            class="form-group"
+            {% endif %}
+        >
+            {{ field.label_tag }}
+            {% if field.help_text %}
+                <em class="pull-right">{{ field.help_text|safe }}</em>
+            {% endif %}
+            {{ field }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger">{{ field.errors }}</div>
+        {% endif %}
+    {% endfor %}
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+</form>

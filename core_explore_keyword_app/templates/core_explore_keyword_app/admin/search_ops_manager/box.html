@@ -1,0 +1,53 @@
+<!--FIXME: use common box.html-->
+{% extends "core_main_app/_render/admin/theme/tools/box.html" %}
+
+{% block box_title %}{{ data.subtitle }}{% endblock %}
+
+{% block box_tools %}
+    <span class="btn btn-success btn-create-operator">
+        <i class="fa fa-plus-circle"></i> New operator
+    </span>
+{% endblock %}
+
+{% block box_body %}
+<p>
+    This table lists the current search operators created on the platform. New ones can
+    be added using the <a class="link btn-create-operator">new operator button</a>.
+</p>
+<table class="table table-condensed" id="operators-list">
+    <thead>
+        <tr>
+            <th id="col-op-name">Name</th>
+            <th id="col-op-xpath">XPath List</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for operator in data.operators %}
+        <tr id="{{ operator.id }}">
+            <td>{{ operator.name }}</td>
+            <td><ul>
+                {% for xpath in operator.xpath_list %}
+                    <li><code>{{ xpath }}</code></li>
+                {% endfor %}
+            </ul></td>
+            <td>
+                <span class="btn btn-default btn-edit-operator">
+                    <i class="fa fa-edit"></i> Edit
+                </span>
+                <span class="btn btn-danger btn-delete-operator">
+                    <i class="fa fa-trash"></i> Delete
+                </span>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="empty">
+                No operator defined. Start by
+                <a class="link btn-create-operator">creating a new one</a>!
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

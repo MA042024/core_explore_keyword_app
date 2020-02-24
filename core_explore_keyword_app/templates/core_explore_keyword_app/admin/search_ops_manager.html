@@ -1,0 +1,7 @@
+<!--FIXME: use common section.html-->
+{% extends "core_main_app/_render/admin/theme/tools/section.html" %}
+{% block section_title %}{{ data.title }}{% endblock %}
+
+{% block section_content %}
+	{% include 'core_explore_keyword_app/admin/search_ops_manager/box.html' %}
+{% endblock %}

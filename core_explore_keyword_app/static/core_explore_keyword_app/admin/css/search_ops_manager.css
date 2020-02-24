@@ -1,0 +1,11 @@
+#col-op-name, #col-op-xpath {
+    width: 35%;
+}
+
+a.link {
+    cursor: pointer;
+}
+
+span.operator-name {
+    font-style: italic;
+}
