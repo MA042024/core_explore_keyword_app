@@ -229,6 +229,10 @@ class KeywordSearchView(View):
                             "is_raw": False
                         },
                         {
+                            "path": 'core_explore_keyword_app/user/js/search/autocomplete_source.js',
+                            "is_raw": False
+                        },
+                        {
                             "path": 'core_explore_common_app/user/js/button_persistent_query.js',
                             "is_raw": False
                         },
