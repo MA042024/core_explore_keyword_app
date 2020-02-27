@@ -13,7 +13,7 @@ import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.components.version_manager.api as version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.settings import DISPLAY_LAST_MODIFICATION_DATE
+from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
 from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
@@ -118,6 +118,7 @@ class KeywordSearchView(View):
         """
         error = None
         display_persistent_query_button = True
+        default_order = None
         if query_id is None:
             # create query
             query = create_default_query(request, [])
@@ -130,7 +131,7 @@ class KeywordSearchView(View):
                 "user_id": query.user_id,
             }
             # set the correct default ordering for the context
-            default_order = ",".join(DATA_SORTING_FIELDS) if DATA_SORTING_FIELDS else ""
+            default_order = [",".join(DATA_SORTING_FIELDS)] if DATA_SORTING_FIELDS else [""]
         else:
             try:
                 # get the query id
@@ -150,19 +151,17 @@ class KeywordSearchView(View):
                     "user_id": user_id,
                     "keywords": keywords,
                     "global_templates": version_managers,
-                    "order_by_field": query.order_by_field,
+                    "order_by_field": self._build_sorting_context_array(query),
                     "user_templates": version_managers
                 }
                 # set the correct ordering for the context
-                default_order = ",".join(DATA_SORTING_FIELDS) \
-                    if query.order_by_field is None else query.order_by_field
+                default_order = [",".join(DATA_SORTING_FIELDS)] if len(keywords_data_form["order_by_field"]) == 0 else keywords_data_form["order_by_field"]
             except Exception as e:
                 error = "An unexpected error occurred while loading the query: {}.".format(str(e))
                 return {"error": error}
 
         search_form = KeywordForm(data=keywords_data_form)
-        return _format_keyword_search_context(search_form, error, None,
-                                              display_persistent_query_button, default_order)
+        return _format_keyword_search_context(search_form, error, None, default_order)
 
     def _post(self, request):
         """ Prepare the POST context
@@ -176,8 +175,7 @@ class KeywordSearchView(View):
         error = None
         warning = None
         search_form = KeywordForm(data=request.POST)
-        display_persistent_query_button = False
-        default_order = ",".join(DATA_SORTING_FIELDS) if DATA_SORTING_FIELDS else ""
+        default_order = [",".join(DATA_SORTING_FIELDS)] if DATA_SORTING_FIELDS else [""]
         # validate form
         if search_form.is_valid():
             try:
@@ -186,8 +184,8 @@ class KeywordSearchView(View):
                 keywords = search_form.cleaned_data.get("keywords", None)
                 global_templates = search_form.cleaned_data.get("global_templates", [])
                 user_templates = search_form.cleaned_data.get("user_templates", [])
-                order_by_field = search_form.cleaned_data.get("order_by_field", "")
-                default_order = order_by_field
+                order_by_field = json.loads(search_form.cleaned_data.get("order_by_field", [""]))
+                default_order = order_by_field if order_by_field else default_order
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
@@ -217,9 +215,11 @@ class KeywordSearchView(View):
                         #         ]
                         #     }
                         # )
-                        query.order_by_field = order_by_field
+                        # set the sorting value according to the data-sources
+                        for data_sources_index in range(len(query.data_sources)):
+                            if data_sources_index in range(-len(default_order), len(default_order)):
+                                query.data_sources[data_sources_index].order_by_field = default_order[data_sources_index]
                         query_api.upsert(query)
-                        display_persistent_query_button = True
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
             except Exception as e:
@@ -228,7 +228,7 @@ class KeywordSearchView(View):
             error = "An unexpected error occurred: the form is not valid."
 
         return _format_keyword_search_context(
-            search_form, error, warning, display_persistent_query_button, default_order
+            search_form, error, warning, default_order
         )
 
     @staticmethod
@@ -319,12 +319,12 @@ class KeywordSearchView(View):
                         {
                             "path": "core_explore_common_app/user/js/button_persistent_query.js",
                             "is_raw": False
-                        },
+                        }
                     ],
                     "css": ["core_explore_common_app/user/css/query_result.css",
                             "core_main_app/common/css/XMLTree.css",
-                            "core_explore_common_app/user/css/toggle.css",
                             "core_explore_common_app/user/css/results.css",
+                            "core_explore_common_app/user/css/toggle.css",
                             "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
                             "core_explore_keyword_app/user/css/search/search.css"],
                 }
@@ -347,6 +347,19 @@ class KeywordSearchView(View):
             assets["css"].append("core_file_preview_app/user/css/file_preview.css")
 
         return assets
+
+    def _build_sorting_context_array(self, query):
+        """ Get the query data-sources dans build the context sorting array for the JS
+
+        Returns: Sorting values ex. ['-title, +date', '+title']
+
+        """
+        context_array = []
+        for data_source in query.data_sources:
+            context_array.append(data_source.order_by_field)
+
+        return context_array
+
 
     @staticmethod
     def _load_modals():
@@ -372,14 +385,12 @@ class KeywordSearchView(View):
         return modals
 
 
-def _format_keyword_search_context(search_form, error, warning, display_persistent_query_button,
-                                   default_order=""):
+def _format_keyword_search_context(search_form, error, warning, query_order=[""]):
     """ Format the context for the keyword research page
 
     Args:
         search_form:
         error:
-        display_persistent_query_button:
         default_order:
 
     Returns:
@@ -390,16 +401,13 @@ def _format_keyword_search_context(search_form, error, warning, display_persiste
         "query_id": search_form.data["query_id"],
         "error": error,
         "warning": warning,
+        "default_date_toggle_value": DEFAULT_DATE_TOGGLE_VALUE,
         "data_sources_selector_template":
             "core_explore_common_app/user/selector/data_sources_selector.html",
-        "get_shareable_link_url": reverse("core_explore_keyword_get_persistent_query_url"),
-        "display_persistent_query_button": display_persistent_query_button,
-        "data_sorting_fields": default_order,
-        "display_last_modification_date": "true" if DISPLAY_LAST_MODIFICATION_DATE else "false"
+        "data_sorting_fields": query_order,
+        "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
+        "get_shareable_link_url": reverse("core_explore_keyword_get_persistent_query_url")
     }
-
-    if "core_exporters_app" in INSTALLED_APPS:
-        context["exporter_app"] = True
 
     return context
 
