@@ -13,7 +13,7 @@ import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.components.version_manager.api as version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
+from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE, SORTING_DISPLAY_TYPE
 from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
@@ -131,7 +131,7 @@ class KeywordSearchView(View):
                 "user_id": query.user_id,
             }
             # set the correct default ordering for the context
-            default_order = [",".join(DATA_SORTING_FIELDS)] if DATA_SORTING_FIELDS else [""]
+            default_order = ','.join(DATA_SORTING_FIELDS)
         else:
             try:
                 # get the query id
@@ -155,7 +155,7 @@ class KeywordSearchView(View):
                     "user_templates": version_managers
                 }
                 # set the correct ordering for the context
-                default_order = [",".join(DATA_SORTING_FIELDS)] if len(keywords_data_form["order_by_field"]) == 0 else keywords_data_form["order_by_field"]
+                default_order = ','.join(DATA_SORTING_FIELDS) if keywords_data_form['order_by_field'] == 0 else keywords_data_form['order_by_field']
             except Exception as e:
                 error = "An unexpected error occurred while loading the query: {}.".format(str(e))
                 return {"error": error}
@@ -175,7 +175,6 @@ class KeywordSearchView(View):
         error = None
         warning = None
         search_form = KeywordForm(data=request.POST)
-        default_order = [",".join(DATA_SORTING_FIELDS)] if DATA_SORTING_FIELDS else [""]
         # validate form
         if search_form.is_valid():
             try:
@@ -184,8 +183,7 @@ class KeywordSearchView(View):
                 keywords = search_form.cleaned_data.get("keywords", None)
                 global_templates = search_form.cleaned_data.get("global_templates", [])
                 user_templates = search_form.cleaned_data.get("user_templates", [])
-                order_by_field = json.loads(search_form.cleaned_data.get("order_by_field", [""]))
-                default_order = order_by_field if order_by_field else default_order
+                order_by_field_array = search_form.cleaned_data.get("order_by_field", "").strip().split(";")
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
@@ -215,10 +213,13 @@ class KeywordSearchView(View):
                         #         ]
                         #     }
                         # )
-                        # set the sorting value according to the data-sources
+                        # set the data-sources filter value according to the POST request field
                         for data_sources_index in range(len(query.data_sources)):
-                            if data_sources_index in range(-len(default_order), len(default_order)):
-                                query.data_sources[data_sources_index].order_by_field = default_order[data_sources_index]
+                            # update the data-source filter only if it's not a new data-source (the default
+                            # filter value is already added when the data-source is created)
+                            if data_sources_index in range(0, len(order_by_field_array)):
+                                query.data_sources[data_sources_index].order_by_field = order_by_field_array[data_sources_index]
+
                         query_api.upsert(query)
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
@@ -228,7 +229,7 @@ class KeywordSearchView(View):
             error = "An unexpected error occurred: the form is not valid."
 
         return _format_keyword_search_context(
-            search_form, error, warning, default_order
+            search_form, error, warning, search_form.cleaned_data.get("order_by_field", "").strip()
         )
 
     @staticmethod
@@ -329,6 +330,11 @@ class KeywordSearchView(View):
                             "core_explore_keyword_app/user/css/search/search.css"],
                 }
 
+        assets["js"].extend([{
+            "path": "core_explore_common_app/user/js/sorting_{0}_criteria.js".format(SORTING_DISPLAY_TYPE),
+            "is_raw": False
+        }])
+
         if "core_exporters_app" in INSTALLED_APPS:
             # add all assets needed
             assets["js"].extend([{
@@ -351,14 +357,14 @@ class KeywordSearchView(View):
     def _build_sorting_context_array(self, query):
         """ Get the query data-sources dans build the context sorting array for the JS
 
-        Returns: Sorting values ex. ['-title, +date', '+title']
+        Returns:
 
         """
         context_array = []
         for data_source in query.data_sources:
             context_array.append(data_source.order_by_field)
 
-        return context_array
+        return ';'.join(context_array)
 
 
     @staticmethod
