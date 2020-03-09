@@ -1,6 +1,8 @@
 """ Search Operator model
 """
 from django_mongoengine import fields, Document
+from mongoengine import errors as mongoengine_errors
+from core_main_app.commons import exceptions
 
 
 class SearchOperator(Document):
@@ -27,7 +29,12 @@ class SearchOperator(Document):
 
         Returns:
         """
-        return SearchOperator.objects.get(pk=operator_id)
+        try:
+            return SearchOperator.objects.get(pk=operator_id)
+        except mongoengine_errors.ValidationError as validation_error:
+            raise exceptions.ModelError(str(validation_error))
+        except mongoengine_errors.DoesNotExist as does_not_exist:
+            raise exceptions.DoesNotExist(str(does_not_exist))
 
     @staticmethod
     def get_by_name(operator_name):
@@ -38,7 +45,10 @@ class SearchOperator(Document):
 
         Returns:
         """
-        return SearchOperator.objects.get(name=operator_name)
+        try:
+            return SearchOperator.objects.get(name=operator_name)
+        except mongoengine_errors.DoesNotExist as does_not_exist:
+            raise exceptions.DoesNotExist(str(does_not_exist))
 
     @staticmethod
     def get_by_dot_notation_list(operator_dot_notation_list):
@@ -49,4 +59,20 @@ class SearchOperator(Document):
 
         Returns:
         """
-        return SearchOperator.objects.get(dot_notation_list=operator_dot_notation_list)
+        try:
+            return SearchOperator.objects.get(dot_notation_list=operator_dot_notation_list)
+        except mongoengine_errors.DoesNotExist as does_not_exist:
+            raise exceptions.DoesNotExist(str(does_not_exist))
+
+    def save_object(self):
+        """ Upsert a search operator and handle possible issues.
+
+            Returns:
+                SearchOperator
+        """
+        try:
+            return self.save()
+        except mongoengine_errors.NotUniqueError as not_unique_error:
+            raise exceptions.NotUniqueError(str(not_unique_error))
+        except Exception as exception:
+            raise exceptions.ModelError(str(exception))

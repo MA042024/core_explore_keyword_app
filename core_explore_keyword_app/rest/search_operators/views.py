@@ -3,13 +3,11 @@
 from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import core_explore_keyword_app.components.search_operator.api as search_operator_api
 from core_explore_keyword_app.rest.search_operators.serializers import SearchOperatorSerializer
-from core_main_app.access_control.exceptions import AccessControlError
 from core_main_app.commons import exceptions
 from core_main_app.utils.decorators import api_staff_member_required
 
@@ -17,9 +15,6 @@ from core_main_app.utils.decorators import api_staff_member_required
 class SearchOperatorList(APIView):
     """ List search operators
     """
-    permission_classes = (IsAuthenticated, )
-
-    @method_decorator(api_staff_member_required())
     def get(self, request):
         """ Get all search operators
 
@@ -81,26 +76,26 @@ class SearchOperatorList(APIView):
         except ValidationError as validation_exception:
             content = {"message": validation_exception.detail}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except exceptions.ModelError as validation_exception:
-            content = {"message": str(validation_exception)}
+        except exceptions.ModelError as model_exception:
+            content = {"message": str(model_exception)}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except exceptions.NotUniqueError as validation_exception:
-            content = {"message": str(validation_exception)}
+        except exceptions.NotUniqueError as not_unique_error:
+            content = {"message": str(not_unique_error)}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except KeyError as validation_exception:
-            content = {"message": validation_exception}
+        except KeyError as key_error:
+            content = {"message": str(key_error)}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as api_exception:
+        except exceptions.ApiError as api_exception:
             content = {"message": str(api_exception)}
+            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class SearchOperatorDetail(APIView):
     """ Search operator detail
     """
-    permission_classes = (IsAuthenticated,)
-
-    @method_decorator(api_staff_member_required())
     def get(self, request, pk):
         """ Retrieve search operator from database
 

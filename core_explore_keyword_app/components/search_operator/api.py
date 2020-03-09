@@ -1,10 +1,7 @@
 """ Search Operator API
 """
-from mongoengine import errors as mongoengine_errors
-from pymongo import errors as pymongo_errors
-
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
-from core_main_app.commons.exceptions import ApiError
+from core_main_app.commons import exceptions
 from core_main_app.utils.xml import xpath_to_dot_notation
 
 
@@ -26,10 +23,10 @@ def get_by_id(operator_id):
     """
     try:
         return SearchOperator.get_by_id(operator_id)
-    except mongoengine_errors.ValidationError:
-        raise ApiError("Invalid operator ID")
-    except mongoengine_errors.DoesNotExist:
-        raise ApiError("Operator does not exist")
+    except exceptions.ModelError:
+        raise exceptions.ApiError("Invalid operator ID")
+    except exceptions.DoesNotExist:
+        raise exceptions.ApiError("Operator does not exist")
 
 
 def get_by_name(operator_name):
@@ -42,8 +39,8 @@ def get_by_name(operator_name):
     """
     try:
         return SearchOperator.get_by_name(operator_name)
-    except mongoengine_errors.DoesNotExist:
-        raise ApiError("Operator does not exist")
+    except exceptions.DoesNotExist:
+        raise exceptions.ApiError("Operator does not exist")
 
 
 def get_by_dot_notation_list(dot_notation_list):
@@ -56,8 +53,8 @@ def get_by_dot_notation_list(dot_notation_list):
     """
     try:
         return SearchOperator.get_by_dot_notation_list(dot_notation_list)
-    except mongoengine_errors.DoesNotExist:
-        raise ApiError("Operator does not exist")
+    except exceptions.DoesNotExist:
+        raise exceptions.ApiError("Operator does not exist")
 
 
 def upsert(operator):
@@ -76,9 +73,11 @@ def upsert(operator):
             for xpath in operator.xpath_list
         ]
 
-        return operator.save()
-    except pymongo_errors.DuplicateKeyError:
-        raise ApiError("Operator named %s already exists" % operator.name)
+        return operator.save_object()
+    except exceptions.NotUniqueError:
+        raise exceptions.ApiError("Operator name or xpath already exists")
+    except exceptions.ModelError as model_error:
+        raise exceptions.ApiError("Model save failed: %s" % str(model_error))
 
 
 def delete(operator):

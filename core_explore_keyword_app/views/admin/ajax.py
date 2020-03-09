@@ -52,6 +52,7 @@ class SearchOperatorConfigModalView(View):
                 search_operator_api.upsert(operator)
             except ApiError as e:
                 operator_form.add_error("name", str(e))
+                operator_form.add_error("xpath_list", str(e))
                 return render(
                     request,
                     "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
