@@ -3,6 +3,7 @@
  */
 var SUBMIT_DELAY = 3000;
 var timer;
+var cachedOperators;
 const SELECT_ALL_LABEL = "Select All";
 const UNSELECT_ALL_LABEL = "Unselect All";
 
@@ -26,10 +27,30 @@ function showHidePlaceholder($tagit){
     if ($tagit.tagit("assignedTags").length > 0) {
         $input.removeAttr('placeholder');
         $(".tagit-new").css({"width": "auto"});
+
     } else {
         $input.attr('placeholder', placeholderText);
         $(".tagit-new").css({"width": "100%"});
+
     }
+}
+
+/**
+  * Add the function to get the textWidth according to on the font and the placeholder to jQuery
+  * @see: https://codepen.io/Momciloo/pen/bpyMbB
+  */
+$.fn.textWidth = function(text, font) {
+
+    if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
+
+    $.fn.textWidth.fakeEl.text(text || this.val() || this.text() || this.attr('placeholder'))
+        .css('font', font || this.css('font'));
+
+    return $.fn.textWidth.fakeEl.width();
+};
+
+function inputWidth(elem, minW, maxW) {
+    elem = $(this);
 }
 
 /**
@@ -40,6 +61,7 @@ var initAutoSubmit = function() {
         onTagAdded: function(event, ui) {
             // delay submission after a tag is added
             fancyTreeSelectDelaySubmit();
+            cleanSearchOperatorStyle(true);
         }
     });
 
@@ -50,10 +72,115 @@ var initAutoSubmit = function() {
         timer = null;
     });
 
-    $(".ui-autocomplete-input").on("keypress", () => {
-        // avoid submission when user is typing
-        clearTimeout(timer);
-        timer = null;
+    $(".ui-autocomplete-input").on("keyup", (event) => {
+
+        var jqNewTagInputValue = $(".ui-autocomplete-input").val();
+        // check the key if the key is ':' it could be a search operator
+        if (event.originalEvent && event.originalEvent.key === ':') {
+            var jqCurrentTarget = $(event.currentTarget).parent();
+            checkOperator(jqNewTagInputValue, jqCurrentTarget);
+        } else if ( jqNewTagInputValue === "") {
+            cleanSearchOperatorStyle(true);
+        } else if ( event.originalEvent.key !== "Enter") {
+            // avoid submission when user is typing
+            clearTimeout(timer);
+            timer = null;
+        }
+    });
+}
+
+/**
+  * Call the REST API to get the operators list and check if operatorValue is a valid operator
+  * if yes color the tag in green if not color the tag in blue
+  * @param: operatorValue the operator tapped by the user
+  * @param: the jQuery element of the element to color
+  * @param: the optional success callBack function
+  */
+var checkOperator = function(operatorValue, target, callBack) {
+        if (cachedOperators === undefined) {
+            $.ajax({
+                url: operatorListURL,
+                type : "GET",
+                contentType: 'application/json',
+                success: function(data){
+                    if (data && data.length > 0) {
+                        cachedOperators = data;
+                        applyInputStyle(cachedOperators, operatorValue, target);
+                    }
+                    if (typeof callBack === 'function') callBack(data);
+                },
+                error: function(data){
+                    cleanSearchOperatorStyle(true);
+                    target.addClass('tagit-choice-editable operator-bg-error-color');
+                }
+            });
+        } else {
+            applyInputStyle(cachedOperators, operatorValue, target);
+            if (typeof callBack === 'function') callBack(cachedOperators);
+        }
+}
+
+
+
+/**
+  * Add the input style if the current operator match with the operator list
+  * @param: operatorsList: Array<string> list of the available operator
+  * @param: operatorsValue: string value tapped bu the user
+  * @param: target: DomElement element to apply the style
+  */
+var applyInputStyle = function(operatorList, operatorValue, target) {
+    operatorList.forEach( (operator, index) => {
+        if (operatorValue && operator.name && operator.name === operatorValue.slice(0, -1)) {
+            cleanSearchOperatorStyle(true);
+            target.addClass('tagit-choice-editable operator-bg-success-color');
+        }
+    });
+}
+
+
+/**
+  * Clean the style added when the user tape ':' a potential search operator
+  * @param: force boolean force the clean if true clean only if there are not tags left
+  */
+var cleanSearchOperatorStyle = function(force) {
+    // get all the tags in the page
+    if (force || $("li.tagit-choice").length === 0) {
+        // remove all the possible state of the tag
+        var jqTagInputElement = $(".tagit-new");
+        jqTagInputElement.removeClass("tagit-choice-editable " +
+            "operator-bg-success-color " +
+            "operator-bg-error-color "
+        );
+
+        showHidePlaceholder($("#id_keywords").tagit());
+    }
+}
+
+/**
+  * Add style to the operator tag
+  */
+var addOperatorTagStyle = function() {
+    var tagList = $("#id_keywords").tagit("assignedTags");
+    var jqNewTagInputValue = $(".ui-autocomplete-input").val();
+    var jqTargetElement = $(".tagit-new");
+    var operatorsIndexes = [];
+    checkOperator(jqNewTagInputValue, jqTargetElement, (operators)=>{
+        tagList.forEach( (tagValue, tagIndex) => {
+            // we get the element at the left of the operator separator
+            var operatorTagValue = tagValue.split(":")[0];
+            // search in the current tag list if one of these values match with one of the created Operators
+            for (var index=0; index<operators.length; ++index) {
+                if (operators[index] && operators[index].name === operatorTagValue) {
+                    operatorsIndexes.push(tagIndex);
+                }
+            }
+        });
+
+        var tagElements = $('.tagit-choice');
+        operatorsIndexes.forEach( (currentTagIndex) => {
+            $(tagElements[currentTagIndex]).addClass('tagit-choice-editable operator-bg-success-color');
+        });
+
     });
 }
 
@@ -65,10 +192,12 @@ var initAutocomplete = function () {
         allowSpaces: false,
         placeholderText: 'Enter keywords, or leave blank to retrieve all records',
         afterTagRemoved: function (event, ui) {
+            cleanSearchOperatorStyle();
             showHidePlaceholder($(this));
         },
         afterTagAdded: function (event, ui) {
             showHidePlaceholder($(this));
+            addOperatorTagStyle();
         },
         autocomplete: ({
             search: function (event, ui) {
@@ -196,4 +325,14 @@ $(document).ready(function() {
     initAutoSubmit();
     initSelectAllTemplate();
     initSortingAutoSubmit();
+    addOperatorTagStyle();
+    // add listener to auto resize the keyword input
+    $('.ui-autocomplete-input').on('input', function() {
+    var inputWidth = $(this).textWidth()==0?"100%":$(this).textWidth();
+        $(this).css({
+            width: inputWidth
+        })
+    }).trigger('input');
+    var targetInputElem = $('.ui-autocomplete-input');
+    inputWidth(targetInputElem);
 });
