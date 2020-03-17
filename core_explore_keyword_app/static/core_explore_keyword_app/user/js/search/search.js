@@ -31,6 +31,7 @@ function showHidePlaceholder($tagit){
     } else {
         $input.attr('placeholder', placeholderText);
         $(".tagit-new").css({"width": "100%"});
+        $(".tagit-new input").css({"width": "100%"});
 
     }
 }
@@ -192,7 +193,6 @@ var initAutocomplete = function () {
         allowSpaces: false,
         placeholderText: 'Enter keywords, or leave blank to retrieve all records',
         afterTagRemoved: function (event, ui) {
-            cleanSearchOperatorStyle();
             showHidePlaceholder($(this));
         },
         afterTagAdded: function (event, ui) {
