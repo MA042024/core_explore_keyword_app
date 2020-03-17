@@ -1,18 +1,12 @@
 /* Search by keyword CSS file */
 
 .search_button {
-    width: 2.9em;
-    height: 2.8em;
+    height: 2.5em;
+    line-height: 0em;
+    min-width: 0em;
+    width: 6em;
+    margin-right: 1.5em;
     float: right;
-    -webkit-border-radius: 2.5em;
-    border-radius: 2.5em;
-    border: 0;
-    margin-top: -4.65em;
-    margin-right: 20px;
-    background-color: #35b1e6;
-    color: #fff;
-    -webkit-box-shadow: 0 3px 10px 0 #b1b1b1;
-    box-shadow: 2px 0px 5px 0px #b1b1b1;
 }
 
 .ui-autocomplete-input {
@@ -48,8 +42,8 @@ ul.tagit {
     width: 100%;
     height: 2.5em;
     margin: 0;
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
     border: none !important;
     padding-top: 0.35em;
     -webkit-box-shadow: 0 3px 10px 0 #B5B5B5;
@@ -58,9 +52,9 @@ ul.tagit {
 
 ul.tagit li.tagit-choice-editable {
     height: 1.65em;
-    padding: .0em 25px 0em 0.5em;
-    border-radius: 1em;
-    -webkit-border-radius: 1em;
+    padding: 0 20px 0em 0.2em;
+    border-radius: .3em;
+    -webkit-border-radius: .3em;
     border: 1px solid #b1b1b1;
     background-color: #efefef;
     color: #4a4a4a;
@@ -73,7 +67,11 @@ ul.tagit li.tagit-choice-editable {
 }
 
 ul.tagit li.tagit-new {
-    padding: .15em 25px 0em 0.5em;
+    padding: .3em 25px 0em 0.5em;
+}
+
+ul.tagit li.tagit-new.tagit-choice-editable {
+    padding: .1em 25px 0em 0.5em;
 }
 
 .tagit-close {
@@ -128,7 +126,7 @@ span.fancytree-title {
     margin-left: 1.4em;
     margin-bottom: 2em;
     float: left;
-    width: calc(100% - 3.5em);
+    width: calc(100% - 10em);
 }
 
 ul.tagit li.operator-bg-success-color {
@@ -146,4 +144,11 @@ ul.tagit li.operator-bg-success-color input {
 
 ul.tagit li.operator-bg-error-color input{
     margin-top: 3px;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    #data_sources_selector {
+        padding-top: 6em;
+    }
 }
