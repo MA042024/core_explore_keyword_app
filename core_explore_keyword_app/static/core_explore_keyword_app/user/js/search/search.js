@@ -1,7 +1,6 @@
 /**
  * Search
  */
-var SUBMIT_DELAY = 3000;
 var timer;
 var cachedOperators;
 const SELECT_ALL_LABEL = "Select All";
