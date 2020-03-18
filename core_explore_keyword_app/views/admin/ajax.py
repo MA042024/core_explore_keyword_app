@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
+from mongoengine.base import NON_FIELD_ERRORS
 
 from core_explore_keyword_app.components.search_operator import api as search_operator_api
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
@@ -51,8 +52,7 @@ class SearchOperatorConfigModalView(View):
             try:
                 search_operator_api.upsert(operator)
             except ApiError as e:
-                operator_form.add_error("name", str(e))
-                operator_form.add_error("xpath_list", str(e))
+                operator_form.add_error(NON_FIELD_ERRORS, str(e))
                 return render(
                     request,
                     "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",

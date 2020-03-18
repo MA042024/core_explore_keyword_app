@@ -1,8 +1,13 @@
 <form>
     {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            Form errors: {{ form.non_field_errors }}
+        </div>
+    {% endif %}
     {% for field in form.visible_fields %}
         <div
-            {% if field.errors %}
+            {% if field.errors or form.non_field_errors %}
             class="form-group has-error"
             {% else %}
             class="form-group"

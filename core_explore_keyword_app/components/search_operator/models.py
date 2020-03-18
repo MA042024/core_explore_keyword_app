@@ -1,15 +1,37 @@
 """ Search Operator model
 """
+import re
 from django_mongoengine import fields, Document
 from mongoengine import errors as mongoengine_errors
 from core_main_app.commons import exceptions
+from core_main_app.utils.xml import validate_xpath
+
+
+def validate_xpath_list(xpath_list):
+    item_position = 0
+
+    for xpath in xpath_list:
+        try:
+            validate_xpath(xpath)
+            item_position += 1
+        except exceptions.XMLError as e:
+            raise mongoengine_errors.ValidationError("XPath syntax error (item #%d): %s" % (
+                item_position, str(e)
+            ))
+
+
+def validate_name(name):
+    if re.match(r"^[a-zA-Z][a-zA-Z0-9]+$", name) is None:
+        raise mongoengine_errors.ValidationError(
+            "Name should only contains alpha-numerical characters."
+        )
 
 
 class SearchOperator(Document):
     """ Search Operator model
     """
-    name = fields.StringField(blank=False, unique=True)
-    xpath_list = fields.ListField(blank=False, unique=True)
+    name = fields.StringField(blank=False, unique=True, validation=validate_name)
+    xpath_list = fields.ListField(blank=False, unique=True, validation=validate_xpath_list)
     dot_notation_list = fields.ListField(blank=False, unique=True)
 
     @staticmethod

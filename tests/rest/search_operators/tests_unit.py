@@ -91,7 +91,7 @@ class TestSearchOperatorListPost(SimpleTestCase):
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
             self.mock_user, data={
-                "name": "mock_name",
+                "name": "mockname",
                 "xpath_list": ["/x/path/one", "/x/path/two"],
             }
         )
