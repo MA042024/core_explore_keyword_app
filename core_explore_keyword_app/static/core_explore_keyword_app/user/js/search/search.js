@@ -36,24 +36,6 @@ function showHidePlaceholder($tagit){
 }
 
 /**
-  * Add the function to get the textWidth according to on the font and the placeholder to jQuery
-  * @see: https://codepen.io/Momciloo/pen/bpyMbB
-  */
-$.fn.textWidth = function(text, font) {
-
-    if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
-
-    $.fn.textWidth.fakeEl.text(text || this.val() || this.text() || this.attr('placeholder'))
-        .css('font', font || this.css('font'));
-
-    return $.fn.textWidth.fakeEl.width();
-};
-
-function inputWidth(elem, minW, maxW) {
-    elem = $(this);
-}
-
-/**
  * Initialize auto submission
  */
 var initAutoSubmit = function() {
@@ -325,13 +307,4 @@ $(document).ready(function() {
     initSelectAllTemplate();
     initSortingAutoSubmit();
     addOperatorTagStyle();
-    // add listener to auto resize the keyword input
-    $('.ui-autocomplete-input').on('input', function() {
-    var inputWidth = $(this).textWidth()==0?"100%":$(this).textWidth();
-        $(this).css({
-            width: inputWidth
-        })
-    }).trigger('input');
-    var targetInputElem = $('.ui-autocomplete-input');
-    inputWidth(targetInputElem);
 });

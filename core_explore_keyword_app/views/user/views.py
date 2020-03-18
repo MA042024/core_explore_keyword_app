@@ -301,6 +301,10 @@ class KeywordSearchView(View):
                     "is_raw": True
                 },
                 {
+                    "path": "core_explore_keyword_app/libs/stretchy/stretchy.min.js",
+                    "is_raw": False
+                },
+                {
                     "path": "core_main_app/common/js/debounce.js",
                     "is_raw": True
                 },
