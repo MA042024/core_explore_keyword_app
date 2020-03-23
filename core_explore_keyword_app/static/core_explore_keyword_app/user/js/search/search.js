@@ -1,6 +1,8 @@
 /**
  * Search
  */
+var SUBMIT_DELAY = 3000;
+var SORTING_SUBMIT_DELAY = 3000;
 var timer;
 var cachedOperators;
 const SELECT_ALL_LABEL = "Select All";
@@ -296,7 +298,7 @@ var initSortingAutoSubmit = function() {
             clearInterval(interval);
             $(".dropdown-menu.tools-menu.filter-dropdown-menu li").click(debounce(function() {
                 submitForm();
-            }, SUBMIT_DELAY));
+            }, SORTING_SUBMIT_DELAY));
         }
     }, 500);
 }
