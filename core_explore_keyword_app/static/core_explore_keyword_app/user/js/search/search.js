@@ -63,7 +63,7 @@ var initAutoSubmit = function() {
         if (event.originalEvent && event.originalEvent.key === ':') {
             var jqCurrentTarget = $(event.currentTarget).parent();
             checkOperator(jqNewTagInputValue, jqCurrentTarget);
-        } else if ( jqNewTagInputValue === "") {
+        } else if ( jqNewTagInputValue === "" || jqNewTagInputValue.indexOf(":") === -1) {
             cleanSearchOperatorStyle(true);
         } else if ( event.originalEvent.key !== "Enter") {
             // avoid submission when user is typing
