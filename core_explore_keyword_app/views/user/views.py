@@ -90,11 +90,15 @@ class KeywordSearchView(View):
     def _parse_query(query_content):
         keyword_list = list()
         query_json = json.loads(query_content)
+        queries = list()
 
         if "$and" in query_json:
-            queries = query_json["$and"]
-        else:
-            queries = [query_json]
+            queries += query_json["$and"]
+
+        queries += [
+            {key: value} for key, value in query_json.items()
+            if key != "$and" and key != "$or"
+        ]
 
         for query in queries:
             if "$text" in query:
@@ -102,9 +106,10 @@ class KeywordSearchView(View):
                     r"['\"]", "", query["$text"]["$search"]
                 ).split(" ")
             elif len(query.keys()) != 0:  # Avoid parsing empty query
-                keyword_list.append(
-                    get_keywords_from_search_operator_query(query)
-                )
+                keyword = get_keywords_from_search_operator_query(query)
+
+                if keyword is not None:
+                    keyword_list.append(keyword)
 
         return ",".join(keyword_list)
 
@@ -131,7 +136,7 @@ class KeywordSearchView(View):
                 "query_id": str(query.id),
                 "user_id": query.user_id,
             }
-        else:
+        else:  # query_id is not None
             try:
                 # get the query id
                 query = query_api.get_by_id(query_id)

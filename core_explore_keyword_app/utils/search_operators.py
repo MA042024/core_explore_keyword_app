@@ -1,7 +1,12 @@
 """ Search operators utilities
 """
+import logging
+
 from core_explore_keyword_app.components.search_operator import api as \
     search_operator_api
+from core_main_app.commons.exceptions import ApiError
+
+LOGGER = logging.getLogger(__name__)
 
 
 def build_search_operator_query(search_operator_name, value):
@@ -24,6 +29,10 @@ def get_keywords_from_search_operator_query(query):
         dot_notation_list = list(query.keys())
         value = list(query.values())[0]
 
-    return "%s:%s" % (
-        search_operator_api.get_by_dot_notation_list(dot_notation_list).name, value
-    )
+    try:
+        return "%s:%s" % (
+            search_operator_api.get_by_dot_notation_list(dot_notation_list).name, value
+        )
+    except ApiError as api_error:
+        LOGGER.info("API error for query: %s (%s)" % (str(query), str(api_error)))
+        return None
