@@ -150,12 +150,14 @@ var addOperatorTagStyle = function() {
     var operatorsIndexes = [];
     checkOperator(jqNewTagInputValue, jqTargetElement, (operators)=>{
         tagList.forEach( (tagValue, tagIndex) => {
-            // we get the element at the left of the operator separator
-            var operatorTagValue = tagValue.split(":")[0];
-            // search in the current tag list if one of these values match with one of the created Operators
-            for (var index=0; index<operators.length; ++index) {
-                if (operators[index] && operators[index].name === operatorTagValue) {
-                    operatorsIndexes.push(tagIndex);
+            if(tagValue.indexOf(":") !== -1) {
+                // we get the element at the left of the operator separator
+                var operatorTagValue = tagValue.split(":")[0];
+                // search in the current tag list if one of these values match with one of the created Operators
+                for (var index=0; index<operators.length; ++index) {
+                    if (operators[index] && operators[index].name === operatorTagValue) {
+                        operatorsIndexes.push(tagIndex);
+                    }
                 }
             }
         });
