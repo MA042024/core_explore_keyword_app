@@ -84,24 +84,42 @@ ul.tagit li.tagit-new.tagit-choice-editable {
     margin-left: 0.2em;
 }
 
-.search-left-panel .panel-default {
-    overflow: hidden;
-}
-
-.panel-body .glyphicon {
-    top: inherit;
-}
-
-.panel-body {
-    overflow-y: auto;
-}
-
-.panel-template ul {
-    margin: 0;
-}
-
-.panel-template input {
+.list-group input {
     margin-right: 8px;
+}
+
+.list-group label {
+    font-weight: 400;
+}
+
+.card-header+.list-group li:first-child {
+    border-top: 0;
+}
+
+.list-group li:first-child {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.list-group ul {
+    margin: 0 0 0 0;
+}
+
+.list-group li {
+    position: relative;
+    display: block;
+    padding: .75rem 1.25rem;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    border-left: 1px solid rgba(0,0,0,.125);
+    border-right: 1px solid rgba(0,0,0,.125);
+}
+
+.group-list-side-border {
+    border-right: 1px solid rgba(0,0,0,.125);
+    border-left: 1px solid rgba(0,0,0,.125);
+    border-radius: 2px;
+    overflow: scroll;
 }
 
 .tools-menu li {
@@ -144,11 +162,4 @@ ul.tagit li.operator-bg-success-color input {
 
 ul.tagit li.operator-bg-error-color input{
     margin-top: 3px;
-}
-
-/* Media queries */
-@media (max-width: 768px) {
-    #data_sources_selector {
-        padding-top: 6em;
-    }
 }

@@ -1,42 +1,40 @@
 {% if data.search_form.global_templates|length > 0 or data.search_form.user_templates|length > 0 %}
-<div class="panel-template panel panel-default">
-    {% if data.search_form.global_templates|length > 0 %}
-    <div class="panel-heading">
-        <div class="row">
-            <div class="col-md-8">
-                Filter by Template
-            </div>
-            <div class="col-md-4">
-                <div class="pull-right">
-                    <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
-                        Select All
-                    </a>
-                </div>
+{% if data.search_form.global_templates|length > 0 %}
+<div class="card-header group-list-side-border">
+    <div class="row">
+        <div class="col-md-8">
+            Filter by Template
+        </div>
+        <div class="col-md-4">
+            <div class="pull-right">
+                <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
+                    Select All
+                </a>
             </div>
         </div>
     </div>
-    <div class="panel-body">
-        {{ data.search_form.global_templates }}
-    </div>
-    {% endif %}
-    {% if data.search_form.user_templates|length > 0 %}
-    <div class="panel-heading">
-        <div class="row">
-            <div class="col-md-8">
-                Filter by User Template
-            </div>
-            <div class="col-md-4">
-                <div class="pull-right">
-                    <a class="selectAllUserTemplateButton" href="javascript:void(0)">
-                        Select All
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="panel-body">
-        {{ data.search_form.user_templates }}
-    </div>
-    {% endif %}
 </div>
+<div class="list-group">
+    {{ data.search_form.global_templates }}
+</div>
+{% endif %}
+{% if data.search_form.user_templates|length > 0 %}
+<div class="card-header group-list-side-border">
+    <div class="row">
+        <div class="col-md-8">
+            Filter by User Template
+        </div>
+        <div class="col-md-4">
+            <div class="pull-right">
+                <a class="selectAllUserTemplateButton" href="javascript:void(0)">
+                    Select All
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="list-group">
+    {{ data.search_form.user_templates }}
+</div>
+    {% endif %}
 {% endif %}
