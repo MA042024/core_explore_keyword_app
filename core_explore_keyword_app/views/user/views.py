@@ -105,12 +105,8 @@ class KeywordSearchView(View):
 
         if "$and" in query_json:
             queries += query_json["$and"]
-
-        queries += [
-            {key: value}
-            for key, value in query_json.items()
-            if key != "$and" and key != "$or"
-        ]
+        else:
+            queries += [query_json]
 
         for query in queries:
             if "$text" in query:

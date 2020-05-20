@@ -17,19 +17,23 @@ def build_search_operator_query(search_operator_name, value):
         for search_operator_dot_notation in search_operator.dot_notation_list
     ]
 
-    if len(search_operator_list) == 1:
-        return search_operator_list[0]
-    else:
-        return {"$or": search_operator_list}
+    # Add `#text` field in case it is defined
+    search_operator_list += [
+        {"%s.#text" % search_operator_dot_notation: value}
+        for search_operator_dot_notation in search_operator.dot_notation_list
+    ]
+
+    return {"$or": search_operator_list}
 
 
 def get_keywords_from_search_operator_query(query):
-    if "$or" in query:
-        dot_notation_list = [list(query_item.keys())[0] for query_item in query["$or"]]
-        value = list(query["$or"][0].values())[0]
-    else:
-        dot_notation_list = list(query.keys())
-        value = list(query.values())[0]
+    dot_notation_list = [list(query_item.keys())[0] for query_item in query["$or"]]
+    dot_notation_list = [
+        dot_notation_item
+        for dot_notation_item in dot_notation_list
+        if not dot_notation_item.endswith("#text")
+    ]
+    value = list(query["$or"][0].values())[0]
 
     try:
         return "%s:%s" % (
