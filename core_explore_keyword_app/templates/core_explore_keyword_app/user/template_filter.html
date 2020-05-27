@@ -1,15 +1,17 @@
 {% if data.search_form.global_templates|length > 0 or data.search_form.user_templates|length > 0 %}
 {% if data.search_form.global_templates|length > 0 %}
-<div class="card-header group-list-side-border">
-    <div class="row">
-        <div class="col-md-8">
-            Filter by Template
-        </div>
-        <div class="pl-0 col-md-4">
-            <div class="float-right">
-                <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
-                    Select All
-                </a>
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-8">
+                Filter by Template
+            </div>
+            <div class="pl-0 col-md-4">
+                <div class="float-right">
+                    <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
+                        Select All
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -19,16 +21,18 @@
 </div>
 {% endif %}
 {% if data.search_form.user_templates|length > 0 %}
-<div class="card-header group-list-side-border">
-    <div class="row">
-        <div class="col-md-9">
-            Filter by User Template
-        </div>
-        <div class="pl-0 col-md-3">
-            <div class="float-right">
-                <a class="selectAllUserTemplateButton" href="javascript:void(0)">
-                    Select All
-                </a>
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-9">
+                Filter by User Template
+            </div>
+            <div class="pl-0 col-md-3">
+                <div class="float-right">
+                    <a class="selectAllUserTemplateButton" href="javascript:void(0)">
+                        Select All
+                    </a>
+                </div>
             </div>
         </div>
     </div>
