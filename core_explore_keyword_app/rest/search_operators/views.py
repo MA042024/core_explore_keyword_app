@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import core_explore_keyword_app.components.search_operator.api as search_operator_api
-from core_explore_keyword_app.rest.search_operators.serializers import SearchOperatorSerializer
+from core_explore_keyword_app.rest.search_operators.serializers import (
+    SearchOperatorSerializer,
+)
 from core_main_app.commons import exceptions
 from core_main_app.utils.decorators import api_staff_member_required
 
@@ -15,6 +17,7 @@ from core_main_app.utils.decorators import api_staff_member_required
 class SearchOperatorList(APIView):
     """ List search operators
     """
+
     def get(self, request):
         """ Get all search operators
 
@@ -96,6 +99,7 @@ class SearchOperatorList(APIView):
 class SearchOperatorDetail(APIView):
     """ Search operator detail
     """
+
     def get(self, request, pk):
         """ Retrieve search operator from database
 

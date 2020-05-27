@@ -11,12 +11,14 @@ from core_explore_keyword_app.components.search_operator.models import SearchOpe
 class SearchOperatorForm(DocumentForm):
     """ Main form to edit search operators.
     """
+
     document_id = forms.CharField(required=False, widget=forms.HiddenInput())
     xpath_list = forms.CharField(
         help_text="Enter one xpath per line.",
-        required=True, widget=forms.Textarea(attrs={
-            "placeholder": "/path/to/xpath", "class": "form-control"
-        })
+        required=True,
+        widget=forms.Textarea(
+            attrs={"placeholder": "/path/to/xpath", "class": "form-control"}
+        ),
     )
 
     class Meta(object):
@@ -42,8 +44,8 @@ class SearchOperatorForm(DocumentForm):
             try:
                 validate_xpath(xpath)
             except core_main_app_exceptions.XMLError as e:
-                raise forms.ValidationError("XPath syntax error (line %d): %s" % (
-                    line_xpath, str(e)
-                ))
+                raise forms.ValidationError(
+                    "XPath syntax error (line %d): %s" % (line_xpath, str(e))
+                )
 
         return self.cleaned_data["xpath_list"]

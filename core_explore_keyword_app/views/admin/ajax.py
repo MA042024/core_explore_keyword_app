@@ -6,7 +6,9 @@ from django.shortcuts import render
 from django.views import View
 from mongoengine.base import NON_FIELD_ERRORS
 
-from core_explore_keyword_app.components.search_operator import api as search_operator_api
+from core_explore_keyword_app.components.search_operator import (
+    api as search_operator_api,
+)
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_explore_keyword_app.views.admin.forms import SearchOperatorForm
 from core_main_app.commons.exceptions import ApiError
@@ -15,6 +17,7 @@ from core_main_app.commons.exceptions import ApiError
 class SearchOperatorConfigModalView(View):
     """ View for saving the configuration of a search operator
     """
+
     @staticmethod
     def post(request):
         """ Method called after editing a search operator.
@@ -28,21 +31,20 @@ class SearchOperatorConfigModalView(View):
 
         if not operator_form.is_valid():
             return render(
-                request, "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
-                context={"form": operator_form}
+                request,
+                "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
+                context={"form": operator_form},
             )
         else:
             action = "created"
 
             xpath_list = [
-                xpath.strip() for xpath in operator_form.cleaned_data[
-                    "xpath_list"
-                ].split("\n")
+                xpath.strip()
+                for xpath in operator_form.cleaned_data["xpath_list"].split("\n")
             ]
 
             operator = SearchOperator(
-                name=operator_form.cleaned_data["name"],
-                xpath_list=xpath_list
+                name=operator_form.cleaned_data["name"], xpath_list=xpath_list
             )
 
             if "document_id" in request.POST and request.POST["document_id"] != "":
@@ -56,7 +58,7 @@ class SearchOperatorConfigModalView(View):
                 return render(
                     request,
                     "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
-                    context={"form": operator_form}
+                    context={"form": operator_form},
                 )
 
             messages.add_message(
@@ -69,6 +71,7 @@ class SearchOperatorConfigModalView(View):
 class SearchOperatorDeleteModalView(View):
     """ View for deleting a search operator
     """
+
     @staticmethod
     def post(request):
         """ Method called after confirmation of the deletion of a search operator.
@@ -79,9 +82,7 @@ class SearchOperatorDeleteModalView(View):
         Returns:
         """
         if "id" not in request.POST:
-            messages.add_message(
-                request, messages.ERROR, "Invalid delete request."
-            )
+            messages.add_message(request, messages.ERROR, "Invalid delete request.")
             return JsonResponse({}, status=400)
 
         try:

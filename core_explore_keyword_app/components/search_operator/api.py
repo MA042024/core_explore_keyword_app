@@ -69,8 +69,7 @@ def upsert(operator):
     try:
         # Create the dot notation list automatically from the XPath list
         operator.dot_notation_list = [
-            xpath_to_dot_notation(xpath)
-            for xpath in operator.xpath_list
+            xpath_to_dot_notation(xpath) for xpath in operator.xpath_list
         ]
 
         return operator.save_object()

@@ -9,8 +9,11 @@ from core_main_app.permissions.utils import get_formatted_name
 
 class ExploreKeyword(models.Model):
     class Meta(object):
-        verbose_name = 'core_explore_keyword_app'
+        verbose_name = "core_explore_keyword_app"
         default_permissions = ()
         permissions = (
-            (rights.explore_keyword_access, get_formatted_name(rights.explore_keyword_access)),
+            (
+                rights.explore_keyword_access,
+                get_formatted_name(rights.explore_keyword_access),
+            ),
         )

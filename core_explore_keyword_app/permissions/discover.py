@@ -19,7 +19,9 @@ def init_permissions(apps):
         permission = apps.get_model("auth", "Permission")
 
         # Get or Create the default group
-        default_group, created = group.objects.get_or_create(name=main_rights.default_group)
+        default_group, created = group.objects.get_or_create(
+            name=main_rights.default_group
+        )
 
         # Get explore keyword permissions
         explore_access_perm = permission.objects.get(

@@ -16,7 +16,9 @@ from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.constants import LOCAL_QUERY_NAME
 from core_explore_common_app.utils.query.query import send, create_local_data_source
 from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
-from core_explore_keyword_app.components.persistent_query_keyword.models import PersistentQueryKeyword
+from core_explore_keyword_app.components.persistent_query_keyword.models import (
+    PersistentQueryKeyword,
+)
 from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.components.template import api as template_api
 from core_main_app.utils.databases.pymongo_database import get_full_text_query
@@ -53,10 +55,13 @@ def check_data_source(query):
 
 
 class SuggestionsKeywordSearchView(View):
-    @method_decorator(decorators.
-                      permission_required(content_type=rights.explore_keyword_content_type,
-                                          permission=rights.explore_keyword_access,
-                                          login_url=reverse_lazy("core_main_app_login")))
+    @method_decorator(
+        decorators.permission_required(
+            content_type=rights.explore_keyword_content_type,
+            permission=rights.explore_keyword_access,
+            login_url=reverse_lazy("core_main_app_login"),
+        )
+    )
     def post(self, request, *args, **kwargs):
         """ POST
 
@@ -70,20 +75,22 @@ class SuggestionsKeywordSearchView(View):
         """
         suggestions = []
         search_form = KeywordForm(data=request.POST)
-        keywords = request.POST.get('term')
+        keywords = request.POST.get("term")
 
         if search_form.is_valid():
             try:
                 # get form values
-                query_id = search_form.cleaned_data.get('query_id', None)
-                global_templates = search_form.cleaned_data.get('global_templates', [])
-                user_templates = search_form.cleaned_data.get('user_templates', [])
+                query_id = search_form.cleaned_data.get("query_id", None)
+                global_templates = search_form.cleaned_data.get("global_templates", [])
+                user_templates = search_form.cleaned_data.get("user_templates", [])
 
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
 
                 # from ids, get all version manager
-                version_manager_list = version_manager_api.get_by_id_list(template_version_manager_ids)
+                version_manager_list = version_manager_api.get_by_id_list(
+                    template_version_manager_ids
+                )
 
                 # from all version manager, build a list of all version (template)
                 template_ids = []
@@ -97,18 +104,27 @@ class SuggestionsKeywordSearchView(View):
                     if check_data_source(query):
 
                         # Prepare query
-                        query = self._get_query_prepared(keywords, query, request, template_ids)
+                        query = self._get_query_prepared(
+                            keywords, query, request, template_ids
+                        )
 
                         # Send query
-                        dict_results = send(request, query, len(query.data_sources) - 1, 1)
+                        dict_results = send(
+                            request, query, len(query.data_sources) - 1, 1
+                        )
 
-                        if dict_results['count'] > 0:
-                            self._extract_suggestion_from_results(dict_results, keywords, suggestions)
+                        if dict_results["count"] > 0:
+                            self._extract_suggestion_from_results(
+                                dict_results, keywords, suggestions
+                            )
 
             except Exception as e:
                 logger.error("Exception while generating suggestions: " + str(e))
 
-        return HttpResponse(json.dumps({'suggestions': suggestions}), content_type='application/javascript')
+        return HttpResponse(
+            json.dumps({"suggestions": suggestions}),
+            content_type="application/javascript",
+        )
 
     def _get_query_prepared(self, keywords, query, request, template_ids):
         """ Prepare the query for suggestions.
@@ -139,23 +155,23 @@ class SuggestionsKeywordSearchView(View):
 
         Returns:
         """
-        results = dict_results['results']
+        results = dict_results["results"]
         # Prepare keywords
         wordList = re.sub("[^\w]", " ", keywords).split()
         wordList = [x + "|" + x + "\w+" for x in wordList]
-        wordList = '|'.join(wordList)
+        wordList = "|".join(wordList)
         for result in results:
             # Extract suggestions from data
-            listWholeKeywords = re.findall("\\b(" + wordList + ")\\b",
-                                           result['xml_content'],
-                                           flags=re.IGNORECASE)
+            listWholeKeywords = re.findall(
+                "\\b(" + wordList + ")\\b", result["xml_content"], flags=re.IGNORECASE
+            )
             labels = list(set(listWholeKeywords))
 
             for label in labels:
                 label = label.lower()
                 result_json = {}
-                result_json['label'] = label
-                result_json['value'] = label
+                result_json["label"] = label
+                result_json["value"] = label
                 if not result_json in suggestions:
                     suggestions.append(result_json)
 
@@ -169,7 +185,9 @@ class CreatePersistentQueryUrlKeywordView(CreatePersistentQueryUrlView):
     @staticmethod
     def _create_persistent_query(query):
         # create the persistent query
-        return PersistentQueryKeyword(user_id=query.user_id,
-                                      content=query.content,
-                                      templates=query.templates,
-                                      data_sources=query.data_sources)
+        return PersistentQueryKeyword(
+            user_id=query.user_id,
+            content=query.content,
+            templates=query.templates,
+            data_sources=query.data_sources,
+        )

@@ -15,9 +15,9 @@ def validate_xpath_list(xpath_list):
             validate_xpath(xpath)
             item_position += 1
         except exceptions.XMLError as e:
-            raise mongoengine_errors.ValidationError("XPath syntax error (item #%d): %s" % (
-                item_position, str(e)
-            ))
+            raise mongoengine_errors.ValidationError(
+                "XPath syntax error (item #%d): %s" % (item_position, str(e))
+            )
 
 
 def validate_name(name):
@@ -30,8 +30,11 @@ def validate_name(name):
 class SearchOperator(Document):
     """ Search Operator model
     """
+
     name = fields.StringField(blank=False, unique=True, validation=validate_name)
-    xpath_list = fields.ListField(blank=False, unique=True, validation=validate_xpath_list)
+    xpath_list = fields.ListField(
+        blank=False, unique=True, validation=validate_xpath_list
+    )
     dot_notation_list = fields.ListField(blank=False, unique=True)
 
     @staticmethod
@@ -82,7 +85,9 @@ class SearchOperator(Document):
         Returns:
         """
         try:
-            return SearchOperator.objects.get(dot_notation_list=operator_dot_notation_list)
+            return SearchOperator.objects.get(
+                dot_notation_list=operator_dot_notation_list
+            )
         except mongoengine_errors.DoesNotExist as does_not_exist:
             raise exceptions.DoesNotExist(str(does_not_exist))
 

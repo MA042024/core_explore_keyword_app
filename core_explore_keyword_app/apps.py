@@ -10,7 +10,8 @@ from core_explore_keyword_app.permissions import discover
 class ExploreKeywordAppConfig(AppConfig):
     """ Core application settings
     """
-    name = 'core_explore_keyword_app'
+
+    name = "core_explore_keyword_app"
 
     def ready(self):
         """ Run when the app is ready.
@@ -18,5 +19,5 @@ class ExploreKeywordAppConfig(AppConfig):
         Returns:
 
         """
-        if 'migrate' not in sys.argv:
+        if "migrate" not in sys.argv:
             discover.init_permissions(self.apps)

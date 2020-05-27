@@ -8,19 +8,23 @@ from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-import core_explore_keyword_app.components.persistent_query_keyword.api as \
-    persistent_query_keyword_api
+import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.components.version_manager.api as version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE, SORTING_DISPLAY_TYPE
+from core_explore_common_app.settings import (
+    DEFAULT_DATE_TOGGLE_VALUE,
+    SORTING_DISPLAY_TYPE,
+)
 from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import ResultQueryRedirectView
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import INSTALLED_APPS
-from core_explore_keyword_app.utils.search_operators import build_search_operator_query, \
-    get_keywords_from_search_operator_query
+from core_explore_keyword_app.utils.search_operators import (
+    build_search_operator_query,
+    get_keywords_from_search_operator_query,
+)
 from core_main_app.commons.exceptions import DoesNotExist, ApiError
 from core_main_app.components.template import api as template_api
 from core_main_app.settings import DATA_SORTING_FIELDS
@@ -29,17 +33,18 @@ from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(View):
-
     def __init__(self, **kwargs):
         self.assets = self._load_assets()
         self.modals = self._load_modals()
 
         super().__init__(**kwargs)
 
-    @method_decorator(decorators.permission_required(
-        content_type=rights.explore_keyword_content_type,
-        permission=rights.explore_keyword_access,
-        login_url=reverse_lazy("core_main_app_login"))
+    @method_decorator(
+        decorators.permission_required(
+            content_type=rights.explore_keyword_content_type,
+            permission=rights.explore_keyword_access,
+            login_url=reverse_lazy("core_main_app_login"),
+        )
     )
     def get(self, request, **kwargs):
         """ GET
@@ -56,16 +61,20 @@ class KeywordSearchView(View):
         # assets / modals / forms
         context = self._get(request, query_id)
 
-        return render(request,
-                      "core_explore_keyword_app/user/index.html",
-                      assets=self.assets,
-                      modals=self.modals,
-                      context=context)
+        return render(
+            request,
+            "core_explore_keyword_app/user/index.html",
+            assets=self.assets,
+            modals=self.modals,
+            context=context,
+        )
 
-    @method_decorator(decorators.permission_required(
-        content_type=rights.explore_keyword_content_type,
-        permission=rights.explore_keyword_access,
-        login_url=reverse_lazy("core_main_app_login"))
+    @method_decorator(
+        decorators.permission_required(
+            content_type=rights.explore_keyword_content_type,
+            permission=rights.explore_keyword_access,
+            login_url=reverse_lazy("core_main_app_login"),
+        )
     )
     def post(self, request):
         """ POST
@@ -80,11 +89,13 @@ class KeywordSearchView(View):
         # assets / modals / forms
         context = self._post(request)
 
-        return render(request,
-                      "core_explore_keyword_app/user/index.html",
-                      assets=self.assets,
-                      modals=self.modals,
-                      context=context)
+        return render(
+            request,
+            "core_explore_keyword_app/user/index.html",
+            assets=self.assets,
+            modals=self.modals,
+            context=context,
+        )
 
     @staticmethod
     def _parse_query(query_content):
@@ -96,15 +107,16 @@ class KeywordSearchView(View):
             queries += query_json["$and"]
 
         queries += [
-            {key: value} for key, value in query_json.items()
+            {key: value}
+            for key, value in query_json.items()
             if key != "$and" and key != "$or"
         ]
 
         for query in queries:
             if "$text" in query:
-                keyword_list += re.sub(
-                    r"['\"]", "", query["$text"]["$search"]
-                ).split(" ")
+                keyword_list += re.sub(r"['\"]", "", query["$text"]["$search"]).split(
+                    " "
+                )
             elif len(query.keys()) != 0:  # Avoid parsing empty query
                 keyword = get_keywords_from_search_operator_query(query)
 
@@ -124,7 +136,7 @@ class KeywordSearchView(View):
         """
         error = None
         # set the correct default ordering for the context
-        default_order = ','.join(DATA_SORTING_FIELDS)
+        default_order = ",".join(DATA_SORTING_FIELDS)
         if query_id is None:
             # create query
             query = create_default_query(request, [])
@@ -148,7 +160,9 @@ class KeywordSearchView(View):
                 # get all version managers
                 version_managers = []
                 for template in query.templates:
-                    version_managers.append(str(version_manager_api.get_from_version(template).id))
+                    version_managers.append(
+                        str(version_manager_api.get_from_version(template).id)
+                    )
                 # create all data for select values in forms
                 keywords_data_form = {
                     "query_id": str(query.id),
@@ -156,13 +170,15 @@ class KeywordSearchView(View):
                     "keywords": keywords,
                     "global_templates": version_managers,
                     "order_by_field": self._build_sorting_context_array(query),
-                    "user_templates": version_managers
+                    "user_templates": version_managers,
                 }
                 # set the correct ordering for the context
-                if keywords_data_form['order_by_field'] != 0:
-                    default_order = keywords_data_form['order_by_field']
+                if keywords_data_form["order_by_field"] != 0:
+                    default_order = keywords_data_form["order_by_field"]
             except Exception as e:
-                error = "An unexpected error occurred while loading the query: {}.".format(str(e))
+                error = "An unexpected error occurred while loading the query: {}.".format(
+                    str(e)
+                )
                 return {"error": error}
 
         search_form = KeywordForm(data=keywords_data_form)
@@ -188,9 +204,11 @@ class KeywordSearchView(View):
                 keywords = search_form.cleaned_data.get("keywords", None)
                 global_templates = search_form.cleaned_data.get("global_templates", [])
                 user_templates = search_form.cleaned_data.get("user_templates", [])
-                order_by_field_array = search_form.cleaned_data.get(
-                    "order_by_field", ""
-                ).strip().split(";")
+                order_by_field_array = (
+                    search_form.cleaned_data.get("order_by_field", "")
+                    .strip()
+                    .split(";")
+                )
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
@@ -216,10 +234,14 @@ class KeywordSearchView(View):
                             # update the data-source filter only if it's not a new data-source
                             # (the default filter value is already added when the data-source
                             # is created)
-                            if data_sources_index in range(0, len(order_by_field_array)):
+                            if data_sources_index in range(
+                                0, len(order_by_field_array)
+                            ):
                                 query.data_sources[
                                     data_sources_index
-                                ].order_by_field = order_by_field_array[data_sources_index]
+                                ].order_by_field = order_by_field_array[
+                                    data_sources_index
+                                ]
 
                         query_api.upsert(query)
             except DoesNotExist:
@@ -230,7 +252,10 @@ class KeywordSearchView(View):
             error = "An unexpected error occurred: the form is not valid."
 
         return _format_keyword_search_context(
-            search_form, error, warning, search_form.cleaned_data.get("order_by_field", "").strip()
+            search_form,
+            error,
+            warning,
+            search_form.cleaned_data.get("order_by_field", "").strip(),
         )
 
     @staticmethod
@@ -251,9 +276,7 @@ class KeywordSearchView(View):
                     split_keyword = keyword.split(":")
 
                     main_query.append(
-                        build_search_operator_query(
-                            split_keyword[0], split_keyword[1]
-                        )
+                        build_search_operator_query(split_keyword[0], split_keyword[1])
                     )
                 except ApiError:
                     keyword_list.append(keyword)
@@ -272,9 +295,7 @@ class KeywordSearchView(View):
         elif len(main_query) == 1:  # If there is one query item, match one this item.
             return json.dumps(main_query[0])
         else:  # For multiple items, a "$and" query is needed.
-            return json.dumps({
-                "$and": main_query
-            })
+            return json.dumps({"$and": main_query})
 
     @staticmethod
     def _load_assets():
@@ -285,53 +306,43 @@ class KeywordSearchView(View):
         """
         assets: Dict[str, List[Any]] = {
             "js": [
-                {
-                    "path": "core_explore_common_app/user/js/results.js",
-                    "is_raw": False
-                },
+                {"path": "core_explore_common_app/user/js/results.js", "is_raw": False},
                 {
                     "path": "core_explore_common_app/user/js/results.raw.js",
-                    "is_raw": True
+                    "is_raw": True,
                 },
-                {
-                    "path": "core_main_app/common/js/XMLTree.js",
-                    "is_raw": False
-                },
+                {"path": "core_main_app/common/js/XMLTree.js", "is_raw": False},
                 {
                     "path": "core_main_app/common/js/modals/error_page_modal.js",
-                    "is_raw": True
+                    "is_raw": True,
                 },
                 {
                     "path": "core_explore_keyword_app/libs/tag-it/2.0/js/tag-it.js",
-                    "is_raw": True
+                    "is_raw": True,
                 },
                 {
                     "path": "core_explore_keyword_app/libs/stretchy/stretchy.min.js",
-                    "is_raw": False
+                    "is_raw": False,
                 },
-                {
-                    "path": "core_main_app/common/js/debounce.js",
-                    "is_raw": True
-                },
+                {"path": "core_main_app/common/js/debounce.js", "is_raw": True},
                 {
                     "path": "core_explore_keyword_app/user/js/search/search.js",
-                    "is_raw": False
+                    "is_raw": False,
                 },
                 {
-                    "path":
-                        "core_explore_keyword_app/user/js/search/autocomplete_source.js",
-                    "is_raw": False
+                    "path": "core_explore_keyword_app/user/js/search/autocomplete_source.js",
+                    "is_raw": False,
                 },
                 {
                     "path": "core_explore_common_app/user/js/button_persistent_query.js",
-                    "is_raw": False
+                    "is_raw": False,
                 },
                 {
                     "path": "core_explore_common_app/user/js/sorting_{0}_criteria.js".format(
                         SORTING_DISPLAY_TYPE
                     ),
-                    "is_raw": False
-                }
+                    "is_raw": False,
+                },
             ],
             "css": [
                 "core_explore_common_app/user/css/query_result.css",
@@ -339,26 +350,31 @@ class KeywordSearchView(View):
                 "core_explore_common_app/user/css/results.css",
                 "core_explore_common_app/user/css/toggle.css",
                 "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
-                "core_explore_keyword_app/user/css/search/search.css"
+                "core_explore_keyword_app/user/css/search/search.css",
             ],
         }
 
         # Add assets needed for the exporters
         if "core_exporters_app" in INSTALLED_APPS:
-            assets["js"].extend([{
-                "path":
-                    "core_exporters_app/user/js/exporters/list/modals/list_exporters_selector.js",
-                "is_raw": False
-            }])
+            assets["js"].extend(
+                [
+                    {
+                        "path": "core_exporters_app/user/js/exporters/list/modals/list_exporters_selector.js",
+                        "is_raw": False,
+                    }
+                ]
+            )
 
         # Add assets needed for the file preview
         if "core_file_preview_app" in INSTALLED_APPS:
-            assets["js"].extend([
-                {
-                    "path": "core_file_preview_app/user/js/file_preview.js",
-                    "is_raw": False
-                }
-            ])
+            assets["js"].extend(
+                [
+                    {
+                        "path": "core_file_preview_app/user/js/file_preview.js",
+                        "is_raw": False,
+                    }
+                ]
+            )
             assets["css"].append("core_file_preview_app/user/css/file_preview.css")
 
         return assets
@@ -374,7 +390,7 @@ class KeywordSearchView(View):
         for data_source in query.data_sources:
             context_array.append(data_source.order_by_field)
 
-        return ';'.join(context_array)
+        return ";".join(context_array)
 
     @staticmethod
     def _load_modals():
@@ -385,14 +401,16 @@ class KeywordSearchView(View):
         """
         modals = [
             "core_main_app/common/modals/error_page_modal.html",
-            "core_explore_common_app/user/persistent_query/modals/persistent_query_modal.html"
+            "core_explore_common_app/user/persistent_query/modals/persistent_query_modal.html",
         ]
 
         if "core_exporters_app" in INSTALLED_APPS:
             # add the modal
-            modals.extend([
-                "core_exporters_app/user/exporters/list/modals/list_exporters_selector.html"
-            ])
+            modals.extend(
+                [
+                    "core_exporters_app/user/exporters/list/modals/list_exporters_selector.html"
+                ]
+            )
 
         if "core_file_preview_app" in INSTALLED_APPS:
             modals.append("core_file_preview_app/user/file_preview_modal.html")
@@ -418,18 +436,18 @@ def _format_keyword_search_context(search_form, error, warning, query_order=""):
         "error": error,
         "warning": warning,
         "default_date_toggle_value": DEFAULT_DATE_TOGGLE_VALUE,
-        "data_sources_selector_template":
-            "core_explore_common_app/user/selector/data_sources_selector.html",
+        "data_sources_selector_template": "core_explore_common_app/user/selector/data_sources_selector.html",
         "data_sorting_fields": query_order,
         "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
-        "get_shareable_link_url": reverse("core_explore_keyword_get_persistent_query_url")
+        "get_shareable_link_url": reverse(
+            "core_explore_keyword_get_persistent_query_url"
+        ),
     }
 
     return context
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
-
     @staticmethod
     def _get_persistent_query(persistent_query_id):
         return persistent_query_keyword_api.get_by_id(persistent_query_id)

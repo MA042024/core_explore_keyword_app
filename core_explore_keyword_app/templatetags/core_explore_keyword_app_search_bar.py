@@ -12,8 +12,9 @@ from core_main_app.settings import DATA_SORTING_FIELDS
 register = template.Library()
 
 
-@register.inclusion_tag('core_explore_keyword_app/user/embedded_search_bar.html',
-                        takes_context=True)
+@register.inclusion_tag(
+    "core_explore_keyword_app/user/embedded_search_bar.html", takes_context=True
+)
 def show_search_bar(context):
     """ Include the search bar in a template.
 
@@ -23,7 +24,7 @@ def show_search_bar(context):
     Returns:
 
     """
-    request = context['request']
+    request = context["request"]
 
     # create Query
     query = Query(user_id=str(request.user.id), templates=[])
@@ -39,18 +40,15 @@ def show_search_bar(context):
 
     # create keyword form
     data_form = {
-        'query_id': str(query.id),
-        'user_id': query.user_id,
-        'order_by_field': ','.join(DATA_SORTING_FIELDS),
+        "query_id": str(query.id),
+        "user_id": query.user_id,
+        "order_by_field": ",".join(DATA_SORTING_FIELDS),
     }
 
     search_form = KeywordForm(data=data_form)
 
     context = {
-        "data": {
-            'search_form': search_form,
-            'query_id': search_form.data['query_id'],
-         }
+        "data": {"search_form": search_form, "query_id": search_form.data["query_id"],}
     }
 
     return template.RequestContext(request, context)

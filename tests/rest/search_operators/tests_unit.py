@@ -7,10 +7,16 @@ from django.test import SimpleTestCase
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
-from core_explore_keyword_app.components.search_operator import api as search_operator_api
+from core_explore_keyword_app.components.search_operator import (
+    api as search_operator_api,
+)
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
-from core_explore_keyword_app.rest.search_operators import views as search_operator_views
-from core_explore_keyword_app.rest.search_operators.serializers import SearchOperatorSerializer
+from core_explore_keyword_app.rest.search_operators import (
+    views as search_operator_views,
+)
+from core_explore_keyword_app.rest.search_operators.serializers import (
+    SearchOperatorSerializer,
+)
 from core_main_app.commons.exceptions import DoesNotExist, ModelError, NotUniqueError
 from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_main_app.utils.tests_tools.RequestMock import RequestMock
@@ -28,59 +34,44 @@ class TestSearchOperatorListGet(SimpleTestCase):
     def test_get_all_returns_200(self, mock_get_all):
         mock_get_all.return_value = self.mock_search_operators
         response = RequestMock.do_request_get(
-            search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user
+            search_operator_views.SearchOperatorList.as_view(), self.mock_user
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_200_OK
-        )
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
 
     @patch.object(search_operator_api, "get_all")
     def test_get_all_returns_search_operator_list(self, mock_get_all):
         mock_get_all.return_value = self.mock_search_operators
         response = RequestMock.do_request_get(
-            search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user
+            search_operator_views.SearchOperatorList.as_view(), self.mock_user
         )
 
         self.assertEqual(
             response.data,
-            [OrderedDict({
-                "id": None,
-                "name": "mock01",
-                "xpath_list": ["x/path/a"]
-            }), OrderedDict({
-                "id": None,
-                "name": "mock02",
-                "xpath_list": ["x/path/b"]
-            })]
+            [
+                OrderedDict({"id": None, "name": "mock01", "xpath_list": ["x/path/a"]}),
+                OrderedDict({"id": None, "name": "mock02", "xpath_list": ["x/path/b"]}),
+            ],
         )
 
     @patch.object(search_operator_api, "get_all")
     def test_empty_list_returns_200(self, mock_get_all):
         mock_get_all.return_value = []
         response = RequestMock.do_request_get(
-            search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user
+            search_operator_views.SearchOperatorList.as_view(), self.mock_user
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_200_OK
-        )
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
 
     @patch.object(search_operator_api, "get_all")
     @patch.object(SearchOperatorSerializer, "data")
     def test_exception_returns_500(self, mock_serializer_data, mock_get_all):
         mock_get_all.side_effect = Exception
         response = RequestMock.do_request_get(
-            search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user
+            search_operator_views.SearchOperatorList.as_view(), self.mock_user
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class TestSearchOperatorListPost(SimpleTestCase):
@@ -90,10 +81,8 @@ class TestSearchOperatorListPost(SimpleTestCase):
     def test_valid_search_operator_returns_201(self):
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
-                "name": "mockname",
-                "xpath_list": ["/x/path/one", "/x/path/two"],
-            }
+            self.mock_user,
+            data={"name": "mockname", "xpath_list": ["/x/path/one", "/x/path/two"],},
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -104,10 +93,11 @@ class TestSearchOperatorListPost(SimpleTestCase):
 
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
+            self.mock_user,
+            data={
                 "name": "mock_name",
                 "xpath_list": ["/x/path.one*1..1", "/x/path/two"],
-            }
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -118,10 +108,11 @@ class TestSearchOperatorListPost(SimpleTestCase):
 
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
+            self.mock_user,
+            data={
                 "name": "mock_name",
                 "xpath_list": ["/x/path.one*1..1", "/x/path/two"],
-            }
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -131,10 +122,11 @@ class TestSearchOperatorListPost(SimpleTestCase):
         mock_serializer_save.side_effect = NotUniqueError(message="mock error")
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
+            self.mock_user,
+            data={
                 "name": "mock_name",
                 "xpath_list": ["/x/path.one*1..1", "/x/path/two"],
-            }
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -144,9 +136,8 @@ class TestSearchOperatorListPost(SimpleTestCase):
         mock_serializer.side_effect = KeyError
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
-                "name": "mock_name",
-            }
+            self.mock_user,
+            data={"name": "mock_name",},
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -156,9 +147,8 @@ class TestSearchOperatorListPost(SimpleTestCase):
         mock_serializer.side_effect = Exception
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
-            self.mock_user, data={
-                "name": "mock_name",
-            }
+            self.mock_user,
+            data={"name": "mock_name",},
         )
 
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -172,27 +162,27 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
     def test_default_returns_200(self, mock_get_by_id):
         mock_get_by_id.return_value = {
             "name": "mock_operator",
-            "xpath_list": ["/x/path/a", "/x/path/b"]
+            "xpath_list": ["/x/path/a", "/x/path/b"],
         }
         response = RequestMock.do_request_get(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_200_OK
-        )
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
 
     @patch.object(search_operator_api, "get_by_id")
     def test_default_returns_search_operator_data(self, mock_get_by_id):
         search_operator = {
             "name": "mock_operator",
-            "xpath_list": ["/x/path/a", "/x/path/b"]
+            "xpath_list": ["/x/path/a", "/x/path/b"],
         }
         mock_get_by_id.return_value = search_operator
         response = RequestMock.do_request_get(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
         self.assertEqual(response.data, search_operator)
@@ -202,7 +192,8 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
         mock_get_by_id.side_effect = DoesNotExist(message="mock error")
         response = RequestMock.do_request_get(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
         self.assertTrue(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -212,7 +203,8 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
         mock_get_by_id.side_effect = Exception
         response = RequestMock.do_request_get(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
         self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -226,27 +218,27 @@ class TestSearchOperatorDetailPatch(SimpleTestCase):
     def test_valid_operator_returns_200(self, mock_get_by_id):
         mock_get_by_id.return_value = {
             "name": "mock_operator",
-            "xpath_list": ["/x/path/a", "/x/path/b"]
+            "xpath_list": ["/x/path/a", "/x/path/b"],
         }
         response = RequestMock.do_request_patch(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_200_OK
-        )
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
 
     @patch.object(search_operator_api, "get_by_id")
     def test_valid_operator_returns_operator(self, mock_get_by_id):
         mock_operator = {
             "name": "mock_operator",
-            "xpath_list": ["/x/path/a", "/x/path/b"]
+            "xpath_list": ["/x/path/a", "/x/path/b"],
         }
         mock_get_by_id.return_value = mock_operator
         response = RequestMock.do_request_patch(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
         self.assertTrue(response.data, mock_operator)
@@ -256,36 +248,33 @@ class TestSearchOperatorDetailPatch(SimpleTestCase):
         mock_serializer_is_valid.side_effect = ValidationError
         response = RequestMock.do_request_patch(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_400_BAD_REQUEST
-        )
+        self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch.object(search_operator_api, "get_by_id")
     def test_nonexistent_operator_returns_404(self, mock_get_by_id):
         mock_get_by_id.side_effect = DoesNotExist
         response = RequestMock.do_request_patch(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_404_NOT_FOUND
-        )
+        self.assertTrue(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @patch.object(SearchOperatorSerializer, "save")
     def test_exception_returns_500(self, mock_serializer_save):
         mock_serializer_save.side_effect = Exception
         response = RequestMock.do_request_patch(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class TestSearchOperatorDetailDelete(SimpleTestCase):
@@ -299,24 +288,22 @@ class TestSearchOperatorDetailDelete(SimpleTestCase):
         mock_get_by_id.return_value = {}
         response = RequestMock.do_request_delete(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_204_NO_CONTENT
-        )
+        self.assertTrue(response.status_code, status.HTTP_204_NO_CONTENT)
 
     @patch.object(search_operator_api, "get_by_id")
     def test_nonexistent_returns_404(self, mock_get_by_id):
         mock_get_by_id.side_effect = DoesNotExist
         response = RequestMock.do_request_delete(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_404_NOT_FOUND
-        )
+        self.assertTrue(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @patch.object(search_operator_api, "get_by_id")
     @patch.object(search_operator_api, "delete")
@@ -325,9 +312,8 @@ class TestSearchOperatorDetailDelete(SimpleTestCase):
         mock_delete.side_effect = Exception
         response = RequestMock.do_request_delete(
             search_operator_views.SearchOperatorDetail.as_view(),
-            self.mock_user, param={"pk": 1}
+            self.mock_user,
+            param={"pk": 1},
         )
 
-        self.assertTrue(
-            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
