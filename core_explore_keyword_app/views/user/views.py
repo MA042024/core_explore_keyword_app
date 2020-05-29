@@ -6,21 +6,19 @@ from typing import Dict, Any, List
 
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import View
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_explore_keyword_app.permissions.rights as rights
 import core_main_app.components.version_manager.api as version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.settings import (
-    DEFAULT_DATE_TOGGLE_VALUE,
-    SORTING_DISPLAY_TYPE,
-)
+from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
 from core_explore_common_app.utils.query.query import create_default_query
-from core_explore_common_app.views.user.views import ResultQueryRedirectView
+from core_explore_common_app.views.user.views import (
+    ResultQueryRedirectView,
+    ResultsView,
+)
 from core_explore_keyword_app.forms import KeywordForm
-from core_explore_keyword_app.settings import INSTALLED_APPS
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
@@ -32,13 +30,7 @@ from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
 
 
-class KeywordSearchView(View):
-    def __init__(self, **kwargs):
-        self.assets = self._load_assets()
-        self.modals = self._load_modals()
-
-        super().__init__(**kwargs)
-
+class KeywordSearchView(ResultsView):
     @method_decorator(
         decorators.permission_required(
             content_type=rights.explore_keyword_content_type,
@@ -165,7 +157,7 @@ class KeywordSearchView(View):
                     "user_id": user_id,
                     "keywords": keywords,
                     "global_templates": version_managers,
-                    "order_by_field": self._build_sorting_context_array(query),
+                    "order_by_field": super().build_sorting_context_array(query),
                     "user_templates": version_managers,
                 }
                 # set the correct ordering for the context
@@ -293,25 +285,15 @@ class KeywordSearchView(View):
         else:  # For multiple items, a "$and" query is needed.
             return json.dumps({"$and": main_query})
 
-    @staticmethod
-    def _load_assets():
+    def _load_assets(self):
         """ Return assets structure
 
         Returns:
 
         """
-        assets: Dict[str, List[Any]] = {
+        assets = super()._load_assets()
+        extra_assets: Dict[str, List[Any]] = {
             "js": [
-                {"path": "core_explore_common_app/user/js/results.js", "is_raw": False},
-                {
-                    "path": "core_explore_common_app/user/js/results.raw.js",
-                    "is_raw": True,
-                },
-                {"path": "core_main_app/common/js/XMLTree.js", "is_raw": False},
-                {
-                    "path": "core_main_app/common/js/modals/error_page_modal.js",
-                    "is_raw": True,
-                },
                 {
                     "path": "core_explore_keyword_app/libs/tag-it/2.0/js/tag-it.js",
                     "is_raw": True,
@@ -320,7 +302,6 @@ class KeywordSearchView(View):
                     "path": "core_explore_keyword_app/libs/stretchy/stretchy.min.js",
                     "is_raw": False,
                 },
-                {"path": "core_main_app/common/js/debounce.js", "is_raw": True},
                 {
                     "path": "core_explore_keyword_app/user/js/search/search.js",
                     "is_raw": False,
@@ -330,88 +311,28 @@ class KeywordSearchView(View):
                     "is_raw": False,
                 },
                 {
-                    "path": "core_explore_common_app/user/js/button_persistent_query.js",
-                    "is_raw": False,
-                },
-                {
-                    "path": "core_explore_common_app/user/js/sorting_{0}_criteria.js".format(
-                        SORTING_DISPLAY_TYPE
-                    ),
-                    "is_raw": False,
+                    "path": "core_explore_keyword_app/user/js/persistent_query.raw.js",
+                    "is_raw": True,
                 },
             ],
             "css": [
-                "core_explore_common_app/user/css/query_result.css",
-                "core_main_app/common/css/XMLTree.css",
-                "core_explore_common_app/user/css/results.css",
-                "core_explore_common_app/user/css/toggle.css",
                 "core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css",
                 "core_explore_keyword_app/user/css/search/search.css",
             ],
         }
 
-        # Add assets needed for the exporters
-        if "core_exporters_app" in INSTALLED_APPS:
-            assets["js"].extend(
-                [
-                    {
-                        "path": "core_exporters_app/user/js/exporters/list/modals/list_exporters_selector.js",
-                        "is_raw": False,
-                    }
-                ]
-            )
-
-        # Add assets needed for the file preview
-        if "core_file_preview_app" in INSTALLED_APPS:
-            assets["js"].extend(
-                [
-                    {
-                        "path": "core_file_preview_app/user/js/file_preview.js",
-                        "is_raw": False,
-                    }
-                ]
-            )
-            assets["css"].append("core_file_preview_app/user/css/file_preview.css")
+        assets["js"].extend(extra_assets["js"])
+        assets["css"].extend(extra_assets["css"])
 
         return assets
 
-    @staticmethod
-    def _build_sorting_context_array(query):
-        """ Get the query data-sources dans build the context sorting array for the JS
-
-        Returns:
-
-        """
-        context_array = []
-        for data_source in query.data_sources:
-            context_array.append(data_source.order_by_field)
-
-        return ";".join(context_array)
-
-    @staticmethod
-    def _load_modals():
+    def _load_modals(self):
         """ Return modals structure
 
         Returns:
 
         """
-        modals = [
-            "core_main_app/common/modals/error_page_modal.html",
-            "core_explore_common_app/user/persistent_query/modals/persistent_query_modal.html",
-        ]
-
-        if "core_exporters_app" in INSTALLED_APPS:
-            # add the modal
-            modals.extend(
-                [
-                    "core_exporters_app/user/exporters/list/modals/list_exporters_selector.html"
-                ]
-            )
-
-        if "core_file_preview_app" in INSTALLED_APPS:
-            modals.append("core_file_preview_app/user/file_preview_modal.html")
-
-        return modals
+        return super()._load_modals()
 
 
 def _format_keyword_search_context(search_form, error, warning, query_order=""):
@@ -435,9 +356,6 @@ def _format_keyword_search_context(search_form, error, warning, query_order=""):
         "data_sources_selector_template": "core_explore_common_app/user/selector/data_sources_selector.html",
         "data_sorting_fields": query_order,
         "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
-        "get_shareable_link_url": reverse(
-            "core_explore_keyword_get_persistent_query_url"
-        ),
     }
 
     return context

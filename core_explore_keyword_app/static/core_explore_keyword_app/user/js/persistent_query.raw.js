@@ -1,0 +1,1 @@
+let persistentQueryUrl = "{% url 'core_explore_keyword_get_persistent_query_url' %}";

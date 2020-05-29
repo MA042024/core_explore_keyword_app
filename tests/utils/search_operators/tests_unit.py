@@ -4,8 +4,10 @@ from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
-from core_explore_keyword_app.utils.search_operators import build_search_operator_query, \
-    get_keywords_from_search_operator_query
+from core_explore_keyword_app.utils.search_operators import (
+    build_search_operator_query,
+    get_keywords_from_search_operator_query,
+)
 from core_main_app.commons.exceptions import ApiError
 
 
@@ -21,7 +23,7 @@ class TestBuildSearchOperatorQuery(TestCase):
         expected_dict = {
             "$or": [
                 {mock_dot_notation: mock_value},
-                {"%s.#text" % mock_dot_notation: mock_value}
+                {"%s.#text" % mock_dot_notation: mock_value},
             ]
         }
 
@@ -46,9 +48,7 @@ class TestBuildSearchOperatorQuery(TestCase):
             for mock_dot_notation in mock_dot_notation_list
         ]
 
-        expected_dict = {
-            "$or": mock_dot_notation_values
-        }
+        expected_dict = {"$or": mock_dot_notation_values}
 
         returned_dict = build_search_operator_query("mock_name", mock_value)
 
@@ -67,12 +67,14 @@ class TestGetKeywordsFromSearchOperatorQuery(TestCase):
         mock_search_operator.name = mock_keyword
         mock_get_by_dot_notation_list.return_value = mock_search_operator
         mock_value = "mock_value"
-        mock_query = {"$or": [
-            {"mock.dot.notation.1": mock_value},
-            {"mock.dot.notation.1.#text": mock_value},
-            {"mock.dot.notation.2": mock_value},
-            {"mock.dot.notation.2.#text": mock_value}
-        ]}
+        mock_query = {
+            "$or": [
+                {"mock.dot.notation.1": mock_value},
+                {"mock.dot.notation.1.#text": mock_value},
+                {"mock.dot.notation.2": mock_value},
+                {"mock.dot.notation.2.#text": mock_value},
+            ]
+        }
 
         expected_string = "%s:%s" % (mock_keyword, mock_value)
         returned_string = get_keywords_from_search_operator_query(mock_query)
@@ -83,11 +85,13 @@ class TestGetKeywordsFromSearchOperatorQuery(TestCase):
     def test_api_error_returns_none(self, mock_get_by_dot_notation_list):
         mock_get_by_dot_notation_list.side_effect = ApiError("mock_error")
         mock_value = "mock_value"
-        mock_query = {"$or": [
-            {"mock.dot.notation.1": mock_value},
-            {"mock.dot.notation.1.#text": mock_value},
-            {"mock.dot.notation.2": mock_value},
-            {"mock.dot.notation.2.#text": mock_value}
-        ]}
+        mock_query = {
+            "$or": [
+                {"mock.dot.notation.1": mock_value},
+                {"mock.dot.notation.1.#text": mock_value},
+                {"mock.dot.notation.2": mock_value},
+                {"mock.dot.notation.2.#text": mock_value},
+            ]
+        }
 
         self.assertIsNone(get_keywords_from_search_operator_query(mock_query))
