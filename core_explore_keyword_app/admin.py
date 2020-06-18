@@ -10,7 +10,7 @@ from core_explore_keyword_app.views.admin import ajax as admin_ajax
 admin_urls = [
     re_path(
         r"^operators/$",
-        admin_views.ListSearchOperatorsView.as_view(),
+        staff_member_required(admin_views.ListSearchOperatorsView.as_view()),
         name="core_explore_keyword_app_list_search_operators",
     ),
     re_path(
