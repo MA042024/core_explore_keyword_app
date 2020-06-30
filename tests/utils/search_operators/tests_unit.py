@@ -56,9 +56,8 @@ class TestBuildSearchOperatorQuery(TestCase):
 
 
 class TestGetKeywordsFromSearchOperatorQuery(TestCase):
-    def test_query_without_or_fails(self):
-        with self.assertRaises(KeyError):
-            get_keywords_from_search_operator_query({})
+    def test_query_without_or_returns_none(self):
+        self.assertEqual(get_keywords_from_search_operator_query({}), None)
 
     @patch.object(search_operator_api, "get_by_dot_notation_list")
     def test_returns_valid_keyword(self, mock_get_by_dot_notation_list):

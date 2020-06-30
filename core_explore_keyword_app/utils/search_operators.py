@@ -27,6 +27,11 @@ def build_search_operator_query(search_operator_name, value):
 
 
 def get_keywords_from_search_operator_query(query):
+    # Any query without $or does not contain keywords (since keyword and keyword.#text
+    # are always part of the query, separated by $or).
+    if "$or" not in query.keys():
+        return None
+
     dot_notation_list = [list(query_item.keys())[0] for query_item in query["$or"]]
     dot_notation_list = [
         dot_notation_item
