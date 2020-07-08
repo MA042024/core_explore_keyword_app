@@ -93,23 +93,16 @@ class KeywordSearchView(ResultsView):
     def _parse_query(query_content):
         keyword_list = list()
         query_json = json.loads(query_content)
-        queries = list()
 
-        if "$and" in query_json:
-            queries += query_json["$and"]
-        else:
-            queries += [query_json]
+        if "$text" in query_json:
+            keyword_list += re.sub(r"['\"]", "", query_json["$text"]["$search"]).split(
+                " "
+            )
+        elif len(query_json.keys()) != 0:  # Avoid parsing empty query
+            keyword = get_keywords_from_search_operator_query(query_json)
 
-        for query in queries:
-            if "$text" in query:
-                keyword_list += re.sub(r"['\"]", "", query["$text"]["$search"]).split(
-                    " "
-                )
-            elif len(query.keys()) != 0:  # Avoid parsing empty query
-                keyword = get_keywords_from_search_operator_query(query)
-
-                if keyword is not None:
-                    keyword_list.append(keyword)
+            if keyword is not None:
+                keyword_list.append(keyword)
 
         return ",".join(keyword_list)
 
