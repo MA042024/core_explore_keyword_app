@@ -31,6 +31,8 @@ from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(ResultsView):
+    query_builder_interface = "core_explore_keyword_app/user/search_bar.html"
+
     @method_decorator(
         decorators.permission_required(
             content_type=rights.explore_keyword_content_type,
@@ -172,7 +174,9 @@ class KeywordSearchView(ResultsView):
                 return {"error": error}
 
         search_form = KeywordForm(data=keywords_data_form)
-        return _format_keyword_search_context(search_form, error, None, default_order)
+        return self._format_keyword_search_context(
+            search_form, error, None, default_order
+        )
 
     def _post(self, request):
         """ Prepare the POST context
@@ -241,7 +245,7 @@ class KeywordSearchView(ResultsView):
         else:
             error = "An unexpected error occurred: the form is not valid."
 
-        return _format_keyword_search_context(
+        return self._format_keyword_search_context(
             search_form,
             error,
             warning,
@@ -336,31 +340,33 @@ class KeywordSearchView(ResultsView):
         """
         return super()._load_modals()
 
+    def _format_keyword_search_context(
+        self, search_form, error, warning, query_order=""
+    ):
+        """ Format the context for the keyword research page
 
-def _format_keyword_search_context(search_form, error, warning, query_order=""):
-    """ Format the context for the keyword research page
+        Args:
+            search_form:
+            error:
+            warning:
+            query_order:
 
-    Args:
-        search_form:
-        error:
-        warning:
-        query_order:
+        Returns:
 
-    Returns:
+        """
+        context = {
+            "search_form": search_form,
+            "query_id": search_form.data["query_id"],
+            "error": error,
+            "warning": warning,
+            "default_date_toggle_value": DEFAULT_DATE_TOGGLE_VALUE,
+            "data_sources_selector_template": "core_explore_common_app/user/selector/data_sources_selector.html",
+            "data_sorting_fields": query_order,
+            "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
+            "query_builder_interface": self.query_builder_interface,
+        }
 
-    """
-    context = {
-        "search_form": search_form,
-        "query_id": search_form.data["query_id"],
-        "error": error,
-        "warning": warning,
-        "default_date_toggle_value": DEFAULT_DATE_TOGGLE_VALUE,
-        "data_sources_selector_template": "core_explore_common_app/user/selector/data_sources_selector.html",
-        "data_sorting_fields": query_order,
-        "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
-    }
-
-    return context
+        return context
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
