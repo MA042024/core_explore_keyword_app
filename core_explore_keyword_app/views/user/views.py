@@ -98,6 +98,15 @@ class KeywordSearchView(ResultsView):
             keyword_list += re.sub(r"['\"]", "", query_json["$text"]["$search"]).split(
                 " "
             )
+        if "$and" in query_json:
+            result = []
+
+            # parse all the sub_queries
+            for sub_query in query_json["$and"]:
+                result.append(KeywordSearchView._parse_query(json.dumps(sub_query)))
+
+            return ",".join(result)
+
         elif len(query_json.keys()) != 0:  # Avoid parsing empty query
             keyword = get_keywords_from_search_operator_query(query_json)
 

@@ -31,6 +31,12 @@ def get_keywords_from_search_operator_query(query):
     # are always part of the query, separated by $or).
     if "$or" not in query.keys():
         return None
+    else:
+        # The attribute of the $or sub_query must be a string : the search operator path
+        for sub_query in query["$or"]:
+            for key, value in sub_query.items():
+                if not isinstance(sub_query[key], str):
+                    return None
 
     dot_notation_list = [list(query_item.keys())[0] for query_item in query["$or"]]
     dot_notation_list = [
