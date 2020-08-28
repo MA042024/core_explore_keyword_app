@@ -82,7 +82,10 @@ class TestSearchOperatorListPost(SimpleTestCase):
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
             self.mock_user,
-            data={"name": "mockname", "xpath_list": ["/x/path/one", "/x/path/two"],},
+            data={
+                "name": "mockname",
+                "xpath_list": ["/x/path/one", "/x/path/two"],
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -137,7 +140,9 @@ class TestSearchOperatorListPost(SimpleTestCase):
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
             self.mock_user,
-            data={"name": "mock_name",},
+            data={
+                "name": "mock_name",
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -148,7 +153,9 @@ class TestSearchOperatorListPost(SimpleTestCase):
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
             self.mock_user,
-            data={"name": "mock_name",},
+            data={
+                "name": "mock_name",
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

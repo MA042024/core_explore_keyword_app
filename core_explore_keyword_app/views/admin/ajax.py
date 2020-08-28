@@ -15,12 +15,11 @@ from core_main_app.commons.exceptions import ApiError
 
 
 class SearchOperatorConfigModalView(View):
-    """ View for saving the configuration of a search operator
-    """
+    """View for saving the configuration of a search operator"""
 
     @staticmethod
     def post(request):
-        """ Method called after editing a search operator.
+        """Method called after editing a search operator.
 
         Args:
             request:
@@ -69,12 +68,11 @@ class SearchOperatorConfigModalView(View):
 
 
 class SearchOperatorDeleteModalView(View):
-    """ View for deleting a search operator
-    """
+    """View for deleting a search operator"""
 
     @staticmethod
     def post(request):
-        """ Method called after confirmation of the deletion of a search operator.
+        """Method called after confirmation of the deletion of a search operator.
 
         Args:
             request:

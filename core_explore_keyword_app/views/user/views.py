@@ -41,7 +41,7 @@ class KeywordSearchView(ResultsView):
         )
     )
     def get(self, request, **kwargs):
-        """ GET
+        """GET
 
         Args:
             request:
@@ -71,7 +71,7 @@ class KeywordSearchView(ResultsView):
         )
     )
     def post(self, request):
-        """ POST
+        """POST
 
         Args:
             request:
@@ -118,7 +118,7 @@ class KeywordSearchView(ResultsView):
         return ",".join(keyword_list)
 
     def _get(self, request, query_id):
-        """ Prepare the GET context
+        """Prepare the GET context
 
         Args:
             query_id:
@@ -168,8 +168,10 @@ class KeywordSearchView(ResultsView):
                 if keywords_data_form["order_by_field"] != 0:
                     default_order = keywords_data_form["order_by_field"]
             except Exception as e:
-                error = "An unexpected error occurred while loading the query: {}.".format(
-                    str(e)
+                error = (
+                    "An unexpected error occurred while loading the query: {}.".format(
+                        str(e)
+                    )
                 )
                 return {"error": error}
 
@@ -179,7 +181,7 @@ class KeywordSearchView(ResultsView):
         )
 
     def _post(self, request):
-        """ Prepare the POST context
+        """Prepare the POST context
 
         Args:
             request:
@@ -254,7 +256,7 @@ class KeywordSearchView(ResultsView):
 
     @staticmethod
     def _build_query(initial_keyword_list):
-        """ Build query content with correct keywords and search operators
+        """Build query content with correct keywords and search operators
 
         Args:
             initial_keyword_list:
@@ -292,7 +294,7 @@ class KeywordSearchView(ResultsView):
             return json.dumps({"$and": main_query})
 
     def _load_assets(self):
-        """ Return assets structure
+        """Return assets structure
 
         Returns:
 
@@ -333,7 +335,7 @@ class KeywordSearchView(ResultsView):
         return assets
 
     def _load_modals(self):
-        """ Return modals structure
+        """Return modals structure
 
         Returns:
 
@@ -343,7 +345,7 @@ class KeywordSearchView(ResultsView):
     def _format_keyword_search_context(
         self, search_form, error, warning, query_order=""
     ):
-        """ Format the context for the keyword research page
+        """Format the context for the keyword research page
 
         Args:
             search_form:

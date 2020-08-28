@@ -27,7 +27,7 @@ logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
 
 def _is_local_in_data_source(query):
-    """ Check if there is a data source that is local.
+    """Check if there is a data source that is local.
 
     Args:
         query:
@@ -43,7 +43,7 @@ def _is_local_in_data_source(query):
 
 
 def check_data_source(query):
-    """ Check the data sources. We will not provide suggestions if there are data sources selected but none of them is local.
+    """Check the data sources. We will not provide suggestions if there are data sources selected but none of them is local.
 
     Args:
         query:
@@ -63,7 +63,7 @@ class SuggestionsKeywordSearchView(View):
         )
     )
     def post(self, request, *args, **kwargs):
-        """ POST
+        """POST
 
         Args:
             request:
@@ -127,7 +127,7 @@ class SuggestionsKeywordSearchView(View):
         )
 
     def _get_query_prepared(self, keywords, query, request, template_ids):
-        """ Prepare the query for suggestions.
+        """Prepare the query for suggestions.
 
         Args:
             keywords:
@@ -146,7 +146,7 @@ class SuggestionsKeywordSearchView(View):
         return query
 
     def _extract_suggestion_from_results(self, dict_results, keywords, suggestions):
-        """ Extract suggestion from
+        """Extract suggestion from
 
         Args:
             dict_results:
@@ -177,8 +177,7 @@ class SuggestionsKeywordSearchView(View):
 
 
 class CreatePersistentQueryUrlKeywordView(CreatePersistentQueryUrlView):
-    """ Create the persistent url from a Query
-    """
+    """Create the persistent url from a Query"""
 
     view_to_reverse = "core_explore_keyword_results_redirect"
 

@@ -6,7 +6,7 @@ from core_main_app.utils.xml import xpath_to_dot_notation
 
 
 def get_all():
-    """ Return all the Search Operator.
+    """Return all the Search Operator.
 
     Returns:
     """
@@ -14,7 +14,7 @@ def get_all():
 
 
 def get_by_id(operator_id):
-    """ Return the Search Operator with the given id.
+    """Return the Search Operator with the given id.
 
     Args:
         operator_id:
@@ -30,7 +30,7 @@ def get_by_id(operator_id):
 
 
 def get_by_name(operator_name):
-    """ Return the Search Operator with the given name.
+    """Return the Search Operator with the given name.
 
     Args:
         operator_name:
@@ -44,7 +44,7 @@ def get_by_name(operator_name):
 
 
 def get_by_dot_notation_list(dot_notation_list):
-    """ Return the Search Operator with the given dot_notation list.
+    """Return the Search Operator with the given dot_notation list.
 
     Args:
         dot_notation_list:
@@ -58,7 +58,7 @@ def get_by_dot_notation_list(dot_notation_list):
 
 
 def upsert(operator):
-    """ Save or update a Search Operator.
+    """Save or update a Search Operator.
 
     Args:
         operator:
@@ -80,7 +80,7 @@ def upsert(operator):
 
 
 def delete(operator):
-    """ Delete a Search Operator.
+    """Delete a Search Operator.
 
     Args:
         operator:

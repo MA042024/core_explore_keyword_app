@@ -9,8 +9,7 @@ from core_explore_keyword_app.components.search_operator.models import SearchOpe
 
 
 class SearchOperatorForm(DocumentForm):
-    """ Main form to edit search operators.
-    """
+    """Main form to edit search operators."""
 
     document_id = forms.CharField(required=False, widget=forms.HiddenInput())
     xpath_list = forms.CharField(
@@ -32,7 +31,7 @@ class SearchOperatorForm(DocumentForm):
         }
 
     def clean_xpath_list(self):
-        """ Validate the list of xpath.
+        """Validate the list of xpath.
 
         Returns:
         """

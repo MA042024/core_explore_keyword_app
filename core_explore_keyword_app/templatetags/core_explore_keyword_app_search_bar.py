@@ -16,7 +16,7 @@ register = template.Library()
     "core_explore_keyword_app/user/embedded_search_bar.html", takes_context=True
 )
 def show_search_bar(context):
-    """ Include the search bar in a template.
+    """Include the search bar in a template.
 
     Args:
         context: Context
@@ -48,7 +48,10 @@ def show_search_bar(context):
     search_form = KeywordForm(data=data_form)
 
     context = {
-        "data": {"search_form": search_form, "query_id": search_form.data["query_id"],}
+        "data": {
+            "search_form": search_form,
+            "query_id": search_form.data["query_id"],
+        }
     }
 
     return template.RequestContext(request, context)

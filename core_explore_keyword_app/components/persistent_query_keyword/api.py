@@ -6,7 +6,7 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
 
 
 def get_by_id(persistent_query_keyword_id):
-    """ Return the Persistent Query Keyword with the given id
+    """Return the Persistent Query Keyword with the given id
 
     Args:
         persistent_query_keyword_id:

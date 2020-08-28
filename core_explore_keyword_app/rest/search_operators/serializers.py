@@ -9,8 +9,7 @@ from core_explore_keyword_app.components.search_operator.models import SearchOpe
 
 
 class SearchOperatorSerializer(DocumentSerializer):
-    """ Search operator serializer
-    """
+    """Search operator serializer"""
 
     class Meta(object):
         model = SearchOperator
@@ -18,8 +17,7 @@ class SearchOperatorSerializer(DocumentSerializer):
         read_only_fields = ("id",)
 
     def create(self, validated_data):
-        """ Create and return a new `SearchOperator` instance, given the validated data.
-        """
+        """Create and return a new `SearchOperator` instance, given the validated data."""
         # Create instance from the validated data and insert it in DB
         instance = SearchOperator(
             name=validated_data["name"], xpath_list=validated_data["xpath_list"]
@@ -29,7 +27,7 @@ class SearchOperatorSerializer(DocumentSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        """ Update and return an existing `SearchOperator` instance, given the validated
+        """Update and return an existing `SearchOperator` instance, given the validated
         data.
         """
         instance.name = validated_data.get("name", instance.name)

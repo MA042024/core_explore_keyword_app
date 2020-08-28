@@ -11,7 +11,7 @@ from core_main_app.utils.rendering import admin_render
 
 class ListSearchOperatorsView(View):
     def get(self, request):
-        """ View to assign search operators to template
+        """View to assign search operators to template
 
         Args:
             request:

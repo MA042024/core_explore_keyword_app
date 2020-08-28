@@ -15,11 +15,10 @@ from core_main_app.utils.decorators import api_staff_member_required
 
 
 class SearchOperatorList(APIView):
-    """ List search operators
-    """
+    """List search operators"""
 
     def get(self, request):
-        """ Get all search operators
+        """Get all search operators
 
         Args:
             request: HTTP request
@@ -45,7 +44,7 @@ class SearchOperatorList(APIView):
 
     @method_decorator(api_staff_member_required())
     def post(self, request):
-        """ Create a search operator
+        """Create a search operator
 
         Parameters:
             {
@@ -97,11 +96,10 @@ class SearchOperatorList(APIView):
 
 
 class SearchOperatorDetail(APIView):
-    """ Search operator detail
-    """
+    """Search operator detail"""
 
     def get(self, request, pk):
-        """ Retrieve search operator from database
+        """Retrieve search operator from database
 
         Args:
 
@@ -129,7 +127,7 @@ class SearchOperatorDetail(APIView):
 
     @method_decorator(api_staff_member_required())
     def patch(self, request, pk):
-        """ Update a search operator
+        """Update a search operator
 
         Parameters:
             {
@@ -177,7 +175,7 @@ class SearchOperatorDetail(APIView):
 
     @method_decorator(api_staff_member_required())
     def delete(self, request, pk):
-        """ Delete a search operator
+        """Delete a search operator
 
         Args:
             request: HTTP request

@@ -28,8 +28,7 @@ def validate_name(name):
 
 
 class SearchOperator(Document):
-    """ Search Operator model
-    """
+    """Search Operator model"""
 
     name = fields.StringField(blank=False, unique=True, validation=validate_name)
     xpath_list = fields.ListField(
@@ -39,7 +38,7 @@ class SearchOperator(Document):
 
     @staticmethod
     def get_all():
-        """ Retrieve all search operators.
+        """Retrieve all search operators.
 
         Returns:
         """
@@ -47,7 +46,7 @@ class SearchOperator(Document):
 
     @staticmethod
     def get_by_id(operator_id):
-        """ Retrieve a search operator with a given id.
+        """Retrieve a search operator with a given id.
 
         Args:
             operator_id:
@@ -63,7 +62,7 @@ class SearchOperator(Document):
 
     @staticmethod
     def get_by_name(operator_name):
-        """ Retrieve all search operators with a given name.
+        """Retrieve all search operators with a given name.
 
         Args:
             operator_name:
@@ -77,7 +76,7 @@ class SearchOperator(Document):
 
     @staticmethod
     def get_by_dot_notation_list(operator_dot_notation_list):
-        """ Retrieve all search operators with a given dot_notation list.
+        """Retrieve all search operators with a given dot_notation list.
 
         Args:
             operator_dot_notation_list:
@@ -92,10 +91,10 @@ class SearchOperator(Document):
             raise exceptions.DoesNotExist(str(does_not_exist))
 
     def save_object(self):
-        """ Upsert a search operator and handle possible issues.
+        """Upsert a search operator and handle possible issues.
 
-            Returns:
-                SearchOperator
+        Returns:
+            SearchOperator
         """
         try:
             return self.save()

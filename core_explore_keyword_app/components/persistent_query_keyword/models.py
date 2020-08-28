@@ -9,8 +9,7 @@ from core_main_app.commons import exceptions
 
 
 class PersistentQueryKeyword(AbstractPersistentQuery):
-    """ Persistent Query Keyword
-    """
+    """Persistent Query Keyword"""
 
     @staticmethod
     def get_by_id(query_id):
