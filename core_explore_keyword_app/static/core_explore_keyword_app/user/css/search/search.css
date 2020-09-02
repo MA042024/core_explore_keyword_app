@@ -1,5 +1,21 @@
 /* Search by keyword CSS file */
 
+#id_user_templates li{
+    overflow: auto;
+}
+
+#id_user_templates li>label{
+    display: flex;
+    align-items: center;
+}
+#id_global_templates li{
+    overflow: auto;
+}
+
+#id_global_templates li>label{
+    display: flex;
+    align-items: center;
+}
 .search_button {
     height: 2.5em;
     line-height: 0em;
