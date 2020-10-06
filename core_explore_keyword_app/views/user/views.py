@@ -133,7 +133,7 @@ class KeywordSearchView(ResultsView):
             # create query
             query = create_default_query(request, [])
             # upsert the query
-            query_api.upsert(query)
+            query_api.upsert(query, request.user)
             # create keyword form
             # create all data for select values in forms
             keywords_data_form = {
@@ -143,7 +143,7 @@ class KeywordSearchView(ResultsView):
         else:  # query_id is not None
             try:
                 # get the query id
-                query = query_api.get_by_id(query_id)
+                query = query_api.get_by_id(query_id, request.user)
                 user_id = query.user_id
 
                 # get all keywords back
@@ -218,7 +218,7 @@ class KeywordSearchView(ResultsView):
                     error = "Expected parameters are not provided"
                 else:
                     # get query
-                    query = query_api.get_by_id(query_id)
+                    query = query_api.get_by_id(query_id, request.user)
                     if len(query.data_sources) == 0:
                         warning = "Please select at least 1 data source."
                     else:
@@ -239,7 +239,7 @@ class KeywordSearchView(ResultsView):
                                     data_sources_index
                                 ]
 
-                        query_api.upsert(query)
+                        query_api.upsert(query, request.user)
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
             except Exception as e:

@@ -33,10 +33,10 @@ def show_search_bar(context):
     add_local_data_source(request, query)
 
     # set visibility
-    query_api.set_visibility_to_query(query)
+    query_api.set_visibility_to_query(query, request.user)
 
-    # upset the query
-    query_api.upsert(query)
+    # upsert the query
+    query_api.upsert(query, request.user)
 
     # create keyword form
     data_form = {

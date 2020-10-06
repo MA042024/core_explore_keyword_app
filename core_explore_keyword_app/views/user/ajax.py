@@ -98,7 +98,7 @@ class SuggestionsKeywordSearchView(View):
 
                 if query_id is not None and keywords is not None:
                     # get query
-                    query = query_api.get_by_id(query_id)
+                    query = query_api.get_by_id(query_id, request.user)
 
                     # Check the selected data sources
                     if check_data_source(query):
