@@ -1,6 +1,9 @@
 {% load staticfiles %}
 {% load include_static %}
 
+{% if data.error%}
+<div class="text-danger">{{data.error}}</div>
+{% else %}
 <script src="{% static 'core_explore_common_app/common/js/tools.js' %}"></script>
 <script src="{% static 'core_explore_keyword_app/user/js/search/embedded_search.js' %}"></script>
 <link rel="stylesheet" href="{% static 'core_explore_keyword_app/libs/tag-it/2.0/css/jquery.tagit.css' %}" />
@@ -21,3 +24,4 @@
     // can't be in raw file, initialisation here to be use in embedded_search.js
     var tagit_url = '{% static 'core_explore_keyword_app/libs/tag-it/2.0/js/tag-it.js' %}';
 </script>
+{% endif %}

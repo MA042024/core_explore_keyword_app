@@ -7,6 +7,7 @@ from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_common_app.views.user.ajax import add_local_data_source
 from core_explore_keyword_app.forms import KeywordForm
+from core_main_app.access_control.exceptions import AccessControlError
 from core_main_app.settings import DATA_SORTING_FIELDS
 
 register = template.Library()
@@ -25,33 +26,36 @@ def show_search_bar(context):
 
     """
     request = context["request"]
+    try:
+        # create Query
+        query = Query(user_id=str(request.user.id), templates=[])
 
-    # create Query
-    query = Query(user_id=str(request.user.id), templates=[])
+        # add local data source to the query
+        add_local_data_source(request, query)
 
-    # add local data source to the query
-    add_local_data_source(request, query)
+        # set visibility
+        query_api.set_visibility_to_query(query, request.user)
 
-    # set visibility
-    query_api.set_visibility_to_query(query, request.user)
+        # upsert the query
+        query_api.upsert(query, request.user)
 
-    # upsert the query
-    query_api.upsert(query, request.user)
-
-    # create keyword form
-    data_form = {
-        "query_id": str(query.id),
-        "user_id": query.user_id,
-        "order_by_field": ",".join(DATA_SORTING_FIELDS),
-    }
-
-    search_form = KeywordForm(data=data_form)
-
-    context = {
-        "data": {
-            "search_form": search_form,
-            "query_id": search_form.data["query_id"],
+        # create keyword form
+        data_form = {
+            "query_id": str(query.id),
+            "user_id": query.user_id,
+            "order_by_field": ",".join(DATA_SORTING_FIELDS),
         }
-    }
+        search_form = KeywordForm(data=data_form)
+
+        context = {
+            "data": {
+                "search_form": search_form,
+                "query_id": search_form.data["query_id"],
+            }
+        }
+    except AccessControlError as ace:
+        context = {"data": {"error": str(ace)}}
+    except:
+        context = {"data": {"error": "An unexpected error occurred"}}
 
     return template.RequestContext(request, context)

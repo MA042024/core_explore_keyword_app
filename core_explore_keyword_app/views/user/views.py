@@ -126,22 +126,22 @@ class KeywordSearchView(ResultsView):
         Returns:
 
         """
-        error = None
-        # set the correct default ordering for the context
-        default_order = ",".join(DATA_SORTING_FIELDS)
-        if query_id is None:
-            # create query
-            query = create_default_query(request, [])
-            # upsert the query
-            query_api.upsert(query, request.user)
-            # create keyword form
-            # create all data for select values in forms
-            keywords_data_form = {
-                "query_id": str(query.id),
-                "user_id": query.user_id,
-            }
-        else:  # query_id is not None
-            try:
+        try:
+            error = None
+            # set the correct default ordering for the context
+            default_order = ",".join(DATA_SORTING_FIELDS)
+            if query_id is None:
+                # create query
+                query = create_default_query(request, [])
+                # upsert the query
+                query_api.upsert(query, request.user)
+                # create keyword form
+                # create all data for select values in forms
+                keywords_data_form = {
+                    "query_id": str(query.id),
+                    "user_id": query.user_id,
+                }
+            else:  # query_id is not None
                 # get the query id
                 query = query_api.get_by_id(query_id, request.user)
                 user_id = query.user_id
@@ -167,13 +167,12 @@ class KeywordSearchView(ResultsView):
                 # set the correct ordering for the context
                 if keywords_data_form["order_by_field"] != 0:
                     default_order = keywords_data_form["order_by_field"]
-            except Exception as e:
-                error = (
-                    "An unexpected error occurred while loading the query: {}.".format(
-                        str(e)
-                    )
-                )
-                return {"error": error}
+
+        except Exception as e:
+            error = "An unexpected error occurred while loading the query: {}.".format(
+                str(e)
+            )
+            return {"error": error}
 
         search_form = KeywordForm(data=keywords_data_form)
         return self._format_keyword_search_context(
