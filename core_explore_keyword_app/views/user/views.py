@@ -384,8 +384,8 @@ class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
         )
 
     @staticmethod
-    def _get_persistent_query(persistent_query_id):
-        return persistent_query_keyword_api.get_by_id(persistent_query_id)
+    def _get_persistent_query(persistent_query_id, user):
+        return persistent_query_keyword_api.get_by_id(persistent_query_id, user)
 
     @staticmethod
     def _get_reversed_url(query):
