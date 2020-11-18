@@ -44,3 +44,24 @@ class PersistentQueryKeyword(AbstractPersistentQuery):
             raise exceptions.DoesNotExist(str(e))
         except Exception as e:
             raise exceptions.ModelError(str(e))
+
+    @staticmethod
+    def get_all():
+        """Return all persistent query Keyword.
+
+        Returns:
+
+        """
+        return PersistentQueryKeyword.objects.all()
+
+    @staticmethod
+    def get_all_by_user(user_id):
+        """Return all persistent query Keyword by user.
+
+        Args:
+            user_id:
+
+        Returns:
+
+        """
+        return PersistentQueryKeyword.objects(user_id=str(user_id))
