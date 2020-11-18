@@ -45,7 +45,7 @@ def show_search_bar(context):
             "user_id": query.user_id,
             "order_by_field": ",".join(DATA_SORTING_FIELDS),
         }
-        search_form = KeywordForm(data=data_form)
+        search_form = KeywordForm(data=data_form, request=request)
 
         context = {
             "data": {

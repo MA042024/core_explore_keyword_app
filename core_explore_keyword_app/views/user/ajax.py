@@ -74,7 +74,7 @@ class SuggestionsKeywordSearchView(View):
 
         """
         suggestions = []
-        search_form = KeywordForm(data=request.POST)
+        search_form = KeywordForm(data=request.POST, request=request)
         keywords = request.POST.get("term")
 
         if search_form.is_valid():
@@ -89,7 +89,7 @@ class SuggestionsKeywordSearchView(View):
 
                 # from ids, get all version manager
                 version_manager_list = version_manager_api.get_by_id_list(
-                    template_version_manager_ids
+                    template_version_manager_ids, request=request
                 )
 
                 # from all version manager, build a list of all version (template)
@@ -138,7 +138,9 @@ class SuggestionsKeywordSearchView(View):
         """
 
         # update query
-        query.templates = template_api.get_all_by_id_list(template_ids)
+        query.templates = template_api.get_all_accessible_by_id_list(
+            template_ids, request=request
+        )
         # TODO: improve query to get better results
         query.content = json.dumps(get_full_text_query(keywords))
         # Data source is local

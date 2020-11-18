@@ -153,7 +153,11 @@ class KeywordSearchView(ResultsView):
                 version_managers = []
                 for template in query.templates:
                     version_managers.append(
-                        str(version_manager_api.get_from_version(template).id)
+                        str(
+                            version_manager_api.get_from_version(
+                                template, request=request
+                            ).id
+                        )
                     )
                 # create all data for select values in forms
                 keywords_data_form = {
@@ -174,7 +178,7 @@ class KeywordSearchView(ResultsView):
             )
             return {"error": error}
 
-        search_form = KeywordForm(data=keywords_data_form)
+        search_form = KeywordForm(data=keywords_data_form, request=request)
         return self._format_keyword_search_context(
             search_form, error, None, default_order
         )
@@ -190,7 +194,7 @@ class KeywordSearchView(ResultsView):
         """
         error = None
         warning = None
-        search_form = KeywordForm(data=request.POST)
+        search_form = KeywordForm(data=request.POST, request=request)
         # validate form
         if search_form.is_valid():
             try:
@@ -208,7 +212,7 @@ class KeywordSearchView(ResultsView):
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
                 version_manager_list = version_manager_api.get_by_id_list(
-                    template_version_manager_ids
+                    template_version_manager_ids, request=request
                 )
                 # from all version manager, build a list of all version (template)
                 template_ids = []
@@ -222,7 +226,9 @@ class KeywordSearchView(ResultsView):
                         warning = "Please select at least 1 data source."
                     else:
                         # update query
-                        query.templates = template_api.get_all_by_id_list(template_ids)
+                        query.templates = template_api.get_all_accessible_by_id_list(
+                            template_ids, request=request
+                        )
                         query.content = self._build_query(keywords.split(","))
                         # set the data-sources filter value according to the POST request field
                         for data_sources_index in range(len(query.data_sources)):

@@ -6,6 +6,7 @@ INSTALLED_APPS = [
     # Django apps
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sessions",
     # Local apps
     "tests",
 ]
