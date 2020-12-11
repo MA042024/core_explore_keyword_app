@@ -40,7 +40,7 @@ class PersistentQueryKeywordFixtures(FixtureInterface):
         ).save()
 
         self.persistent_query_keyword_3 = PersistentQueryKeyword(
-            user_id="3", name="persistent_query_keyword_3"
+            user_id="None", name="persistent_query_keyword_3"
         ).save()
 
         self.data_collection = [

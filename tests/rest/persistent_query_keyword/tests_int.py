@@ -155,12 +155,7 @@ class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
         )
 
         # Assert
-        if CAN_ANONYMOUS_ACCESS_PUBLIC_DOCUMENT:
-            self.assertEqual(
-                response.data["name"], self.fixture.persistent_query_keyword_1.name
-            )
-        else:
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_wrong_id_returns_http_404(self):
         # Arrange
@@ -320,16 +315,10 @@ class TestPersistentQueryKeywordByName(MongoIntegrationBaseTestCase):
         response = RequestMock.do_request_get(
             persistent_query_keyword_views.PersistentQueryKeywordByName.as_view(),
             AnonymousUser(),
-            param={"name": str(self.fixture.persistent_query_keyword_1.name)},
+            param={"name": self.fixture.persistent_query_keyword_1.name},
         )
 
-        # Assert
-        if CAN_ANONYMOUS_ACCESS_PUBLIC_DOCUMENT:
-            self.assertEqual(
-                response.data["name"], self.fixture.persistent_query_keyword_1.name
-            )
-        else:
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_wrong_name_returns_http_404(self):
         # Arrange
