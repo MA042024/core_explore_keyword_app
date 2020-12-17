@@ -4,6 +4,7 @@ import json
 import re
 from typing import Dict, Any, List
 
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 
@@ -83,12 +84,22 @@ class KeywordSearchView(ResultsView):
         # assets / modals / forms
         context = self._post(request)
 
-        return render(
-            request,
-            "core_explore_keyword_app/user/index.html",
-            assets=self.assets,
-            modals=self.modals,
-            context=context,
+        # if any errors or warning detected
+        if context["error"] or context["warning"]:
+            # render form again
+            return render(
+                request,
+                "core_explore_keyword_app/user/index.html",
+                assets=self.assets,
+                modals=self.modals,
+                context=context,
+            )
+        # no errors, redirect to search form
+        return HttpResponseRedirect(
+            reverse(
+                "core_explore_keyword_app_search",
+                kwargs={"query_id": context["query_id"]},
+            )
         )
 
     @staticmethod
