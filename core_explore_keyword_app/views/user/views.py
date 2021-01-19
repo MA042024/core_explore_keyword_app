@@ -20,6 +20,7 @@ from core_explore_common_app.views.user.views import (
     ResultsView,
 )
 from core_explore_keyword_app.forms import KeywordForm
+from core_explore_keyword_app.settings import EXPLORE_KEYWORD_APP_EXTRAS
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
@@ -347,6 +348,9 @@ class KeywordSearchView(ResultsView):
 
         assets["js"].extend(extra_assets["js"])
         assets["css"].extend(extra_assets["css"])
+        for extra_app in EXPLORE_KEYWORD_APP_EXTRAS:
+            assets["js"].extend(extra_app.get_extra_js())
+            assets["css"].extend(extra_app.get_extra_css())
 
         return assets
 
@@ -382,6 +386,11 @@ class KeywordSearchView(ResultsView):
             "data_sorting_fields": query_order,
             "default_data_sorting_fields": ",".join(DATA_SORTING_FIELDS),
             "query_builder_interface": self.query_builder_interface,
+            "EXPLORE_KEYWORD_APP_EXTRAS_HTML": [
+                path
+                for extra in EXPLORE_KEYWORD_APP_EXTRAS
+                for path in extra.get_extra_html()
+            ],
         }
 
         return context

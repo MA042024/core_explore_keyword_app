@@ -1,0 +1,9 @@
+{% load dict_key_extras %}
+{% if data.EXPLORE_KEYWORD_APP_EXTRAS_HTML %}
+        <div id="explore_keyword_extras" class="hidden">
+        <!-- Iterate through list of explore apps declared in the settings -->
+        {% for html in data.EXPLORE_KEYWORD_APP_EXTRAS_HTML %}
+            {% include html %}
+        {% endfor %}
+        </div>
+{% endif %}
