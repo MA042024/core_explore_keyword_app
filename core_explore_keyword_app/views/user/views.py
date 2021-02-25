@@ -19,6 +19,9 @@ from core_explore_common_app.views.user.views import (
     ResultQueryRedirectView,
     ResultsView,
 )
+from core_explore_keyword_app.components.persistent_query_keyword.models import (
+    PersistentQueryKeyword,
+)
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import EXPLORE_KEYWORD_APP_EXTRAS
 from core_explore_keyword_app.utils.search_operators import (
@@ -397,6 +400,10 @@ class KeywordSearchView(ResultsView):
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
+    model_name = PersistentQueryKeyword.__name__
+    object_name = "persistent_query_keyword"
+    redirect_url = "core_explore_keyword_app_search"
+
     @method_decorator(
         decorators.permission_required(
             content_type=rights.explore_keyword_content_type,
@@ -418,8 +425,16 @@ class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
         return persistent_query_keyword_api.get_by_name(persistent_query_name, user)
 
     @staticmethod
+    def get_url_path():
+        return reverse(
+            ResultQueryRedirectKeywordView.redirect_url, kwargs={"query_id": "query_id"}
+        ).split("query_id")[0]
+
+    @staticmethod
     def _get_reversed_url(query):
-        return reverse("core_explore_keyword_app_search", kwargs={"query_id": query.id})
+        return reverse(
+            ResultQueryRedirectKeywordView.redirect_url, kwargs={"query_id": query.id}
+        )
 
     @staticmethod
     def _get_reversed_url_if_failed():
