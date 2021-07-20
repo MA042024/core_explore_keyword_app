@@ -11,7 +11,6 @@ from core_explore_keyword_app.rest.persistent_query_keyword import (
 )
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
-from core_explore_common_app.settings import CAN_ANONYMOUS_ACCESS_PUBLIC_DOCUMENT
 from core_main_app.utils.integration_tests.integration_base_test_case import (
     MongoIntegrationBaseTestCase,
 )

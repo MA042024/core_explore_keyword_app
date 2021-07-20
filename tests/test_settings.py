@@ -11,6 +11,10 @@ INSTALLED_APPS = [
     "tests",
 ]
 
+CUSTOM_NAME = "Local"
+""" :py:class:`str`: Name of the local instance
+"""
+
 # IN-MEMORY TEST DATABASE
 DATABASES = {
     "default": {

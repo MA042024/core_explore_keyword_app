@@ -1,7 +1,6 @@
 """Core Explore Keyword App views
 """
 import json
-import re
 from typing import Dict, Any, List
 
 from django.http import HttpResponseRedirect
@@ -31,7 +30,6 @@ from core_explore_keyword_app.utils.search_operators import (
 from core_main_app.commons.exceptions import DoesNotExist, ApiError
 from core_main_app.components.template import api as template_api
 from core_main_app.settings import DATA_SORTING_FIELDS
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
 from core_main_app.utils.rendering import render
 
 
@@ -112,9 +110,13 @@ class KeywordSearchView(ResultsView):
         query_json = json.loads(query_content)
 
         if "$text" in query_json:
-            keyword_list += re.sub(r"['\"]", "", query_json["$text"]["$search"]).split(
-                " "
-            )
+            keywords = query_json["$text"]["$search"]
+            keyword_list = [
+                "{}".format(keyword)
+                for keyword in keywords.split('"')
+                if keyword not in ("", " ")
+            ]
+
         if "$and" in query_json:
             result = []
 
@@ -299,7 +301,10 @@ class KeywordSearchView(ResultsView):
             else:
                 keyword_list.append(keyword)
 
-        keyword_query = get_full_text_query(",".join(keyword_list))
+        keyword_query = ['"' + keyword + '"' for keyword in keyword_list]
+
+        if len(keyword_query) > 0:
+            keyword_query = {"$text": {"$search": " ".join(keyword_query)}}
 
         # Don"t add an empty query to the main query.
         if len(keyword_query.keys()) != 0:

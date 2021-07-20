@@ -8,6 +8,7 @@ from core_explore_keyword_app.components.persistent_query_keyword import (
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
+from core_explore_keyword_app.views.user import views as keyword_search_views
 from core_main_app.commons import exceptions
 from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_main_app.access_control.exceptions import AccessControlError
@@ -174,4 +175,154 @@ class TestsPersistentQueryKeywordGetAllByUser(TestCase):
         # Act # Assert
         self.assertEqual(
             persistent_query_keyword_api.get_all_by_user(mock_user), expected_result
+        )
+
+
+class TestKeywordSearch(TestCase):
+    def test_build_query_content_with_simple_keywords(self):
+        # set query
+        initial_keyword_list = ["FirstTest", "SecondTest"]
+
+        # Act
+        main_query = keyword_search_views.KeywordSearchView._build_query(
+            initial_keyword_list
+        )
+
+        # assert
+        self.assertEqual(
+            main_query, '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
+        )
+
+    def test_build_query_content_with_hyphens(self):
+        # set query
+        initial_keyword_list = ["test-hyphens", "more-hyphen-keyword"]
+
+        # Act
+        main_query = keyword_search_views.KeywordSearchView._build_query(
+            initial_keyword_list
+        )
+
+        # assert
+        self.assertEqual(
+            main_query,
+            '{"$text": {"$search": "\\"test-hyphens\\" \\"more-hyphen-keyword\\""}}',
+        )
+
+    def test_build_query_content_with_hyphens_and_numbers(self):
+        # set query
+        initial_keyword_list = [
+            "test-hyphens_number-123",
+            "more-hyphen-keyword_number-456",
+        ]
+
+        # Act
+        main_query = keyword_search_views.KeywordSearchView._build_query(
+            initial_keyword_list
+        )
+
+        # assert
+        self.assertEqual(
+            main_query,
+            '{"$text": {"$search": "\\"test-hyphens_number-123\\" \\"more-hyphen-keyword_number-456\\""}}',
+        )
+
+    def test_build_query_content_with_blank(self):
+        # set query
+        initial_keyword_list = ['"blank between keywords"']
+
+        # Act
+        main_query = keyword_search_views.KeywordSearchView._build_query(
+            initial_keyword_list
+        )
+
+        # assert
+        self.assertEqual(
+            main_query, '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
+        )
+
+    def test_build_query_content_with_blank_and_hyphens(self):
+        # set query
+        initial_keyword_list = [
+            '"blank and-hyphens-between keywords"',
+            '"test_-hyphens number12 ? "',
+        ]
+
+        # Act
+        main_query = keyword_search_views.KeywordSearchView._build_query(
+            initial_keyword_list
+        )
+
+        # assert
+        self.assertEqual(
+            main_query,
+            '{"$text": {"$search": "\\"\\"blank and-hyphens-between keywords\\"\\" '
+            '\\"\\"test_-hyphens number12 ? \\"\\""}}',
+        )
+
+    def test_parse_simple_query_content(self):
+        # set query
+        query_content = '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
+
+        # Act
+        keyword_list = keyword_search_views.KeywordSearchView._parse_query(
+            query_content
+        )
+
+        # assert
+        self.assertEqual(keyword_list, "FirstTest,SecondTest")
+
+    def test_parse_query_content_with_hyphens(self):
+        # set query
+        query_content = (
+            '{"$text": {"$search": "\\"first-hyphen\\" \\"more-hyphen-keywords\\""}}'
+        )
+
+        # Act
+        keyword_list = keyword_search_views.KeywordSearchView._parse_query(
+            query_content
+        )
+
+        # assert
+        self.assertEqual(keyword_list, "first-hyphen,more-hyphen-keywords")
+
+    def test_parse_query_content_with_hyphens_and_numbers(self):
+        # set query
+        query_content = '{"$text": {"$search": "\\"number-123\\" \\"more-numbers-456\\" \\"last-number-6\\""}}'
+
+        # Act
+        keyword_list = keyword_search_views.KeywordSearchView._parse_query(
+            query_content
+        )
+
+        # assert
+        self.assertEqual(keyword_list, "number-123,more-numbers-456,last-number-6")
+
+    def test_parse_query_content_with_blank(self):
+        # set query
+        query_content = '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
+
+        # Act
+        keyword_list = keyword_search_views.KeywordSearchView._parse_query(
+            query_content
+        )
+
+        # assert
+        self.assertEqual(keyword_list, "blank between keywords")
+
+    def test_parse_query_content_with_blank_and_hyphens(self):
+        # set query
+        query_content = (
+            '{"$text": {"$search": "\\"\\"blank and-hyphens-between keywords\\"\\" '
+            '\\"\\"test_-hyphens number12 ? \\"\\""}}'
+        )
+
+        # Act
+        keyword_list = keyword_search_views.KeywordSearchView._parse_query(
+            query_content
+        )
+
+        # assert
+        self.assertEqual(
+            keyword_list,
+            "blank and-hyphens-between keywords,test_-hyphens number12 ? ",
         )
