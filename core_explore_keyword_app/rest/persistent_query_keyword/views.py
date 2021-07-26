@@ -107,7 +107,7 @@ class AdminPersistentQueryKeywordList(APIView):
 
 
 class PersistentQueryKeywordList(APIView):
-    """List all persistent queries keyword or Create  one """
+    """List all persistent queries keyword or Create  one"""
 
     permission_classes = (IsAuthenticated,)
     serializer = PersistentQueryKeywordSerializer
