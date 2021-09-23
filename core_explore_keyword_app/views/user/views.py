@@ -246,7 +246,8 @@ class KeywordSearchView(ResultsView):
                         query.templates = template_api.get_all_accessible_by_id_list(
                             template_ids, request=request
                         )
-                        query.content = self._build_query(keywords.split(","))
+                        keywords_list = keywords.split(",") if keywords else []
+                        query.content = self._build_query(keywords_list)
                         # set the data-sources filter value according to the POST request field
                         for data_sources_index in range(len(query.data_sources)):
                             # update the data-source filter only if it's not a new data-source
@@ -305,9 +306,6 @@ class KeywordSearchView(ResultsView):
 
         if len(keyword_query) > 0:
             keyword_query = {"$text": {"$search": " ".join(keyword_query)}}
-
-        # Don"t add an empty query to the main query.
-        if len(keyword_query.keys()) != 0:
             main_query.append(keyword_query)
 
         # If the query is empty, match all documents
