@@ -29,19 +29,20 @@ class PersistentQueryKeywordFixtures(FixtureInterface):
         Returns:
 
         """
-
-        # NOTE: no xml_content to avoid using unsupported GridFS mock
         self.persistent_query_keyword_1 = PersistentQueryKeyword(
             user_id="1", name="persistent_query_keyword_1"
-        ).save()
+        )
+        self.persistent_query_keyword_1.save()
 
         self.persistent_query_keyword_2 = PersistentQueryKeyword(
             user_id="2", name="persistent_query_keyword_2"
-        ).save()
+        )
+        self.persistent_query_keyword_2.save()
 
         self.persistent_query_keyword_3 = PersistentQueryKeyword(
             user_id="None", name="persistent_query_keyword_3"
-        ).save()
+        )
+        self.persistent_query_keyword_3.save()
 
         self.data_collection = [
             self.persistent_query_keyword_1,

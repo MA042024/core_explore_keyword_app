@@ -93,7 +93,7 @@ let displayErrorPopUp = function() {
 
 let submitPopUp = function() {
 	$.ajax({
-        url : "/admin/operators/edit",
+        url : "/core-admin/operators/edit",
         type : "POST",
         dataType: "json",
 		data: $operatorConfigModalForm.serialize(),

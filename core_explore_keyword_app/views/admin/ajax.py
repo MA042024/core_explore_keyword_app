@@ -1,10 +1,10 @@
 """ Ajax views for core_explore_keyword_app
 """
 from django.contrib import messages
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from mongoengine.base import NON_FIELD_ERRORS
 
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,

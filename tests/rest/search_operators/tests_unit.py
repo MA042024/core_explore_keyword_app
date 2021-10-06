@@ -78,7 +78,15 @@ class TestSearchOperatorListPost(SimpleTestCase):
     def setUp(self) -> None:
         self.mock_user = create_mock_user("1", is_staff=True)
 
-    def test_valid_search_operator_returns_201(self):
+    @patch.object(SearchOperatorSerializer, "is_valid")
+    @patch.object(SearchOperatorSerializer, "save")
+    @patch.object(SearchOperatorSerializer, "data")
+    def test_valid_search_operator_returns_201(
+        self, mock_serializer_data, mock_serializer_save, mock_serializer_is_valid
+    ):
+        mock_serializer_is_valid.return_value = True
+        mock_serializer_save.return_value = None
+        mock_serializer_data.return_value = None
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),
             self.mock_user,
@@ -105,8 +113,12 @@ class TestSearchOperatorListPost(SimpleTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @patch.object(SearchOperatorSerializer, "is_valid")
     @patch.object(SearchOperatorSerializer, "save")
-    def test_model_error_returns_400(self, mock_serializer_save):
+    def test_model_error_returns_400(
+        self, mock_serializer_save, mock_serializer_is_valid
+    ):
+        mock_serializer_is_valid.return_value = True
         mock_serializer_save.side_effect = ModelError(message="mock error")
 
         response = RequestMock.do_request_post(
@@ -120,8 +132,12 @@ class TestSearchOperatorListPost(SimpleTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @patch.object(SearchOperatorSerializer, "is_valid")
     @patch.object(SearchOperatorSerializer, "save")
-    def test_duplicate_returns_400(self, mock_serializer_save):
+    def test_duplicate_returns_400(
+        self, mock_serializer_save, mock_serializer_is_valid
+    ):
+        mock_serializer_is_valid.return_value = True
         mock_serializer_save.side_effect = NotUniqueError(message="mock error")
         response = RequestMock.do_request_post(
             search_operator_views.SearchOperatorList.as_view(),

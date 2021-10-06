@@ -23,7 +23,7 @@ Menu.add_item(
 explore_by_keyword_children = (
     MenuItem(
         "Search Operators",
-        reverse("admin:core_explore_keyword_app_list_search_operators"),
+        reverse("core-admin:core_explore_keyword_app_list_search_operators"),
         icon="code",
     ),
 )

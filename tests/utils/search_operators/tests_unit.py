@@ -1,5 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
+
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )

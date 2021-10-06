@@ -4,8 +4,13 @@ from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import re_path
 
-from core_explore_keyword_app.views.admin import views as admin_views
+from core_explore_keyword_app.components.persistent_query_keyword.models import (
+    PersistentQueryKeyword,
+)
+from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_explore_keyword_app.views.admin import ajax as admin_ajax
+from core_explore_keyword_app.views.admin import views as admin_views
+from core_main_app.admin import core_admin_site
 
 admin_urls = [
     re_path(
@@ -25,5 +30,7 @@ admin_urls = [
     ),
 ]
 
-urls = admin.site.get_urls()
-admin.site.get_urls = lambda: admin_urls + urls
+admin.site.register(SearchOperator)
+admin.site.register(PersistentQueryKeyword)
+urls = core_admin_site.get_urls()
+core_admin_site.get_urls = lambda: admin_urls + urls

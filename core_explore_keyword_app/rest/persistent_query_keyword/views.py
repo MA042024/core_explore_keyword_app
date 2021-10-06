@@ -1,20 +1,19 @@
 """ REST views for the persistent query keyword.
 """
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
-
 from core_explore_keyword_app.rest.persistent_query_keyword.serializers import (
     PersistentQueryKeywordSerializer,
     PersistentQueryKeywordAdminSerializer,
 )
-from core_main_app.commons import exceptions
-from mongoengine import NotUniqueError
 from core_main_app.access_control.exceptions import AccessControlError
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from core_main_app.commons import exceptions
 
 
 class AdminPersistentQueryKeywordList(APIView):
@@ -281,7 +280,7 @@ class PersistentQueryKeywordDetail(APIView):
         except exceptions.DoesNotExist:
             content = {"message": "Persistent query keyword not found."}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
-        except NotUniqueError as e:
+        except IntegrityError as e:
             content = {"message": str(e)}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except Exception as api_exception:

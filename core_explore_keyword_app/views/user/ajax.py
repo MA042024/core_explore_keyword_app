@@ -4,13 +4,13 @@ import json
 import logging
 import re
 
-from django.urls import reverse_lazy
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.components.template_version_manager.api as template_version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.constants import LOCAL_QUERY_NAME
@@ -37,7 +37,7 @@ def _is_local_in_data_source(query):
     # If we find a data source that is local
     for data_source in query.data_sources:
         # find local data source
-        if data_source.name == LOCAL_QUERY_NAME:
+        if data_source["name"] == LOCAL_QUERY_NAME:
             return True
     return False
 
@@ -88,7 +88,7 @@ class SuggestionsKeywordSearchView(View):
                 template_version_manager_ids = global_templates + user_templates
 
                 # from ids, get all version manager
-                version_manager_list = version_manager_api.get_by_id_list(
+                version_manager_list = template_version_manager_api.get_by_id_list(
                     template_version_manager_ids, request=request
                 )
 
@@ -138,8 +138,8 @@ class SuggestionsKeywordSearchView(View):
         """
 
         # update query
-        query.templates = template_api.get_all_accessible_by_id_list(
-            template_ids, request=request
+        query.templates.set(
+            template_api.get_all_accessible_by_id_list(template_ids, request=request)
         )
         # TODO: improve query to get better results
         query.content = json.dumps(get_full_text_query(keywords))
@@ -189,6 +189,5 @@ class CreatePersistentQueryUrlKeywordView(CreatePersistentQueryUrlView):
         return PersistentQueryKeyword(
             user_id=query.user_id,
             content=query.content,
-            templates=query.templates,
             data_sources=query.data_sources,
         )

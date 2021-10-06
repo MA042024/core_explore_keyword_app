@@ -1,14 +1,14 @@
 """ Admin forms for Search Operators.
 """
 from django import forms
-from django_mongoengine.forms import DocumentForm
-from core_main_app.utils.xml import validate_xpath
-from core_main_app.commons import exceptions as core_main_app_exceptions
+from django.forms import ModelForm
 
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_main_app.commons import exceptions as core_main_app_exceptions
+from core_main_app.utils.xml import validate_xpath
 
 
-class SearchOperatorForm(DocumentForm):
+class SearchOperatorForm(ModelForm):
     """Main form to edit search operators."""
 
     document_id = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -21,7 +21,7 @@ class SearchOperatorForm(DocumentForm):
     )
 
     class Meta(object):
-        document = SearchOperator
+        model = SearchOperator
         fields = ["name"]
 
         widgets = {

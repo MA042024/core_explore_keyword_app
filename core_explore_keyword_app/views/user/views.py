@@ -9,11 +9,10 @@ from django.utils.decorators import method_decorator
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
+import core_main_app.components.template_version_manager.api as template_version_manager_api
 import core_main_app.utils.decorators as decorators
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
-from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import (
     ResultQueryRedirectView,
     ResultsView,
@@ -149,9 +148,7 @@ class KeywordSearchView(ResultsView):
             default_order = ",".join(DATA_SORTING_FIELDS)
             if query_id is None:
                 # create query
-                query = create_default_query(request, [])
-                # upsert the query
-                query_api.upsert(query, request.user)
+                query = query_api.create_default_query(request, [])
                 # create keyword form
                 # create all data for select values in forms
                 keywords_data_form = {
@@ -168,14 +165,8 @@ class KeywordSearchView(ResultsView):
 
                 # get all version managers
                 version_managers = []
-                for template in query.templates:
-                    version_managers.append(
-                        str(
-                            version_manager_api.get_from_version(
-                                template, request=request
-                            ).id
-                        )
-                    )
+                for template in query.templates.all():
+                    version_managers.append(str(template.version_manager.id))
                 # create all data for select values in forms
                 keywords_data_form = {
                     "query_id": str(query.id),
@@ -228,7 +219,7 @@ class KeywordSearchView(ResultsView):
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
-                version_manager_list = version_manager_api.get_by_id_list(
+                version_manager_list = template_version_manager_api.get_by_id_list(
                     template_version_manager_ids, request=request
                 )
                 # from all version manager, build a list of all version (template)
@@ -243,8 +234,10 @@ class KeywordSearchView(ResultsView):
                         warning = "Please select at least 1 data source."
                     else:
                         # update query
-                        query.templates = template_api.get_all_accessible_by_id_list(
-                            template_ids, request=request
+                        query.templates.set(
+                            template_api.get_all_accessible_by_id_list(
+                                template_ids, request=request
+                            )
                         )
                         keywords_list = keywords.split(",") if keywords else []
                         query.content = self._build_query(keywords_list)
@@ -256,11 +249,9 @@ class KeywordSearchView(ResultsView):
                             if data_sources_index in range(
                                 0, len(order_by_field_array)
                             ):
-                                query.data_sources[
-                                    data_sources_index
-                                ].order_by_field = order_by_field_array[
-                                    data_sources_index
-                                ]
+                                query.data_sources[data_sources_index][
+                                    "order_by_field"
+                                ] = order_by_field_array[data_sources_index]
 
                         query_api.upsert(query, request.user)
             except DoesNotExist:

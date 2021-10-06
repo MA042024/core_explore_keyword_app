@@ -17,15 +17,19 @@ from core_main_app.utils.tests_tools.RequestMock import RequestMock
 
 
 class TestSearchOperatorListGet(SimpleTestCase):
-    def test_anonymous_returns_http_200(self):
+    @patch.object(search_operator_api, "get_all")
+    def test_anonymous_returns_http_200(self, mock_search_operator_api_get_all):
+        mock_search_operator_api_get_all.return_value = []
         response = RequestMock.do_request_get(
             search_operator_rest_views.SearchOperatorList.as_view(), None
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_authenticated_returns_http_200(self):
+    @patch.object(search_operator_api, "get_all")
+    def test_authenticated_returns_http_200(self, mock_search_operator_api_get_all):
         mock_user = create_mock_user("1")
+        mock_search_operator_api_get_all.return_value = []
 
         response = RequestMock.do_request_get(
             search_operator_rest_views.SearchOperatorList.as_view(), mock_user

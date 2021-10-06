@@ -88,7 +88,7 @@ class TestsApiUpsert(TestCase):
     def test_returns_no_error(self, mock_save):
         mock_save.return_value = None
 
-        self.assertEqual(search_operator_api.upsert(self.mock_search_operator), None)
+        search_operator_api.upsert(self.mock_search_operator)
 
     @mock.patch.object(SearchOperator, "save")
     def test_dot_notation_list_is_correct(self, mock_save):

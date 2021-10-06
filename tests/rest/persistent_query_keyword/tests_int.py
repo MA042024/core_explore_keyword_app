@@ -1,18 +1,19 @@
 """ Integration Test for Persistent Query Keyword Rest API
 """
 
-from tests.components.persistent_query_keyword.fixtures.fixtures import (
-    PersistentQueryKeywordFixtures,
-)
-from core_main_app.utils.tests_tools.MockUser import create_mock_user
-from core_main_app.utils.tests_tools.RequestMock import RequestMock
+from django.contrib.auth.models import AnonymousUser
+from rest_framework import status
+
 from core_explore_keyword_app.rest.persistent_query_keyword import (
     views as persistent_query_keyword_views,
 )
-from django.contrib.auth.models import AnonymousUser
-from rest_framework import status
 from core_main_app.utils.integration_tests.integration_base_test_case import (
     MongoIntegrationBaseTestCase,
+)
+from core_main_app.utils.tests_tools.MockUser import create_mock_user
+from core_main_app.utils.tests_tools.RequestMock import RequestMock
+from tests.components.persistent_query_keyword.fixtures.fixtures import (
+    PersistentQueryKeywordFixtures,
 )
 
 fixture_data_structure = PersistentQueryKeywordFixtures()
@@ -164,7 +165,7 @@ class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
         response = RequestMock.do_request_get(
             persistent_query_keyword_views.PersistentQueryKeywordDetail.as_view(),
             user,
-            param={"pk": "507f1f77bcf86cd799439011"},
+            param={"pk": -1},
         )
 
         # Assert
@@ -206,7 +207,7 @@ class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
         response = RequestMock.do_request_delete(
             persistent_query_keyword_views.PersistentQueryKeywordDetail.as_view(),
             user,
-            param={"pk": "507f1f77bcf86cd799439011"},
+            param={"pk": -1},
         )
 
         # Assert
@@ -249,7 +250,7 @@ class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
         response = RequestMock.do_request_patch(
             persistent_query_keyword_views.PersistentQueryKeywordDetail.as_view(),
             user,
-            param={"pk": "507f1f77bcf86cd799439011"},
+            param={"pk": -1},
         )
 
         # Assert

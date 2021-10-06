@@ -1,24 +1,21 @@
 """ Unit Test Persistent Query Keyword
 """
 
-from mock import patch
-
-from tests.components.persistent_query_keyword.fixtures.fixtures import (
-    PersistentQueryKeywordFixtures,
-)
 from django.contrib.auth.models import AnonymousUser
-from core_main_app.utils.tests_tools.MockUser import create_mock_user
-from core_main_app.utils.integration_tests.integration_base_test_case import (
-    MongoIntegrationBaseTestCase,
-)
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
+from core_explore_common_app.settings import CAN_ANONYMOUS_ACCESS_PUBLIC_DOCUMENT
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
 from core_main_app.access_control.exceptions import AccessControlError
-
-from core_explore_common_app.settings import CAN_ANONYMOUS_ACCESS_PUBLIC_DOCUMENT
+from core_main_app.utils.integration_tests.integration_base_test_case import (
+    MongoIntegrationBaseTestCase,
+)
+from core_main_app.utils.tests_tools.MockUser import create_mock_user
+from tests.components.persistent_query_keyword.fixtures.fixtures import (
+    PersistentQueryKeywordFixtures,
+)
 
 fixture_persistent_query_keyword = PersistentQueryKeywordFixtures()
 

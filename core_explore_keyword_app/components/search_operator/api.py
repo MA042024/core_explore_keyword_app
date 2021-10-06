@@ -72,7 +72,8 @@ def upsert(operator):
             xpath_to_dot_notation(xpath) for xpath in operator.xpath_list
         ]
 
-        return operator.save_object()
+        operator.save_object()
+        return operator
     except exceptions.NotUniqueError:
         raise exceptions.ApiError("Operator name or xpath already exists")
     except exceptions.ModelError as model_error:

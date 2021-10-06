@@ -1,6 +1,6 @@
 """ Persistent Query Keyword model
 """
-from mongoengine import errors as mongoengine_errors
+from django.core.exceptions import ObjectDoesNotExist
 
 from core_explore_common_app.components.abstract_persistent_query.models import (
     AbstractPersistentQuery,
@@ -22,8 +22,8 @@ class PersistentQueryKeyword(AbstractPersistentQuery):
 
         """
         try:
-            return PersistentQueryKeyword.objects().get(pk=query_id)
-        except mongoengine_errors.DoesNotExist as e:
+            return PersistentQueryKeyword.objects.get(pk=query_id)
+        except ObjectDoesNotExist as e:
             raise exceptions.DoesNotExist(str(e))
         except Exception as e:
             raise exceptions.ModelError(str(e))
@@ -39,8 +39,8 @@ class PersistentQueryKeyword(AbstractPersistentQuery):
 
         """
         try:
-            return PersistentQueryKeyword.objects().get(name=query_name)
-        except mongoengine_errors.DoesNotExist as e:
+            return PersistentQueryKeyword.objects.get(name=query_name)
+        except ObjectDoesNotExist as e:
             raise exceptions.DoesNotExist(str(e))
         except Exception as e:
             raise exceptions.ModelError(str(e))
@@ -64,7 +64,7 @@ class PersistentQueryKeyword(AbstractPersistentQuery):
         Returns:
 
         """
-        return PersistentQueryKeyword.objects(user_id=str(user_id))
+        return PersistentQueryKeyword.objects.filter(user_id=str(user_id))
 
     @staticmethod
     def get_none():
@@ -73,4 +73,4 @@ class PersistentQueryKeyword(AbstractPersistentQuery):
         Returns:
 
         """
-        return PersistentQueryKeyword.objects().none()
+        return PersistentQueryKeyword.objects.none()
