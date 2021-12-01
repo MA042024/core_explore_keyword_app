@@ -28,7 +28,7 @@ def show_search_bar(context):
     request = context["request"]
     try:
         # create Query
-        query = Query(user_id=str(request.user.id), templates=[])
+        query = Query(user_id=str(request.user.id))
 
         # add local data source to the query
         add_local_data_source(request, query)
