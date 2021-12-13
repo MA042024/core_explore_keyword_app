@@ -1,39 +1,21 @@
 """ Search Operator model
 """
-import re
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.db import models
 
 from core_main_app.commons import exceptions
 from core_main_app.commons.exceptions import ModelError
-from core_main_app.utils.xml import validate_xpath
-
-
-def validate_xpath_list(xpath_list):
-    item_position = 0
-
-    for xpath in xpath_list:
-        try:
-            validate_xpath(xpath)
-            item_position += 1
-        except exceptions.XMLError as e:
-            raise ValidationError(
-                "XPath syntax error (item #%d): %s" % (item_position, str(e))
-            )
-
-
-def validate_name(name):
-    if re.match(r"^[a-zA-Z][a-zA-Z0-9]+$", name) is None:
-        raise ValidationError("Name should only contains alpha-numerical characters.")
+from core_main_app.utils.validation.regex_validation import validate_alphanum
+from core_main_app.utils.validation.xpath_validation import validate_xpath_list
 
 
 class SearchOperator(models.Model):
     """Search Operator model"""
 
     name = models.CharField(
-        blank=False, unique=True, validators=[validate_name], max_length=200
+        blank=False, unique=True, validators=[validate_alphanum], max_length=200
     )
     xpath_list = models.JSONField(
         blank=False, unique=True, validators=[validate_xpath_list]
