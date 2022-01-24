@@ -57,6 +57,16 @@ def get_by_dot_notation_list(dot_notation_list):
         raise exceptions.ApiError("Operator does not exist")
 
 
+def get_all_xpath_except_xpath(operator):
+    """Return the Search Operator with the given dot_notation list.
+
+    Args:
+
+    Returns:
+    """
+    return SearchOperator.get_all_xpath_list_except_xpath(operator.id)
+
+
 def upsert(operator):
     """Save or update a Search Operator.
 
@@ -66,6 +76,7 @@ def upsert(operator):
     Returns:
 
     """
+
     try:
         # Create the dot notation list automatically from the XPath list
         operator.dot_notation_list = [

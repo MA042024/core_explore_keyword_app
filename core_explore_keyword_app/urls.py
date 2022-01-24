@@ -4,6 +4,7 @@
 from django.urls import re_path, include
 
 from core_explore_keyword_app.views.user import views as user_views, ajax as user_ajax
+from core_explore_keyword_app.views.admin import ajax as admin_ajax
 
 urlpatterns = [
     re_path(
@@ -30,6 +31,16 @@ urlpatterns = [
         r"^(?P<query_id>\w+)$",
         user_views.KeywordSearchView.as_view(),
         name="core_explore_keyword_app_search",
+    ),
+    re_path(
+        r"^operators/delete$",
+        admin_ajax.SearchOperatorDeleteModalView.as_view(),
+        name="core_explore_keyword_app_search_operator_delete",
+    ),
+    re_path(
+        r"^operators/edit$",
+        admin_ajax.SearchOperatorConfigModalView.as_view(),
+        name="core_explore_keyword_app_search_operator_edit",
     ),
     re_path(r"^rest/", include("core_explore_keyword_app.rest.urls")),
 ]

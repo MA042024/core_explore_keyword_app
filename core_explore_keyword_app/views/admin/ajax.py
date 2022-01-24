@@ -9,7 +9,7 @@ from django.views import View
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+
 from core_explore_keyword_app.views.admin.forms import SearchOperatorForm
 from core_main_app.commons.exceptions import ApiError
 
@@ -19,14 +19,20 @@ class SearchOperatorConfigModalView(View):
 
     @staticmethod
     def post(request):
-        """Method called after editing a search operator.
+        """Method called after editing or creating a search operator.
 
         Args:
             request:
 
         Returns:
         """
-        operator_form = SearchOperatorForm(request.POST)
+        instance = None
+        action = "created"
+        if "document_id" in request.POST and request.POST["document_id"] != "":
+            action = "edited"
+            instance = search_operator_api.get_by_id(request.POST["document_id"])
+
+        operator_form = SearchOperatorForm(request.POST, instance=instance)
 
         if not operator_form.is_valid():
             return render(
@@ -35,23 +41,8 @@ class SearchOperatorConfigModalView(View):
                 context={"form": operator_form},
             )
         else:
-            action = "created"
-
-            xpath_list = [
-                xpath.strip()
-                for xpath in operator_form.cleaned_data["xpath_list"].split("\n")
-            ]
-
-            operator = SearchOperator(
-                name=operator_form.cleaned_data["name"], xpath_list=xpath_list
-            )
-
-            if "document_id" in request.POST and request.POST["document_id"] != "":
-                operator.pk = operator_form.cleaned_data["document_id"]
-                action = "edited"
-
             try:
-                search_operator_api.upsert(operator)
+                operator_form.save()
             except ApiError as e:
                 operator_form.add_error(NON_FIELD_ERRORS, str(e))
                 return render(
@@ -65,6 +56,37 @@ class SearchOperatorConfigModalView(View):
             )
 
             return JsonResponse({})
+
+    @staticmethod
+    def get(request):
+        """Method called after editing a search operator.
+
+        Args:
+            request:
+
+        Returns:
+        """
+        try:
+            from core_explore_keyword_app.components.search_operator.models import (
+                SearchOperator,
+            )
+
+            operator = search_operator_api.get_by_id(request.GET["document_id"])
+            xpath_list = "\n".join(operator.xpath_list)
+            operator_form = SearchOperatorForm(
+                initial={"xpath_list": xpath_list, "document_id": operator.id},
+                instance=operator,
+            )
+
+            return render(
+                request,
+                "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
+                context={"form": operator_form},
+            )
+        except ApiError as e:
+            messages.add_message(
+                request, messages.ERROR, "Failed to find operator: %s." % str(e)
+            )
 
 
 class SearchOperatorDeleteModalView(View):
@@ -91,6 +113,7 @@ class SearchOperatorDeleteModalView(View):
                 request, messages.INFO, "Operator %s deleted." % operator.name
             )
             return JsonResponse({}, status=200)
+
         except ApiError as e:
             messages.add_message(
                 request, messages.ERROR, "Failed to delete operator: %s." % str(e)

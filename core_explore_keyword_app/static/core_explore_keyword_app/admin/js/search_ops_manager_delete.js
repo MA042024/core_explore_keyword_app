@@ -19,7 +19,7 @@ let showDeletePopUp = function(event) {
 
 let submitDeletePopUp = function() {
 	$.ajax({
-        url : "/admin/operators/delete",
+        url : searchOperatorsDeleteUrl,
         type : "POST",
 		data: {
         	"id": $operatorDeleteId.val()

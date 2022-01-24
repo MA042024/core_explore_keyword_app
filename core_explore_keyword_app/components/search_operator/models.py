@@ -76,6 +76,20 @@ class SearchOperator(models.Model):
         except ObjectDoesNotExist as does_not_exist:
             raise exceptions.DoesNotExist(str(does_not_exist))
 
+    @staticmethod
+    def get_all_xpath_list_except_xpath(operator_id):
+        """Retrieve all xpath
+
+        Args:
+
+        Returns:
+        """
+        return (
+            SearchOperator.objects.exclude(id=operator_id)
+            .all()
+            .values_list("xpath_list", flat=True)
+        )
+
     def save_object(self):
         """Upsert a search operator and handle possible issues.
 

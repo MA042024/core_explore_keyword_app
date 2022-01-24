@@ -12,8 +12,6 @@ let btnCreate = ".btn-create-operator";
 let btnEdit = ".btn-edit-operator";
 let btnSave = "#btn-save-operator";
 
-let separator = "\n";
-
 let defaultError = "Unexpected error while submitting the form. Please contact an " +
 	"admintrator.";
 
@@ -42,42 +40,47 @@ let resetPopUp = function() {
 
 let showPopUp = function(event) {
 	let $target = $(event.target);
-	let operator = {
-		id: null,
-		name: null,
-		xpath_list: null
-	};
+	$targetParent = $target.parents("tr");
+	let operatorId = null;
 
-	if($target.hasClass("btn-edit-operator")) {
-		let $targetParent = $target.parents("tr");
-
-		operator.id = $targetParent.attr("id");
-		operator.name = $targetParent.children("td:eq(0)").text();
-		operator.xpath_list = $targetParent.find("td:eq(1) li");
+	if($targetParent.attr("id")) {
+		operatorId = $targetParent.attr("id");
 	}
 
-	configurePopUp(operator);
+	configurePopUp(operatorId);
 	$operatorConfigModal.modal("show");
 };
 
-let configurePopUp = function(operator) {
+let configurePopUp = function(operatorId) {
 	resetPopUp();
-	if(operator.id === null) {
+	if(operatorId === null) {
 		$operatorConfigModalTitle.text("Create");
 		$operatorConfigModalNameField.val("");
 		$operatorConfigModalXPathField.val("");
 		$operatorConfigModalIdField.val("");
 	} else {
 		$operatorConfigModalTitle.text("Edit");
-		$operatorConfigModalIdField.val(operator.id);
-		$operatorConfigModalNameField.val(operator.name);
+        $.ajax({
+            url : searchOperatorsEditUrl,
+            type : "GET",
+            dataType: "json",
+            async: false,
+            data: {"document_id":operatorId},
+            success: function() {},
+            error: function(data) {
+                if("responseText" in data) {
+                    try {
+                        $operatorConfigModalForm.replaceWith($(data.responseText));
+                        init();
+                    } catch (error) {
+                        displayErrorPopUp();
+                    }
+                } else {
+                    displayErrorPopUp();
+                }
 
-		let xpath_list = "";
-		$(operator.xpath_list).each(function() {
-			xpath_list += $.trim($(this).text())+separator;
-		});
-
-		$operatorConfigModalXPathField.val(xpath_list);
+            }
+        });
 	}
 };
 
@@ -93,7 +96,7 @@ let displayErrorPopUp = function() {
 
 let submitPopUp = function() {
 	$.ajax({
-        url : "/core-admin/operators/edit",
+        url : searchOperatorsEditUrl,
         type : "POST",
         dataType: "json",
 		data: $operatorConfigModalForm.serialize(),

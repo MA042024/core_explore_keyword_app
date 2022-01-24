@@ -24,6 +24,10 @@ class ListSearchOperatorsView(View):
         assets = {
             "js": [
                 {
+                    "path": "core_explore_keyword_app/admin/js/search_operators.js",
+                    "is_raw": False,
+                },
+                {
                     "path": "core_explore_keyword_app/admin/js/search_ops_manager.js",
                     "is_raw": False,
                 },
