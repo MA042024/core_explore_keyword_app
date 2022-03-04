@@ -21,7 +21,7 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
 )
 from core_explore_keyword_app.forms import KeywordForm
 from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
+from core_main_app.utils.databases.mongo.pymongo_database import get_full_text_query
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
