@@ -16,12 +16,13 @@
     display: flex;
     align-items: center;
 }
+
 .search_button {
     height: 2.5em;
-    line-height: 0em;
-    min-width: 0em;
+    line-height: 0;
+    min-width: 0;
     width: 6em;
-    margin-right: 1.5em;
+    margin: 0.15em 1em;
     float: right;
 }
 
@@ -56,7 +57,7 @@
 
 ul.tagit {
     width: 100%;
-    height: 2.5em;
+    height: 2.8em;
     margin: 0;
     border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -68,7 +69,7 @@ ul.tagit {
 
 ul.tagit li.tagit-choice-editable {
     height: 1.65em;
-    padding: 0 20px 0em 0.2em;
+    padding: 0 20px 0 0.2em;
     border-radius: .3em;
     -webkit-border-radius: .3em;
     border: 1px solid #b1b1b1;
@@ -83,11 +84,17 @@ ul.tagit li.tagit-choice-editable {
 }
 
 ul.tagit li.tagit-new {
-    padding: .3em 25px 0em 0.5em;
+    padding: 0.25em 20px 0.25em 0.25em;
+    width: auto !important;
+}
+
+/* Enlarge the tag only if the placeholder is present */
+ul.tagit li.tagit-new .ui-autocomplete-input:placeholder-shown {
+    width: 40rem !important;
 }
 
 ul.tagit li.tagit-new.tagit-choice-editable {
-    padding: .1em 25px 0em 0.5em;
+    padding: 0 20px 0 0.2em;
 }
 
 .tagit-close {
