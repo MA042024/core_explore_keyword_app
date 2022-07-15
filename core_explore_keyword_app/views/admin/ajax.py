@@ -9,7 +9,6 @@ from django.views import View
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-
 from core_explore_keyword_app.views.admin.forms import SearchOperatorForm
 from core_main_app.commons.exceptions import ApiError
 
@@ -67,10 +66,6 @@ class SearchOperatorConfigModalView(View):
         Returns:
         """
         try:
-            from core_explore_keyword_app.components.search_operator.models import (
-                SearchOperator,
-            )
-
             operator = search_operator_api.get_by_id(request.GET["document_id"])
             xpath_list = "\n".join(operator.xpath_list)
             operator_form = SearchOperatorForm(

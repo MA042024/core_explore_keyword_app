@@ -368,35 +368,3 @@ class TestPersistentQueryKeywordGetAllByUser(MongoIntegrationBaseTestCase):
         # Assert
         with self.assertRaises(AccessControlError):
             persistent_query_keyword_api.get_all_by_user(AnonymousUser())
-
-
-class TestPersistentQueryKeywordGetAllByUser(MongoIntegrationBaseTestCase):
-    fixture = fixture_persistent_query_keyword
-
-    def test_get_all_by_user_as_superuser_returns_all_user_persistent_query_keyword(
-        self,
-    ):
-        # Arrange
-        mock_user = create_mock_user("1", is_staff=True, is_superuser=True)
-
-        # Act
-        result = persistent_query_keyword_api.get_all_by_user(mock_user)
-
-        # Assert
-        self.assertTrue(len(result), 1)
-
-    def test_get_all_by_user_returns_all_user_persistent_query_keyword(self):
-        # Arrange
-        mock_user = create_mock_user("1")
-
-        # Act
-        result = persistent_query_keyword_api.get_all_by_user(mock_user)
-
-        # Assert
-        self.assertTrue(len(result), 1)
-
-    def test_get_all_as_anonymous_user(self):
-
-        # Act
-        with self.assertRaises(AccessControlError):
-            persistent_query_keyword_api.get_all_by_user(AnonymousUser())
