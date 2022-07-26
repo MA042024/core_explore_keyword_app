@@ -99,6 +99,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 "abstract": False,
+                "verbose_name": "Persistent Query by Keyword",
+                "verbose_name_plural": "Persistent Queries by Keyword",
             },
         ),
     ]
