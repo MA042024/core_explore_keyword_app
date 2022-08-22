@@ -1,6 +1,10 @@
+""" Test units
+"""
+
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
+from core_main_app.commons.exceptions import ApiError
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
@@ -9,12 +13,15 @@ from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
 )
-from core_main_app.commons.exceptions import ApiError
 
 
 class TestBuildSearchOperatorQuery(TestCase):
+    """Test Build Search Operator Query"""
+
     @patch.object(search_operator_api, "get_by_name")
     def test_single_dot_notation_returns_valid_query(self, mock_get_by_name):
+        """test_single_dot_notation_returns_valid_query"""
+
         mock_dot_notation = "mock.dot.notation"
         mock_value = "mock_value"
         mock_search_operator = Mock(spec=SearchOperator)
@@ -34,6 +41,8 @@ class TestBuildSearchOperatorQuery(TestCase):
 
     @patch.object(search_operator_api, "get_by_name")
     def test_multi_dot_notation_returns_valid_query(self, mock_get_by_name):
+        """test_multi_dot_notation_returns_valid_query"""
+
         mock_dot_notation_list = ["mock.dot.notation.1", "mock.dot.notation.2"]
         mock_value = "mock_value"
         mock_search_operator = Mock(spec=SearchOperator)
@@ -57,11 +66,17 @@ class TestBuildSearchOperatorQuery(TestCase):
 
 
 class TestGetKeywordsFromSearchOperatorQuery(TestCase):
+    """Test Get Keywords From Search Operator Query"""
+
     def test_query_without_or_returns_none(self):
+        """test_query_without_or_returns_none"""
+
         self.assertEqual(get_keywords_from_search_operator_query({}), None)
 
     @patch.object(search_operator_api, "get_by_dot_notation_list")
     def test_returns_valid_keyword(self, mock_get_by_dot_notation_list):
+        """test_returns_valid_keyword"""
+
         mock_keyword = "mock_keyword"
         mock_search_operator = Mock(spec=SearchOperator)
         mock_search_operator.name = mock_keyword
@@ -83,6 +98,8 @@ class TestGetKeywordsFromSearchOperatorQuery(TestCase):
 
     @patch.object(search_operator_api, "get_by_dot_notation_list")
     def test_api_error_returns_none(self, mock_get_by_dot_notation_list):
+        """test_api_error_returns_none"""
+
         mock_get_by_dot_notation_list.side_effect = ApiError("mock_error")
         mock_value = "mock_value"
         mock_query = {

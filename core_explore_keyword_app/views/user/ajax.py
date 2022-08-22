@@ -9,19 +9,21 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-import core_explore_keyword_app.permissions.rights as rights
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.mongo.pymongo_database import get_full_text_query
 import core_main_app.components.template_version_manager.api as template_version_manager_api
-import core_main_app.utils.decorators as decorators
+from core_main_app.utils import decorators
+
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.constants import LOCAL_QUERY_NAME
 from core_explore_common_app.utils.query.query import send, create_local_data_source
 from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
+from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
 from core_explore_keyword_app.forms import KeywordForm
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.mongo.pymongo_database import get_full_text_query
+
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
@@ -55,10 +57,12 @@ def check_data_source(query):
 
 
 class SuggestionsKeywordSearchView(View):
+    """Suggestions Keyword Search View"""
+
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -118,8 +122,10 @@ class SuggestionsKeywordSearchView(View):
                                 dict_results, keywords, suggestions
                             )
 
-            except Exception as e:
-                logger.error("Exception while generating suggestions: " + str(e))
+            except Exception as exception:
+                logger.error(
+                    "Exception while generating suggestions: " + str(exception)
+                )
 
         return HttpResponse(
             json.dumps({"suggestions": suggestions}),

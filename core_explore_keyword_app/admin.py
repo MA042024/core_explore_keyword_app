@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import re_path
 
+from core_main_app.admin import core_admin_site
 from core_explore_keyword_app.components.persistent_query_keyword.admin_site import (
     CustomPersistentQueryKeywordAdmin,
 )
@@ -16,7 +17,6 @@ from core_explore_keyword_app.components.search_operator.admin_site import (
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_explore_keyword_app.views.admin import ajax as admin_ajax
 from core_explore_keyword_app.views.admin import views as admin_views
-from core_main_app.admin import core_admin_site
 
 admin_urls = [
     re_path(

@@ -11,7 +11,9 @@ from core_explore_keyword_app.components.search_operator.models import SearchOpe
 class SearchOperatorSerializer(ModelSerializer):
     """Search operator serializer"""
 
-    class Meta(object):
+    class Meta:
+        """Meta"""
+
         model = SearchOperator
         fields = ["id", "name", "xpath_list"]
         read_only_fields = ("id",)

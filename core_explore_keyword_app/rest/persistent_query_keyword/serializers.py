@@ -13,7 +13,9 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
 class PersistentQueryKeywordSerializer(ModelSerializer):
     """persistent query keyword serializer"""
 
-    class Meta(object):
+    class Meta:
+        """Meta"""
+
         model = PersistentQueryKeyword
         fields = ["id", "user_id", "content", "templates", "name"]
         read_only_fields = ("id", "user_id")
@@ -54,7 +56,7 @@ class PersistentQueryKeywordSerializer(ModelSerializer):
 class PersistentQueryKeywordAdminSerializer(ModelSerializer):
     """PersistentQueryKeyword Serializer"""
 
-    class Meta(object):
+    class Meta:
         """Meta"""
 
         model = PersistentQueryKeyword

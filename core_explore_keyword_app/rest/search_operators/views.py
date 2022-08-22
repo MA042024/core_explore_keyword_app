@@ -6,12 +6,12 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core_main_app.commons import exceptions
+from core_main_app.utils.decorators import api_staff_member_required
 import core_explore_keyword_app.components.search_operator.api as search_operator_api
 from core_explore_keyword_app.rest.search_operators.serializers import (
     SearchOperatorSerializer,
 )
-from core_main_app.commons import exceptions
-from core_main_app.utils.decorators import api_staff_member_required
 
 
 class SearchOperatorList(APIView):

@@ -7,10 +7,13 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 
-import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
-import core_explore_keyword_app.permissions.rights as rights
+from core_main_app.commons.exceptions import DoesNotExist, ApiError
+from core_main_app.components.template import api as template_api
+from core_main_app.settings import DATA_SORTING_FIELDS
+from core_main_app.utils.rendering import render
 import core_main_app.components.template_version_manager.api as template_version_manager_api
-import core_main_app.utils.decorators as decorators
+from core_main_app.utils import decorators
+
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
 from core_explore_common_app.views.user.views import (
@@ -20,25 +23,25 @@ from core_explore_common_app.views.user.views import (
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
+import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
+from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import EXPLORE_KEYWORD_APP_EXTRAS
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
 )
-from core_main_app.commons.exceptions import DoesNotExist, ApiError
-from core_main_app.components.template import api as template_api
-from core_main_app.settings import DATA_SORTING_FIELDS
-from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(ResultsView):
+    """Keyword Search View"""
+
     query_builder_interface = "core_explore_keyword_app/user/search_bar.html"
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -67,8 +70,8 @@ class KeywordSearchView(ResultsView):
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -180,9 +183,9 @@ class KeywordSearchView(ResultsView):
                 if keywords_data_form["order_by_field"] != 0:
                     default_order = keywords_data_form["order_by_field"]
 
-        except Exception as e:
+        except Exception as exception:
             error = "An unexpected error occurred while loading the query: {}.".format(
-                str(e)
+                str(exception)
             )
             return {"error": error}
 
@@ -256,8 +259,8 @@ class KeywordSearchView(ResultsView):
                         query_api.upsert(query, request.user)
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
-            except Exception as e:
-                error = "An unexpected error occurred: {}.".format(str(e))
+            except Exception as exception:
+                error = "An unexpected error occurred: {}.".format(str(exception))
         else:
             error = "An unexpected error occurred: the form is not valid."
 
@@ -302,10 +305,11 @@ class KeywordSearchView(ResultsView):
         # If the query is empty, match all documents
         if len(main_query) == 0:
             return json.dumps({})
-        elif len(main_query) == 1:  # If there is one query item, match one this item.
+        if len(main_query) == 1:  # If there is one query item, match one this item.
             return json.dumps(main_query[0])
-        else:  # For multiple items, a "$and" query is needed.
-            return json.dumps({"$and": main_query})
+
+        # For multiple items, a "$and" query is needed.
+        return json.dumps({"$and": main_query})
 
     def _load_assets(self):
         """Return assets structure
@@ -394,21 +398,21 @@ class KeywordSearchView(ResultsView):
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
+    """Result Query Redirect Keyword View"""
+
     model_name = PersistentQueryKeyword.__name__
     object_name = "persistent_query_keyword"
     redirect_url = "core_explore_keyword_app_search"
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def get(self, request, *args, **kwargs):
-        return super(ResultQueryRedirectKeywordView, self).get(
-            self, request, *args, **kwargs
-        )
+        return super().get(self, request, *args, **kwargs)
 
     @staticmethod
     def _get_persistent_query_by_id(persistent_query_id, user):

@@ -3,10 +3,9 @@
 from django import forms
 from django.forms import ModelForm
 
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_main_app.commons import exceptions as core_main_app_exceptions
 from core_main_app.utils.xml import validate_xpath
-
+from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
@@ -24,7 +23,9 @@ class SearchOperatorForm(ModelForm):
         ),
     )
 
-    class Meta(object):
+    class Meta:
+        """Meta"""
+
         model = SearchOperator
         fields = ["name"]
 
@@ -46,15 +47,15 @@ class SearchOperatorForm(ModelForm):
             line_xpath += 1
             try:
                 validate_xpath(xpath)
-            except core_main_app_exceptions.XMLError as e:
+            except core_main_app_exceptions.XMLError as exception:
                 raise forms.ValidationError(
-                    "XPath syntax error (line %d): %s" % (line_xpath, str(e))
+                    "XPath syntax error (line %d): %s" % (line_xpath, str(exception))
                 )
 
         return self.cleaned_data["xpath_list"]
 
     def save(self, commit=True):
-        instance = super(SearchOperatorForm, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.xpath_list = [
             xpath.strip() for xpath in self.cleaned_data["xpath_list"].split("\n")
         ]

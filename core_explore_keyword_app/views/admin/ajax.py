@@ -39,22 +39,22 @@ class SearchOperatorConfigModalView(View):
                 "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
                 context={"form": operator_form},
             )
-        else:
-            try:
-                operator_form.save()
-            except ApiError as e:
-                operator_form.add_error(NON_FIELD_ERRORS, str(e))
-                return render(
-                    request,
-                    "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
-                    context={"form": operator_form},
-                )
 
-            messages.add_message(
-                request, messages.SUCCESS, "Operator successfully %s!" % action
+        try:
+            operator_form.save()
+        except ApiError as exception:
+            operator_form.add_error(NON_FIELD_ERRORS, str(exception))
+            return render(
+                request,
+                "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
+                context={"form": operator_form},
             )
 
-            return JsonResponse({})
+        messages.add_message(
+            request, messages.SUCCESS, "Operator successfully %s!" % action
+        )
+
+        return JsonResponse({})
 
     @staticmethod
     def get(request):
@@ -66,6 +66,7 @@ class SearchOperatorConfigModalView(View):
         Returns:
         """
         try:
+
             operator = search_operator_api.get_by_id(request.GET["document_id"])
             xpath_list = "\n".join(operator.xpath_list)
             operator_form = SearchOperatorForm(
@@ -78,9 +79,9 @@ class SearchOperatorConfigModalView(View):
                 "core_explore_keyword_app/admin/search_ops_manager/modal/config/form.html",
                 context={"form": operator_form},
             )
-        except ApiError as e:
+        except ApiError as exception:
             messages.add_message(
-                request, messages.ERROR, "Failed to find operator: %s." % str(e)
+                request, messages.ERROR, "Failed to find operator: %s." % str(exception)
             )
 
 
@@ -109,8 +110,10 @@ class SearchOperatorDeleteModalView(View):
             )
             return JsonResponse({}, status=200)
 
-        except ApiError as e:
+        except ApiError as exception:
             messages.add_message(
-                request, messages.ERROR, "Failed to delete operator: %s." % str(e)
+                request,
+                messages.ERROR,
+                "Failed to delete operator: %s." % str(exception),
             )
             return JsonResponse({}, status=500)

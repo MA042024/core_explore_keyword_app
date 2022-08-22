@@ -1,8 +1,8 @@
 """ Search Operator API
 """
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
 from core_main_app.commons import exceptions
 from core_main_app.utils.xml import xpath_to_dot_notation
+from core_explore_keyword_app.components.search_operator.models import SearchOperator
 
 
 def get_all():
