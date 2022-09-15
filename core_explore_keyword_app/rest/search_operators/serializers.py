@@ -1,6 +1,6 @@
 """ Serializers used for the search operator REST API.
 """
-from rest_framework_mongoengine.serializers import DocumentSerializer
+from rest_framework.serializers import ModelSerializer
 
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
@@ -8,10 +8,12 @@ from core_explore_keyword_app.components.search_operator import (
 from core_explore_keyword_app.components.search_operator.models import SearchOperator
 
 
-class SearchOperatorSerializer(DocumentSerializer):
+class SearchOperatorSerializer(ModelSerializer):
     """Search operator serializer"""
 
-    class Meta(object):
+    class Meta:
+        """Meta"""
+
         model = SearchOperator
         fields = ["id", "name", "xpath_list"]
         read_only_fields = ("id",)

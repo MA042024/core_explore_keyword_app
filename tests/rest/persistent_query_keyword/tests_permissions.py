@@ -2,10 +2,16 @@
 """
 from unittest.mock import patch
 
+from django.contrib.auth.models import AnonymousUser
 from django.test import SimpleTestCase
 from rest_framework import status
 
+from core_main_app.utils.tests_tools.MockUser import create_mock_user
+from core_main_app.utils.tests_tools.RequestMock import RequestMock
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
+from core_explore_keyword_app.components.persistent_query_keyword.models import (
+    PersistentQueryKeyword,
+)
 from core_explore_keyword_app.rest.persistent_query_keyword import (
     views as persistent_query_keyword_views,
 )
@@ -13,16 +19,14 @@ from core_explore_keyword_app.rest.persistent_query_keyword.serializers import (
     PersistentQueryKeywordSerializer,
     PersistentQueryKeywordAdminSerializer,
 )
-from django.contrib.auth.models import AnonymousUser
-from core_main_app.utils.tests_tools.MockUser import create_mock_user
-from core_main_app.utils.tests_tools.RequestMock import RequestMock
-from core_explore_keyword_app.components.persistent_query_keyword.models import (
-    PersistentQueryKeyword,
-)
 
 
 class TestAdminPersistentQueryKeywordListGet(SimpleTestCase):
+    """Test Admin Persistent Query Keyword List Get"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_get(
             persistent_query_keyword_views.AdminPersistentQueryKeywordList.as_view(),
             AnonymousUser(),
@@ -31,6 +35,8 @@ class TestAdminPersistentQueryKeywordListGet(SimpleTestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_authenticated_returns_http_403(self):
+        """test_authenticated_returns_http_403"""
+
         mock_user = create_mock_user("1")
 
         response = RequestMock.do_request_get(
@@ -42,6 +48,8 @@ class TestAdminPersistentQueryKeywordListGet(SimpleTestCase):
 
     @patch.object(PersistentQueryKeyword, "get_all")
     def test_superuser_returns_http_200(self, get_all):
+        """test_superuser_returns_http_200"""
+
         get_all.return_value = {}
         mock_user = create_mock_user("1", is_staff=True, is_superuser=True)
 
@@ -54,7 +62,11 @@ class TestAdminPersistentQueryKeywordListGet(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordListGet(SimpleTestCase):
+    """Test Persistent Query Keyword List Get"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_get(
             persistent_query_keyword_views.PersistentQueryKeywordList.as_view(),
             AnonymousUser(),
@@ -62,8 +74,10 @@ class TestPersistentQueryKeywordListGet(SimpleTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @patch.object(PersistentQueryKeyword, "get_all")
+    @patch.object(PersistentQueryKeyword, "get_all_by_user")
     def test_authenticated_returns_http_200(self, get_all):
+        """test_authenticated_returns_http_200"""
+
         get_all.return_value = {}
         mock_user = create_mock_user("1")
 
@@ -74,8 +88,10 @@ class TestPersistentQueryKeywordListGet(SimpleTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @patch.object(PersistentQueryKeyword, "get_all")
+    @patch.object(PersistentQueryKeyword, "get_all_by_user")
     def test_superuser_returns_http_200(self, get_all):
+        """test_superuser_returns_http_200"""
+
         get_all.return_value = {}
         mock_user = create_mock_user("1", is_staff=True, is_superuser=True)
 
@@ -88,7 +104,11 @@ class TestPersistentQueryKeywordListGet(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordListPost(SimpleTestCase):
+    """Test Persistent Query Keyword List Post"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_post(
             persistent_query_keyword_views.AdminPersistentQueryKeywordList.as_view(),
             AnonymousUser(),
@@ -105,6 +125,8 @@ class TestPersistentQueryKeywordListPost(SimpleTestCase):
         persistent_query_keyword_serializer_save,
         persistent_query_keyword_serializer_is_valid,
     ):
+        """test_authenticated_returns_http_201"""
+
         persistent_query_keyword_serializer_is_valid.return_value = True
         persistent_query_keyword_serializer_save.return_value = None
         persistent_query_keyword_serializer_data.return_value = {}
@@ -126,6 +148,8 @@ class TestPersistentQueryKeywordListPost(SimpleTestCase):
         persistent_query_keyword_serializer_save,
         persistent_query_keyword_serializer_is_valid,
     ):
+        """test_superuser_returns_http_201"""
+
         persistent_query_keyword_serializer_is_valid.return_value = True
         persistent_query_keyword_serializer_save.return_value = None
         persistent_query_keyword_serializer_data.return_value = {}
@@ -141,7 +165,11 @@ class TestPersistentQueryKeywordListPost(SimpleTestCase):
 
 
 class TestAdminPersistentQueryKeywordListPost(SimpleTestCase):
+    """Test Admin Persistent Query Keyword List Post"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_post(
             persistent_query_keyword_views.AdminPersistentQueryKeywordList.as_view(),
             AnonymousUser(),
@@ -150,6 +178,8 @@ class TestAdminPersistentQueryKeywordListPost(SimpleTestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_authenticated_returns_http_403(self):
+        """test_authenticated_returns_http_403"""
+
         mock_user = create_mock_user("1")
 
         response = RequestMock.do_request_post(
@@ -168,6 +198,8 @@ class TestAdminPersistentQueryKeywordListPost(SimpleTestCase):
         persistent_query_keyword_serializer_save,
         persistent_query_keyword_serializer_is_valid,
     ):
+        """test_superuser_returns_http_201"""
+
         persistent_query_keyword_serializer_is_valid.return_value = True
         persistent_query_keyword_serializer_save.return_value = None
         persistent_query_keyword_serializer_data.return_value = {}
@@ -183,6 +215,8 @@ class TestAdminPersistentQueryKeywordListPost(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordDetailGet(SimpleTestCase):
+    """Test Persistent Query Keyword Detail Get"""
+
     @patch.object(persistent_query_keyword_api, "get_by_id")
     @patch.object(PersistentQueryKeywordSerializer, "data")
     def test_anonymous_returns_http_403(
@@ -190,6 +224,8 @@ class TestPersistentQueryKeywordDetailGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_id,
     ):
+        """test_anonymous_returns_http_403"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_id.return_value = None
         response = RequestMock.do_request_get(
@@ -207,6 +243,8 @@ class TestPersistentQueryKeywordDetailGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_id,
     ):
+        """test_authenticated_returns_http_200"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_id.return_value = None
         mock_user = create_mock_user("1")
@@ -226,6 +264,8 @@ class TestPersistentQueryKeywordDetailGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_id,
     ):
+        """test_superuser_returns_http_200"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_id.return_value = None
         mock_user = create_mock_user("1", is_staff=True)
@@ -240,7 +280,11 @@ class TestPersistentQueryKeywordDetailGet(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordDetailPatch(SimpleTestCase):
+    """Test Persistent Query Keyword Detail Patch"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_patch(
             persistent_query_keyword_views.PersistentQueryKeywordDetail.as_view(),
             AnonymousUser(),
@@ -260,6 +304,8 @@ class TestPersistentQueryKeywordDetailPatch(SimpleTestCase):
         mock_persistent_query_keyword_is_valid,
         mock_persistent_query_keyword_api_get_by_id,
     ):
+        """test_authenticated_returns_http_200"""
+
         mock_persistent_query_keyword_data.return_value = {}
         mock_persistent_query_keyword_save.return_value = None
         mock_persistent_query_keyword_is_valid.return_value = True
@@ -285,6 +331,8 @@ class TestPersistentQueryKeywordDetailPatch(SimpleTestCase):
         mock_persistent_query_keyword_is_valid,
         mock_persistent_query_keyword_api_get_by_id,
     ):
+        """test_superuser_returns_http_200"""
+
         mock_persistent_query_keyword_data.return_value = {}
         mock_persistent_query_keyword_save.return_value = None
         mock_persistent_query_keyword_is_valid.return_value = True
@@ -301,7 +349,11 @@ class TestPersistentQueryKeywordDetailPatch(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
+    """Test Persistent Query Keyword Detail Delete"""
+
     def test_anonymous_returns_http_403(self):
+        """test_anonymous_returns_http_403"""
+
         response = RequestMock.do_request_delete(
             persistent_query_keyword_views.PersistentQueryKeywordDetail.as_view(),
             AnonymousUser(),
@@ -315,6 +367,7 @@ class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
     def test_authenticated_returns_http_200(
         self, persistent_query_keyword_api_delete, persistent_query_keyword_get_by_id
     ):
+        """test_authenticated_returns_http_200"""
 
         persistent_query_keyword_api_delete.return_value = None
         persistent_query_keyword_get_by_id.return_value = None
@@ -333,6 +386,8 @@ class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
     def test_superuser_returns_http_200(
         self, persistent_query_keyword_api_delete, persistent_query_keyword_get_by_id
     ):
+        """test_superuser_returns_http_200"""
+
         persistent_query_keyword_api_delete.return_value = None
         persistent_query_keyword_get_by_id.return_value = None
         mock_user = create_mock_user("1", is_staff=True)
@@ -347,6 +402,8 @@ class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
 
 
 class TestPersistentQueryKeywordByNameGet(SimpleTestCase):
+    """Test Persistent Query Keyword By Name Get"""
+
     @patch.object(persistent_query_keyword_api, "get_by_name")
     @patch.object(PersistentQueryKeywordSerializer, "data")
     def test_anonymous_returns_http_403(
@@ -354,6 +411,8 @@ class TestPersistentQueryKeywordByNameGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_name,
     ):
+        """test_anonymous_returns_http_403"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_name.return_value = None
         response = RequestMock.do_request_get(
@@ -371,6 +430,8 @@ class TestPersistentQueryKeywordByNameGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_name,
     ):
+        """test_authenticated_returns_http_200"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_name.return_value = None
         mock_user = create_mock_user("1")
@@ -390,6 +451,8 @@ class TestPersistentQueryKeywordByNameGet(SimpleTestCase):
         mock_persistent_query_keyword_serializer_data,
         mock_persistent_query_keyword_api_get_by_name,
     ):
+        """test_superuser_returns_http_200"""
+
         mock_persistent_query_keyword_serializer_data.return_value = {}
         mock_persistent_query_keyword_api_get_by_name.return_value = None
         mock_user = create_mock_user("1", is_staff=True)

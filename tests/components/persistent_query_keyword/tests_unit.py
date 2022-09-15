@@ -1,7 +1,12 @@
 """ Unit tests for PersistentQueryKeyword.
 """
 from unittest import TestCase, mock
+
 from mock import patch
+
+from core_main_app.access_control.exceptions import AccessControlError
+from core_main_app.commons import exceptions
+from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_explore_keyword_app.components.persistent_query_keyword import (
     api as persistent_query_keyword_api,
 )
@@ -9,16 +14,16 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
     PersistentQueryKeyword,
 )
 from core_explore_keyword_app.views.user import views as keyword_search_views
-from core_main_app.commons import exceptions
-from core_main_app.utils.tests_tools.MockUser import create_mock_user
-from core_main_app.access_control.exceptions import AccessControlError
 
 
 class TestPersistentQueryKeywordGetById(TestCase):
+    """Test Persistent Query Keyword Get By Id"""
+
     @patch.object(PersistentQueryKeyword, "get_by_id")
     def test_persistent_query_keyword_get_by_id_return_data_if_found(
         self, mock_get_by_id
     ):
+        """test_persistent_query_keyword_get_by_id_return_data_if_found"""
 
         # Arrange
         expected_result = PersistentQueryKeyword(user_id="1")
@@ -32,6 +37,7 @@ class TestPersistentQueryKeywordGetById(TestCase):
         )
 
     def test_persistent_query_keyword_get_by_id_raises_model_error_if_not_found(self):
+        """test_persistent_query_keyword_get_by_id_raises_model_error_if_not_found"""
 
         # Arrange
         mock_user = create_mock_user("1")
@@ -44,6 +50,7 @@ class TestPersistentQueryKeywordGetById(TestCase):
     def test_persistent_query_keyword_get_by_id_raises_does_not_exist_error_if_not_found(
         self, mock_get_by_id
     ):
+        """test_persistent_query_keyword_get_by_id_raises_does_not_exist_error_if_not_found"""
 
         # Arrange
         mock_get_by_id.side_effect = exceptions.DoesNotExist(message="mock error")
@@ -55,10 +62,14 @@ class TestPersistentQueryKeywordGetById(TestCase):
 
 
 class TestsPersistentQueryKeywordGetByName(TestCase):
+    """Tests Persistent Query Keyword Get By Name"""
+
     @mock.patch.object(PersistentQueryKeyword, "get_by_name")
     def test_persistent_query_keyword_get_by_name_return_data_if_found(
         self, mock_get_by_name
     ):
+        """test_persistent_query_keyword_get_by_name_return_data_if_found"""
+
         # Arrange
         expected_result = PersistentQueryKeyword(user_id="1")
         mock_get_by_name.return_value = expected_result
@@ -74,6 +85,7 @@ class TestsPersistentQueryKeywordGetByName(TestCase):
     def test_persistent_query_keyword_get_by_name_raises_does_not_exist_error_if_not_found(
         self, mock_get_by_name
     ):
+        """test_persistent_query_keyword_get_by_name_raises_does_not_exist_error_if_not_found"""
 
         # Arrange
         mock_get_by_name.side_effect = exceptions.DoesNotExist(message="mock error")
@@ -85,17 +97,19 @@ class TestsPersistentQueryKeywordGetByName(TestCase):
 
 
 class TestsPersistentQueryKeywordUpsert(TestCase):
+    """Tests Persistent Query Keyword Upsert"""
+
     def setUp(self) -> None:
         self.mock_persistent_query_keyword = PersistentQueryKeyword(
             user_id="1",
             name="mock_keyword",
             content={"content_test"},
-            templates=["5ea99316d26ebc48e475c60a"],
             data_sources=[],
         )
 
     @patch.object(PersistentQueryKeyword, "save")
     def test_persistent_query_keyword_upsert_return_data(self, mock_save):
+        """test_persistent_query_keyword_upsert_return_data"""
 
         # Arrange
         mock_save.return_value = self.mock_persistent_query_keyword
@@ -111,8 +125,11 @@ class TestsPersistentQueryKeywordUpsert(TestCase):
 
 
 class TestsPersistentQueryKeywordDelete(TestCase):
+    """Tests Persistent Query Keyword Delete"""
+
     @patch.object(PersistentQueryKeyword, "delete")
     def test_returns_no_error(self, mock_delete):
+        """test_returns_no_error"""
 
         # Arrange
         mock_delete.return_value = None
@@ -128,13 +145,16 @@ class TestsPersistentQueryKeywordDelete(TestCase):
 
 
 class TestsPersistentQueryKeywordGetAll(TestCase):
+    """Tests Persistent Query Keyword Get All"""
+
     @patch.object(PersistentQueryKeyword, "get_all")
     def test_returns_no_error(self, mock_get_all):
+        """test_returns_no_error"""
 
         # Arrange
         expected_result = {
-            PersistentQueryKeyword(user_id="1"),
-            PersistentQueryKeyword(user_id="2"),
+            PersistentQueryKeyword(id=1, user_id="1"),
+            PersistentQueryKeyword(id=2, user_id="2"),
         }
         mock_get_all.return_value = expected_result
 
@@ -149,6 +169,7 @@ class TestsPersistentQueryKeywordGetAll(TestCase):
     def test_persistent_query_keyword_get_all_raises_does_not_access_control_error_if_not_admin(
         self, mock_get_all
     ):
+        """test_persistent_query_keyword_get_all_raises_does_not_access_control_error_if_not_admin"""
 
         # Arrange
         mock_get_all.side_effect = AccessControlError
@@ -160,13 +181,16 @@ class TestsPersistentQueryKeywordGetAll(TestCase):
 
 
 class TestsPersistentQueryKeywordGetAllByUser(TestCase):
+    """Tests Persistent Query Keyword Get All By User"""
+
     @patch.object(PersistentQueryKeyword, "get_all_by_user")
     def test_returns_no_error(self, mock_get_all_by_user):
+        """test_returns_no_error"""
 
         # Arrange
         expected_result = {
-            PersistentQueryKeyword(user_id="1"),
-            PersistentQueryKeyword(user_id="1"),
+            PersistentQueryKeyword(id=1, user_id="1"),
+            PersistentQueryKeyword(id=2, user_id="1"),
         }
         mock_get_all_by_user.return_value = expected_result
 
@@ -179,7 +203,11 @@ class TestsPersistentQueryKeywordGetAllByUser(TestCase):
 
 
 class TestKeywordSearch(TestCase):
+    """Test Keyword Search"""
+
     def test_build_query_content_with_simple_keywords(self):
+        """test_build_query_content_with_simple_keywords"""
+
         # set query
         initial_keyword_list = ["FirstTest", "SecondTest"]
 
@@ -194,6 +222,8 @@ class TestKeywordSearch(TestCase):
         )
 
     def test_build_query_content_with_hyphens(self):
+        """test_build_query_content_with_hyphens"""
+
         # set query
         initial_keyword_list = ["test-hyphens", "more-hyphen-keyword"]
 
@@ -209,6 +239,8 @@ class TestKeywordSearch(TestCase):
         )
 
     def test_build_query_content_with_hyphens_and_numbers(self):
+        """test_build_query_content_with_hyphens_and_numbers"""
+
         # set query
         initial_keyword_list = [
             "test-hyphens_number-123",
@@ -227,6 +259,8 @@ class TestKeywordSearch(TestCase):
         )
 
     def test_build_query_content_with_blank(self):
+        """test_build_query_content_with_blank"""
+
         # set query
         initial_keyword_list = ['"blank between keywords"']
 
@@ -241,6 +275,8 @@ class TestKeywordSearch(TestCase):
         )
 
     def test_build_query_content_with_blank_and_hyphens(self):
+        """test_build_query_content_with_blank_and_hyphens"""
+
         # set query
         initial_keyword_list = [
             '"blank and-hyphens-between keywords"',
@@ -260,6 +296,8 @@ class TestKeywordSearch(TestCase):
         )
 
     def test_parse_simple_query_content(self):
+        """test_parse_simple_query_content"""
+
         # set query
         query_content = '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
 
@@ -272,6 +310,8 @@ class TestKeywordSearch(TestCase):
         self.assertEqual(keyword_list, "FirstTest,SecondTest")
 
     def test_parse_query_content_with_hyphens(self):
+        """test_parse_query_content_with_hyphens"""
+
         # set query
         query_content = (
             '{"$text": {"$search": "\\"first-hyphen\\" \\"more-hyphen-keywords\\""}}'
@@ -286,6 +326,8 @@ class TestKeywordSearch(TestCase):
         self.assertEqual(keyword_list, "first-hyphen,more-hyphen-keywords")
 
     def test_parse_query_content_with_hyphens_and_numbers(self):
+        """test_parse_query_content_with_hyphens_and_numbers"""
+
         # set query
         query_content = '{"$text": {"$search": "\\"number-123\\" \\"more-numbers-456\\" \\"last-number-6\\""}}'
 
@@ -298,6 +340,8 @@ class TestKeywordSearch(TestCase):
         self.assertEqual(keyword_list, "number-123,more-numbers-456,last-number-6")
 
     def test_parse_query_content_with_blank(self):
+        """test_parse_query_content_with_blank"""
+
         # set query
         query_content = '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
 
@@ -310,6 +354,8 @@ class TestKeywordSearch(TestCase):
         self.assertEqual(keyword_list, "blank between keywords")
 
     def test_parse_query_content_with_blank_and_hyphens(self):
+        """test_parse_query_content_with_blank_and_hyphens"""
+
         # set query
         query_content = (
             '{"$text": {"$search": "\\"\\"blank and-hyphens-between keywords\\"\\" '

@@ -3,11 +3,11 @@
 from django.urls import re_path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from core_explore_keyword_app.rest.search_operators import (
-    views as search_operator_views,
-)
 from core_explore_keyword_app.rest.persistent_query_keyword import (
     views as persistent_query_keyword_views,
+)
+from core_explore_keyword_app.rest.search_operators import (
+    views as search_operator_views,
 )
 
 urlpatterns = [

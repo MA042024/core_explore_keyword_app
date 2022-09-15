@@ -26,7 +26,7 @@ class KeywordForm(forms.Form):
     def __init__(self, *args, **kwargs):
         """Init Keyword form"""
         request = kwargs.pop("request")
-        super(KeywordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # initialize template filters
         global_templates = [

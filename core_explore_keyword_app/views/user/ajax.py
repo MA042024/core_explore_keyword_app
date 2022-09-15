@@ -4,24 +4,26 @@ import json
 import logging
 import re
 
-from django.urls import reverse_lazy
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
-import core_main_app.utils.decorators as decorators
+from core_main_app.components.template import api as template_api
+from core_main_app.utils.databases.mongo.pymongo_database import get_full_text_query
+import core_main_app.components.template_version_manager.api as template_version_manager_api
+from core_main_app.utils import decorators
+
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.constants import LOCAL_QUERY_NAME
 from core_explore_common_app.utils.query.query import send, create_local_data_source
 from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
+from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
 from core_explore_keyword_app.forms import KeywordForm
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.pymongo_database import get_full_text_query
+
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
@@ -37,7 +39,7 @@ def _is_local_in_data_source(query):
     # If we find a data source that is local
     for data_source in query.data_sources:
         # find local data source
-        if data_source.name == LOCAL_QUERY_NAME:
+        if data_source["name"] == LOCAL_QUERY_NAME:
             return True
     return False
 
@@ -55,10 +57,12 @@ def check_data_source(query):
 
 
 class SuggestionsKeywordSearchView(View):
+    """Suggestions Keyword Search View"""
+
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -88,7 +92,7 @@ class SuggestionsKeywordSearchView(View):
                 template_version_manager_ids = global_templates + user_templates
 
                 # from ids, get all version manager
-                version_manager_list = version_manager_api.get_by_id_list(
+                version_manager_list = template_version_manager_api.get_by_id_list(
                     template_version_manager_ids, request=request
                 )
 
@@ -118,8 +122,10 @@ class SuggestionsKeywordSearchView(View):
                                 dict_results, keywords, suggestions
                             )
 
-            except Exception as e:
-                logger.error("Exception while generating suggestions: " + str(e))
+            except Exception as exception:
+                logger.error(
+                    "Exception while generating suggestions: " + str(exception)
+                )
 
         return HttpResponse(
             json.dumps({"suggestions": suggestions}),
@@ -138,8 +144,8 @@ class SuggestionsKeywordSearchView(View):
         """
 
         # update query
-        query.templates = template_api.get_all_accessible_by_id_list(
-            template_ids, request=request
+        query.templates.set(
+            template_api.get_all_accessible_by_id_list(template_ids, request=request)
         )
         # TODO: improve query to get better results
         query.content = json.dumps(get_full_text_query(keywords))
@@ -189,6 +195,5 @@ class CreatePersistentQueryUrlKeywordView(CreatePersistentQueryUrlView):
         return PersistentQueryKeyword(
             user_id=query.user_id,
             content=query.content,
-            templates=query.templates,
             data_sources=query.data_sources,
         )

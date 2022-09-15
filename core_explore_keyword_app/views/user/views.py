@@ -7,13 +7,15 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 
-import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
-import core_explore_keyword_app.permissions.rights as rights
-import core_main_app.components.version_manager.api as version_manager_api
-import core_main_app.utils.decorators as decorators
+from core_main_app.commons.exceptions import DoesNotExist, ApiError
+from core_main_app.components.template import api as template_api
+from core_main_app.settings import DATA_SORTING_FIELDS
+from core_main_app.utils.rendering import render
+import core_main_app.components.template_version_manager.api as template_version_manager_api
+from core_main_app.utils import decorators
+
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
-from core_explore_common_app.utils.query.query import create_default_query
 from core_explore_common_app.views.user.views import (
     ResultQueryRedirectView,
     ResultsView,
@@ -21,25 +23,25 @@ from core_explore_common_app.views.user.views import (
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
+import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
+from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.settings import EXPLORE_KEYWORD_APP_EXTRAS
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
 )
-from core_main_app.commons.exceptions import DoesNotExist, ApiError
-from core_main_app.components.template import api as template_api
-from core_main_app.settings import DATA_SORTING_FIELDS
-from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(ResultsView):
+    """Keyword Search View"""
+
     query_builder_interface = "core_explore_keyword_app/user/search_bar.html"
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -68,8 +70,8 @@ class KeywordSearchView(ResultsView):
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
@@ -149,9 +151,7 @@ class KeywordSearchView(ResultsView):
             default_order = ",".join(DATA_SORTING_FIELDS)
             if query_id is None:
                 # create query
-                query = create_default_query(request, [])
-                # upsert the query
-                query_api.upsert(query, request.user)
+                query = query_api.create_default_query(request, [])
                 # create keyword form
                 # create all data for select values in forms
                 keywords_data_form = {
@@ -168,14 +168,8 @@ class KeywordSearchView(ResultsView):
 
                 # get all version managers
                 version_managers = []
-                for template in query.templates:
-                    version_managers.append(
-                        str(
-                            version_manager_api.get_from_version(
-                                template, request=request
-                            ).id
-                        )
-                    )
+                for template in query.templates.all():
+                    version_managers.append(str(template.version_manager.id))
                 # create all data for select values in forms
                 keywords_data_form = {
                     "query_id": str(query.id),
@@ -189,9 +183,9 @@ class KeywordSearchView(ResultsView):
                 if keywords_data_form["order_by_field"] != 0:
                     default_order = keywords_data_form["order_by_field"]
 
-        except Exception as e:
+        except Exception as exception:
             error = "An unexpected error occurred while loading the query: {}.".format(
-                str(e)
+                str(exception)
             )
             return {"error": error}
 
@@ -228,7 +222,7 @@ class KeywordSearchView(ResultsView):
                 # get all template version manager ids
                 template_version_manager_ids = global_templates + user_templates
                 # from ids, get all version manager
-                version_manager_list = version_manager_api.get_by_id_list(
+                version_manager_list = template_version_manager_api.get_by_id_list(
                     template_version_manager_ids, request=request
                 )
                 # from all version manager, build a list of all version (template)
@@ -243,8 +237,10 @@ class KeywordSearchView(ResultsView):
                         warning = "Please select at least 1 data source."
                     else:
                         # update query
-                        query.templates = template_api.get_all_accessible_by_id_list(
-                            template_ids, request=request
+                        query.templates.set(
+                            template_api.get_all_accessible_by_id_list(
+                                template_ids, request=request
+                            )
                         )
                         keywords_list = keywords.split(",") if keywords else []
                         query.content = self._build_query(keywords_list)
@@ -256,17 +252,15 @@ class KeywordSearchView(ResultsView):
                             if data_sources_index in range(
                                 0, len(order_by_field_array)
                             ):
-                                query.data_sources[
-                                    data_sources_index
-                                ].order_by_field = order_by_field_array[
-                                    data_sources_index
-                                ]
+                                query.data_sources[data_sources_index][
+                                    "order_by_field"
+                                ] = order_by_field_array[data_sources_index]
 
                         query_api.upsert(query, request.user)
             except DoesNotExist:
                 error = "An unexpected error occurred while retrieving the query."
-            except Exception as e:
-                error = "An unexpected error occurred: {}.".format(str(e))
+            except Exception as exception:
+                error = "An unexpected error occurred: {}.".format(str(exception))
         else:
             error = "An unexpected error occurred: the form is not valid."
 
@@ -311,10 +305,11 @@ class KeywordSearchView(ResultsView):
         # If the query is empty, match all documents
         if len(main_query) == 0:
             return json.dumps({})
-        elif len(main_query) == 1:  # If there is one query item, match one this item.
+        if len(main_query) == 1:  # If there is one query item, match one this item.
             return json.dumps(main_query[0])
-        else:  # For multiple items, a "$and" query is needed.
-            return json.dumps({"$and": main_query})
+
+        # For multiple items, a "$and" query is needed.
+        return json.dumps({"$and": main_query})
 
     def _load_assets(self):
         """Return assets structure
@@ -403,21 +398,21 @@ class KeywordSearchView(ResultsView):
 
 
 class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
+    """Result Query Redirect Keyword View"""
+
     model_name = PersistentQueryKeyword.__name__
     object_name = "persistent_query_keyword"
     redirect_url = "core_explore_keyword_app_search"
 
     @method_decorator(
         decorators.permission_required(
-            content_type=rights.explore_keyword_content_type,
-            permission=rights.explore_keyword_access,
+            content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
+            permission=rights.EXPLORE_KEYWORD_ACCESS,
             login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def get(self, request, *args, **kwargs):
-        return super(ResultQueryRedirectKeywordView, self).get(
-            self, request, *args, **kwargs
-        )
+        return super().get(self, request, *args, **kwargs)
 
     @staticmethod
     def _get_persistent_query_by_id(persistent_query_id, user):

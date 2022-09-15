@@ -1,40 +1,26 @@
 """ Search Operator model
 """
-import re
-from django_mongoengine import fields, Document
-from mongoengine import errors as mongoengine_errors
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
+from django.db import models
+
 from core_main_app.commons import exceptions
-from core_main_app.utils.xml import validate_xpath
+from core_main_app.commons.exceptions import ModelError
+from core_main_app.utils.validation.regex_validation import validate_alphanum
+from core_main_app.utils.validation.xpath_validation import validate_xpath_list
 
 
-def validate_xpath_list(xpath_list):
-    item_position = 0
-
-    for xpath in xpath_list:
-        try:
-            validate_xpath(xpath)
-            item_position += 1
-        except exceptions.XMLError as e:
-            raise mongoengine_errors.ValidationError(
-                "XPath syntax error (item #%d): %s" % (item_position, str(e))
-            )
-
-
-def validate_name(name):
-    if re.match(r"^[a-zA-Z][a-zA-Z0-9]+$", name) is None:
-        raise mongoengine_errors.ValidationError(
-            "Name should only contains alpha-numerical characters."
-        )
-
-
-class SearchOperator(Document):
+class SearchOperator(models.Model):
     """Search Operator model"""
 
-    name = fields.StringField(blank=False, unique=True, validation=validate_name)
-    xpath_list = fields.ListField(
-        blank=False, unique=True, validation=validate_xpath_list
+    name = models.CharField(
+        blank=False, unique=True, validators=[validate_alphanum], max_length=200
     )
-    dot_notation_list = fields.ListField(blank=False, unique=True)
+    xpath_list = models.JSONField(
+        blank=False, unique=True, validators=[validate_xpath_list]
+    )
+    dot_notation_list = models.JSONField(blank=False, unique=True)
 
     @staticmethod
     def get_all():
@@ -42,7 +28,7 @@ class SearchOperator(Document):
 
         Returns:
         """
-        return SearchOperator.objects().all()
+        return SearchOperator.objects.all()
 
     @staticmethod
     def get_by_id(operator_id):
@@ -55,9 +41,9 @@ class SearchOperator(Document):
         """
         try:
             return SearchOperator.objects.get(pk=operator_id)
-        except mongoengine_errors.ValidationError as validation_error:
+        except ModelError as validation_error:
             raise exceptions.ModelError(str(validation_error))
-        except mongoengine_errors.DoesNotExist as does_not_exist:
+        except ObjectDoesNotExist as does_not_exist:
             raise exceptions.DoesNotExist(str(does_not_exist))
 
     @staticmethod
@@ -71,7 +57,7 @@ class SearchOperator(Document):
         """
         try:
             return SearchOperator.objects.get(name=operator_name)
-        except mongoengine_errors.DoesNotExist as does_not_exist:
+        except ObjectDoesNotExist as does_not_exist:
             raise exceptions.DoesNotExist(str(does_not_exist))
 
     @staticmethod
@@ -87,8 +73,22 @@ class SearchOperator(Document):
             return SearchOperator.objects.get(
                 dot_notation_list=operator_dot_notation_list
             )
-        except mongoengine_errors.DoesNotExist as does_not_exist:
+        except ObjectDoesNotExist as does_not_exist:
             raise exceptions.DoesNotExist(str(does_not_exist))
+
+    @staticmethod
+    def get_all_xpath_list_except_xpath(operator_id):
+        """Retrieve all xpath
+
+        Args:
+
+        Returns:
+        """
+        return (
+            SearchOperator.objects.exclude(id=operator_id)
+            .all()
+            .values_list("xpath_list", flat=True)
+        )
 
     def save_object(self):
         """Upsert a search operator and handle possible issues.
@@ -98,7 +98,15 @@ class SearchOperator(Document):
         """
         try:
             return self.save()
-        except mongoengine_errors.NotUniqueError as not_unique_error:
+        except IntegrityError as not_unique_error:
             raise exceptions.NotUniqueError(str(not_unique_error))
         except Exception as exception:
             raise exceptions.ModelError(str(exception))
+
+    def __str__(self):
+        """Search Operator object as string
+
+        Returns:
+
+        """
+        return self.name

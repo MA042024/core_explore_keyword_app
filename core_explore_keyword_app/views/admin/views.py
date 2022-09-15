@@ -2,14 +2,16 @@
 """
 from django.views.generic import View
 
+from core_main_app.utils.rendering import admin_render
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
 from core_explore_keyword_app.views.admin.forms import SearchOperatorForm
-from core_main_app.utils.rendering import admin_render
 
 
 class ListSearchOperatorsView(View):
+    """List Search Operators View"""
+
     def get(self, request):
         """View to assign search operators to template
 
@@ -23,6 +25,10 @@ class ListSearchOperatorsView(View):
 
         assets = {
             "js": [
+                {
+                    "path": "core_explore_keyword_app/admin/js/search_operators.js",
+                    "is_raw": False,
+                },
                 {
                     "path": "core_explore_keyword_app/admin/js/search_ops_manager.js",
                     "is_raw": False,
@@ -55,8 +61,10 @@ class ListSearchOperatorsView(View):
                 assets=assets,
                 context=context,
             )
-        except Exception as e:
-            context.update({"error": "Unable to load the page: %s." % str(e).lower()})
+        except Exception as exception:
+            context.update(
+                {"error": "Unable to load the page: %s." % str(exception).lower()}
+            )
 
             return admin_render(
                 request,

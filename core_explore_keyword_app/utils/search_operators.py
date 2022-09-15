@@ -2,15 +2,16 @@
 """
 import logging
 
+from core_main_app.commons.exceptions import ApiError
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_main_app.commons.exceptions import ApiError
 
 LOGGER = logging.getLogger(__name__)
 
 
 def build_search_operator_query(search_operator_name, value):
+    """build_search_operator_query"""
     search_operator = search_operator_api.get_by_name(search_operator_name)
     search_operator_list = [
         {search_operator_dot_notation: value}
@@ -27,6 +28,7 @@ def build_search_operator_query(search_operator_name, value):
 
 
 def get_keywords_from_search_operator_query(query):
+    """get_keywords_from_search_operator_query"""
     # Any query without $or does not contain keywords (since keyword and keyword.#text
     # are always part of the query, separated by $or).
     if "$or" not in query.keys():

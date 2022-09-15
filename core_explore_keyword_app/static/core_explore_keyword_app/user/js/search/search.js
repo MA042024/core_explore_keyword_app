@@ -2,7 +2,7 @@
  * Search
  */
 var SUBMIT_DELAY = 3000;
-var SORTING_SUBMIT_DELAY = 3000;
+var SORTING_SUBMIT_DELAY = 500;
 var timer;
 var cachedOperators;
 const SELECT_ALL_LABEL = "Select All";

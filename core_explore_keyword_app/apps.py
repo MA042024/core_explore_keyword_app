@@ -11,6 +11,7 @@ class ExploreKeywordAppConfig(AppConfig):
     """Core application settings"""
 
     name = "core_explore_keyword_app"
+    verbose_name = "Core Explore by Keyword App"
 
     def ready(self):
         """Run when the app is ready.

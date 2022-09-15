@@ -1,4 +1,3 @@
 Django
 django-simple-menu
-django-rest-framework-mongoengine
 djangorestframework

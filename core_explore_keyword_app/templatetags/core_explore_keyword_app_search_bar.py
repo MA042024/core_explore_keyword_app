@@ -3,12 +3,13 @@
 
 from django import template
 
+from core_main_app.access_control.exceptions import AccessControlError
+from core_main_app.settings import DATA_SORTING_FIELDS
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.components.query.models import Query
 from core_explore_common_app.views.user.ajax import add_local_data_source
 from core_explore_keyword_app.forms import KeywordForm
-from core_main_app.access_control.exceptions import AccessControlError
-from core_main_app.settings import DATA_SORTING_FIELDS
+
 
 register = template.Library()
 
@@ -28,7 +29,7 @@ def show_search_bar(context):
     request = context["request"]
     try:
         # create Query
-        query = Query(user_id=str(request.user.id), templates=[])
+        query = Query(user_id=str(request.user.id))
 
         # add local data source to the query
         add_local_data_source(request, query)

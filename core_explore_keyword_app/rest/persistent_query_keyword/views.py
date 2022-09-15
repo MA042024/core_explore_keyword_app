@@ -1,20 +1,20 @@
 """ REST views for the persistent query keyword.
 """
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
+from core_main_app.access_control.exceptions import AccessControlError
+from core_main_app.commons import exceptions
 
+import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 from core_explore_keyword_app.rest.persistent_query_keyword.serializers import (
     PersistentQueryKeywordSerializer,
     PersistentQueryKeywordAdminSerializer,
 )
-from core_main_app.commons import exceptions
-from mongoengine import NotUniqueError
-from core_main_app.access_control.exceptions import AccessControlError
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 
 class AdminPersistentQueryKeywordList(APIView):
@@ -217,8 +217,8 @@ class PersistentQueryKeywordDetail(APIView):
 
             # Return response
             return Response(serializer.data)
-        except AccessControlError as e:
-            content = {"message": str(e)}
+        except AccessControlError as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_403_FORBIDDEN)
         except exceptions.DoesNotExist:
             content = {"message": "Persistent query keyword not found."}
@@ -275,14 +275,14 @@ class PersistentQueryKeywordDetail(APIView):
         except ValidationError as validation_exception:
             content = {"message": validation_exception.detail}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except AccessControlError as e:
-            content = {"message": str(e)}
+        except AccessControlError as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_403_FORBIDDEN)
         except exceptions.DoesNotExist:
             content = {"message": "Persistent query keyword not found."}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
-        except NotUniqueError as e:
-            content = {"message": str(e)}
+        except IntegrityError as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
@@ -316,8 +316,8 @@ class PersistentQueryKeywordDetail(APIView):
 
             # Return response
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except AccessControlError as e:
-            content = {"message": str(e)}
+        except AccessControlError as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_403_FORBIDDEN)
         except exceptions.DoesNotExist:
             content = {"message": "Persistent query keyword not found."}
@@ -355,8 +355,8 @@ class PersistentQueryKeywordByName(APIView):
 
             # Return response
             return Response(serializer.data)
-        except AccessControlError as e:
-            content = {"message": str(e)}
+        except AccessControlError as exception:
+            content = {"message": str(exception)}
             return Response(content, status=status.HTTP_403_FORBIDDEN)
         except exceptions.DoesNotExist:
             content = {"message": "Persistent query keyword not found."}
