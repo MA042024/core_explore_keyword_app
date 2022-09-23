@@ -56,7 +56,7 @@ def show_search_bar(context):
         }
     except AccessControlError as ace:
         context = {"data": {"error": str(ace)}}
-    except:
+    except Exception:
         context = {"data": {"error": "An unexpected error occurred"}}
 
     return template.RequestContext(request, context)

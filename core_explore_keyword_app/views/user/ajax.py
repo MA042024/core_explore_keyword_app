@@ -165,22 +165,22 @@ class SuggestionsKeywordSearchView(View):
         """
         results = dict_results["results"]
         # Prepare keywords
-        wordList = re.sub("[^\w]", " ", keywords).split()
-        wordList = [x + "|" + x + "\w+" for x in wordList]
-        wordList = "|".join(wordList)
+        word_list = re.sub(r"[^\w]", " ", keywords).split()
+        word_list = [x + "|" + x + r"\w+" for x in word_list]
+        word_list = "|".join(word_list)
         for result in results:
             # Extract suggestions from data
-            listWholeKeywords = re.findall(
-                "\\b(" + wordList + ")\\b", result["xml_content"], flags=re.IGNORECASE
+            list_whole_keywords = re.findall(
+                "\\b(" + word_list + ")\\b", result["xml_content"], flags=re.IGNORECASE
             )
-            labels = list(set(listWholeKeywords))
+            labels = list(set(list_whole_keywords))
 
             for label in labels:
                 label = label.lower()
-                result_json = {}
+                result_json = dict()
                 result_json["label"] = label
                 result_json["value"] = label
-                if not result_json in suggestions:
+                if result_json not in suggestions:
                     suggestions.append(result_json)
 
 
