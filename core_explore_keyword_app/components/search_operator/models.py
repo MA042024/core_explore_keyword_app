@@ -15,7 +15,10 @@ class SearchOperator(models.Model):
     """Search Operator model"""
 
     name = models.CharField(
-        blank=False, unique=True, validators=[validate_alphanum], max_length=200
+        blank=False,
+        unique=True,
+        validators=[validate_alphanum],
+        max_length=200,
     )
     xpath_list = models.JSONField(
         blank=False, unique=True, validators=[validate_xpath_list]

@@ -21,7 +21,9 @@ class KeywordForm(forms.Form):
     user_templates = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(), required=False
     )
-    order_by_field = forms.CharField(required=False, widget=forms.HiddenInput())
+    order_by_field = forms.CharField(
+        required=False, widget=forms.HiddenInput()
+    )
 
     def __init__(self, *args, **kwargs):
         """Init Keyword form"""

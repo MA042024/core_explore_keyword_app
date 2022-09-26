@@ -40,7 +40,9 @@ def get_keywords_from_search_operator_query(query):
                 if not isinstance(sub_query[key], str):
                     return None
 
-    dot_notation_list = [list(query_item.keys())[0] for query_item in query["$or"]]
+    dot_notation_list = [
+        list(query_item.keys())[0] for query_item in query["$or"]
+    ]
     dot_notation_list = [
         dot_notation_item
         for dot_notation_item in dot_notation_list
@@ -50,9 +52,13 @@ def get_keywords_from_search_operator_query(query):
 
     try:
         return "%s:%s" % (
-            search_operator_api.get_by_dot_notation_list(dot_notation_list).name,
+            search_operator_api.get_by_dot_notation_list(
+                dot_notation_list
+            ).name,
             value,
         )
     except ApiError as api_error:
-        LOGGER.info("API error for query: %s (%s)" % (str(query), str(api_error)))
+        LOGGER.info(
+            "API error for query: %s (%s)" % (str(query), str(api_error))
+        )
         return None

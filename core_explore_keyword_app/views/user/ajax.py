@@ -10,14 +10,21 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.mongo.pymongo_database import get_full_text_query
+from core_main_app.utils.databases.mongo.pymongo_database import (
+    get_full_text_query,
+)
 import core_main_app.components.template_version_manager.api as template_version_manager_api
 from core_main_app.utils import decorators
 
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.constants import LOCAL_QUERY_NAME
-from core_explore_common_app.utils.query.query import send, create_local_data_source
-from core_explore_common_app.views.user.ajax import CreatePersistentQueryUrlView
+from core_explore_common_app.utils.query.query import (
+    send,
+    create_local_data_source,
+)
+from core_explore_common_app.views.user.ajax import (
+    CreatePersistentQueryUrlView,
+)
 from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
@@ -85,20 +92,33 @@ class SuggestionsKeywordSearchView(View):
             try:
                 # get form values
                 query_id = search_form.cleaned_data.get("query_id", None)
-                global_templates = search_form.cleaned_data.get("global_templates", [])
-                user_templates = search_form.cleaned_data.get("user_templates", [])
+                global_templates = search_form.cleaned_data.get(
+                    "global_templates", []
+                )
+                user_templates = search_form.cleaned_data.get(
+                    "user_templates", []
+                )
 
                 # get all template version manager ids
-                template_version_manager_ids = global_templates + user_templates
+                template_version_manager_ids = (
+                    global_templates + user_templates
+                )
 
                 # from ids, get all version manager
-                version_manager_list = template_version_manager_api.get_by_id_list(
-                    template_version_manager_ids, request=request
+                version_manager_list = (
+                    template_version_manager_api.get_by_id_list(
+                        template_version_manager_ids, request=request
+                    )
                 )
 
                 # from all version manager, build a list of all version (template)
                 template_ids = []
-                list([template_ids.extend(x.versions) for x in version_manager_list])
+                list(
+                    [
+                        template_ids.extend(x.versions)
+                        for x in version_manager_list
+                    ]
+                )
 
                 if query_id is not None and keywords is not None:
                     # get query
@@ -145,7 +165,9 @@ class SuggestionsKeywordSearchView(View):
 
         # update query
         query.templates.set(
-            template_api.get_all_accessible_by_id_list(template_ids, request=request)
+            template_api.get_all_accessible_by_id_list(
+                template_ids, request=request
+            )
         )
         # TODO: improve query to get better results
         query.content = json.dumps(get_full_text_query(keywords))
@@ -153,7 +175,9 @@ class SuggestionsKeywordSearchView(View):
         query.data_sources = [create_local_data_source(request)]
         return query
 
-    def _extract_suggestion_from_results(self, dict_results, keywords, suggestions):
+    def _extract_suggestion_from_results(
+        self, dict_results, keywords, suggestions
+    ):
         """Extract suggestion from
 
         Args:
@@ -171,7 +195,9 @@ class SuggestionsKeywordSearchView(View):
         for result in results:
             # Extract suggestions from data
             list_whole_keywords = re.findall(
-                "\\b(" + word_list + ")\\b", result["xml_content"], flags=re.IGNORECASE
+                "\\b(" + word_list + ")\\b",
+                result["xml_content"],
+                flags=re.IGNORECASE,
             )
             labels = list(set(list_whole_keywords))
 

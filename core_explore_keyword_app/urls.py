@@ -3,7 +3,10 @@
 
 from django.urls import re_path, include
 
-from core_explore_keyword_app.views.user import views as user_views, ajax as user_ajax
+from core_explore_keyword_app.views.user import (
+    views as user_views,
+    ajax as user_ajax,
+)
 from core_explore_keyword_app.views.admin import ajax as admin_ajax
 
 urlpatterns = [

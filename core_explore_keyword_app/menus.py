@@ -17,7 +17,8 @@ from core_explore_keyword_app.settings import EXPLORE_MENU_NAME
 
 # FIXME: CHECK AUTHENTICATION !
 Menu.add_item(
-    "main", MenuItem(EXPLORE_MENU_NAME, reverse("core_explore_keyword_app_search"))
+    "main",
+    MenuItem(EXPLORE_MENU_NAME, reverse("core_explore_keyword_app_search")),
 )
 
 explore_by_keyword_children = (
@@ -29,5 +30,6 @@ explore_by_keyword_children = (
 )
 
 Menu.add_item(
-    "admin", MenuItem("EXPLORE BY KEYWORD", None, children=explore_by_keyword_children)
+    "admin",
+    MenuItem("EXPLORE BY KEYWORD", None, children=explore_by_keyword_children),
 )

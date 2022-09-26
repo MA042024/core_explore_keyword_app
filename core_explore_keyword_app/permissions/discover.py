@@ -2,7 +2,9 @@
 """
 import logging
 
-from core_explore_keyword_app.permissions import rights as explore_keyword_rights
+from core_explore_keyword_app.permissions import (
+    rights as explore_keyword_rights,
+)
 from core_main_app.permissions import rights as main_rights
 
 logger = logging.getLogger(__name__)
@@ -32,5 +34,6 @@ def init_permissions(apps):
         default_group.permissions.add(explore_access_perm)
     except Exception as exception:
         logger.error(
-            "Impossible to init explore_keyword permissions: %s" % str(exception)
+            "Impossible to init explore_keyword permissions: %s"
+            % str(exception)
         )

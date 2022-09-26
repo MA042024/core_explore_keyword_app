@@ -15,7 +15,8 @@ register = template.Library()
 
 
 @register.inclusion_tag(
-    "core_explore_keyword_app/user/embedded_search_bar.html", takes_context=True
+    "core_explore_keyword_app/user/embedded_search_bar.html",
+    takes_context=True,
 )
 def show_search_bar(context):
     """Include the search bar in a template.

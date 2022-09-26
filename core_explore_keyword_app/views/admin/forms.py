@@ -5,7 +5,9 @@ from django.forms import ModelForm
 
 from core_main_app.commons import exceptions as core_main_app_exceptions
 from core_main_app.utils.xml import validate_xpath
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
@@ -49,7 +51,8 @@ class SearchOperatorForm(ModelForm):
                 validate_xpath(xpath)
             except core_main_app_exceptions.XMLError as exception:
                 raise forms.ValidationError(
-                    "XPath syntax error (line %d): %s" % (line_xpath, str(exception))
+                    "XPath syntax error (line %d): %s"
+                    % (line_xpath, str(exception))
                 )
 
         return self.cleaned_data["xpath_list"]
@@ -57,7 +60,8 @@ class SearchOperatorForm(ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.xpath_list = [
-            xpath.strip() for xpath in self.cleaned_data["xpath_list"].split("\n")
+            xpath.strip()
+            for xpath in self.cleaned_data["xpath_list"].split("\n")
         ]
         if commit:
             for xpath in instance.xpath_list:
@@ -68,6 +72,8 @@ class SearchOperatorForm(ModelForm):
                         instance
                     )
                 ):
-                    raise core_main_app_exceptions.ApiError("Xpath already exists")
+                    raise core_main_app_exceptions.ApiError(
+                        "Xpath already exists"
+                    )
             return search_operator_api.upsert(instance)
         return instance

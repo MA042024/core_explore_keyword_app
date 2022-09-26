@@ -6,7 +6,9 @@ from core_main_app.commons import exceptions
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 
 
 class TestsApiGetAll(TestCase):
@@ -32,13 +34,17 @@ class TestsApiGetById(TestCase):
         expected_result = "search_operator"
         mock_get_by_id.return_value = expected_result
 
-        self.assertEqual(search_operator_api.get_by_id("mock_id"), expected_result)
+        self.assertEqual(
+            search_operator_api.get_by_id("mock_id"), expected_result
+        )
 
     @mock.patch.object(SearchOperator, "get_by_id")
     def test_incorrect_id_raises_api_error(self, mock_get_by_id):
         """test_incorrect_id_raises_api_error"""
 
-        mock_get_by_id.side_effect = exceptions.ModelError(message="mock error")
+        mock_get_by_id.side_effect = exceptions.ModelError(
+            message="mock error"
+        )
 
         with self.assertRaises(exceptions.ApiError):
             search_operator_api.get_by_id("mock_id")
@@ -47,7 +53,9 @@ class TestsApiGetById(TestCase):
     def test_nonexistant_raises_api_error(self, mock_get_by_id):
         """test_nonexistant_raises_api_error"""
 
-        mock_get_by_id.side_effect = exceptions.DoesNotExist(message="mock error")
+        mock_get_by_id.side_effect = exceptions.DoesNotExist(
+            message="mock error"
+        )
 
         with self.assertRaises(exceptions.ApiError):
             search_operator_api.get_by_id("mock_id")
@@ -63,13 +71,17 @@ class TestsApiGetByName(TestCase):
         expected_result = "search_operator"
         mock_get_by_name.return_value = expected_result
 
-        self.assertEqual(search_operator_api.get_by_name("mock_name"), expected_result)
+        self.assertEqual(
+            search_operator_api.get_by_name("mock_name"), expected_result
+        )
 
     @mock.patch.object(SearchOperator, "get_by_name")
     def test_nonexistant_raises_api_error(self, mock_get_by_name):
         """test_nonexistant_raises_api_error"""
 
-        mock_get_by_name.side_effect = exceptions.DoesNotExist(message="mock error")
+        mock_get_by_name.side_effect = exceptions.DoesNotExist(
+            message="mock error"
+        )
 
         with self.assertRaises(exceptions.ApiError):
             search_operator_api.get_by_name("mock_name")
@@ -86,7 +98,9 @@ class TestsApiGetByDotNotationList(TestCase):
         mock_get_by_dot_notation_list.return_value = expected_result
 
         self.assertEqual(
-            search_operator_api.get_by_dot_notation_list(["dot_not_1", "dot_not_2"]),
+            search_operator_api.get_by_dot_notation_list(
+                ["dot_not_1", "dot_not_2"]
+            ),
             expected_result,
         )
 
@@ -99,7 +113,9 @@ class TestsApiGetByDotNotationList(TestCase):
         )
 
         with self.assertRaises(exceptions.ApiError):
-            search_operator_api.get_by_dot_notation_list(["dot_not_1", "dot_not_2"])
+            search_operator_api.get_by_dot_notation_list(
+                ["dot_not_1", "dot_not_2"]
+            )
 
 
 class TestsApiUpsert(TestCase):
@@ -126,7 +142,9 @@ class TestsApiUpsert(TestCase):
         mock_save.return_value = self.mock_search_operator
 
         self.assertListEqual(
-            search_operator_api.upsert(self.mock_search_operator).dot_notation_list,
+            search_operator_api.upsert(
+                self.mock_search_operator
+            ).dot_notation_list,
             expected_dot_notation_list,
         )
 

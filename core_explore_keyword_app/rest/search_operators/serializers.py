@@ -5,7 +5,9 @@ from rest_framework.serializers import ModelSerializer
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 
 
 class SearchOperatorSerializer(ModelSerializer):
@@ -22,7 +24,8 @@ class SearchOperatorSerializer(ModelSerializer):
         """Create and return a new `SearchOperator` instance, given the validated data."""
         # Create instance from the validated data and insert it in DB
         instance = SearchOperator(
-            name=validated_data["name"], xpath_list=validated_data["xpath_list"]
+            name=validated_data["name"],
+            xpath_list=validated_data["xpath_list"],
         )
         search_operator_api.upsert(instance)
 
@@ -33,5 +36,7 @@ class SearchOperatorSerializer(ModelSerializer):
         data.
         """
         instance.name = validated_data.get("name", instance.name)
-        instance.xpath_list = validated_data.get("xpath_list", instance.xpath_list)
+        instance.xpath_list = validated_data.get(
+            "xpath_list", instance.xpath_list
+        )
         return search_operator_api.upsert(instance)

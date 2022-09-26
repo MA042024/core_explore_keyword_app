@@ -14,7 +14,9 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
 from core_explore_keyword_app.components.search_operator.admin_site import (
     CustomSearchOperatorAdmin,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 from core_explore_keyword_app.views.admin import ajax as admin_ajax
 from core_explore_keyword_app.views.admin import views as admin_views
 
@@ -26,12 +28,16 @@ admin_urls = [
     ),
     re_path(
         r"^operators/edit$",
-        staff_member_required(admin_ajax.SearchOperatorConfigModalView.as_view()),
+        staff_member_required(
+            admin_ajax.SearchOperatorConfigModalView.as_view()
+        ),
         name="core_explore_keyword_app_search_operator_config_modal",
     ),
     re_path(
         r"^operators/delete$",
-        staff_member_required(admin_ajax.SearchOperatorDeleteModalView.as_view()),
+        staff_member_required(
+            admin_ajax.SearchOperatorDeleteModalView.as_view()
+        ),
         name="core_explore_keyword_app_search_operator_delete_modal",
     ),
 ]

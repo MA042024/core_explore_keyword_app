@@ -34,13 +34,17 @@ class SearchOperatorList(APIView):
             search_operator_list = search_operator_api.get_all()
 
             # Serialize object
-            serializer = SearchOperatorSerializer(search_operator_list, many=True)
+            serializer = SearchOperatorSerializer(
+                search_operator_list, many=True
+            )
 
             # Return response
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @method_decorator(api_staff_member_required())
     def post(self, request):
@@ -89,10 +93,14 @@ class SearchOperatorList(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except exceptions.ApiError as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         except Exception as exception:
             content = {"message": str(exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class SearchOperatorDetail(APIView):
@@ -123,7 +131,9 @@ class SearchOperatorDetail(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @method_decorator(api_staff_member_required())
     def patch(self, request, pk):
@@ -162,7 +172,9 @@ class SearchOperatorDetail(APIView):
             search_operator_serializer.is_valid(raise_exception=True)
             search_operator_serializer.save()
 
-            return Response(search_operator_serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                search_operator_serializer.data, status=status.HTTP_200_OK
+            )
         except ValidationError as validation_exception:
             content = {"message": validation_exception.detail}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
@@ -171,7 +183,9 @@ class SearchOperatorDetail(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @method_decorator(api_staff_member_required())
     def delete(self, request, pk):
@@ -205,4 +219,6 @@ class SearchOperatorDetail(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

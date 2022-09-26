@@ -8,7 +8,9 @@ from core_main_app.commons.exceptions import ApiError
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,

@@ -21,7 +21,10 @@ class ListSearchOperatorsView(View):
         Returns:
 
         """
-        context = {"title": "Search Operator Manager", "subtitle": "Operator List"}
+        context = {
+            "title": "Search Operator Manager",
+            "subtitle": "Operator List",
+        }
 
         assets = {
             "js": [
@@ -38,7 +41,9 @@ class ListSearchOperatorsView(View):
                     "is_raw": False,
                 },
             ],
-            "css": ["core_explore_keyword_app/admin/css/search_ops_manager.css"],
+            "css": [
+                "core_explore_keyword_app/admin/css/search_ops_manager.css"
+            ],
         }
 
         modals = [
@@ -63,7 +68,10 @@ class ListSearchOperatorsView(View):
             )
         except Exception as exception:
             context.update(
-                {"error": "Unable to load the page: %s." % str(exception).lower()}
+                {
+                    "error": "Unable to load the page: %s."
+                    % str(exception).lower()
+                }
             )
 
             return admin_render(

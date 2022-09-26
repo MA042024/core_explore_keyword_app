@@ -36,7 +36,9 @@ class TestPersistentQueryKeywordGetById(TestCase):
             expected_result,
         )
 
-    def test_persistent_query_keyword_get_by_id_raises_model_error_if_not_found(self):
+    def test_persistent_query_keyword_get_by_id_raises_model_error_if_not_found(
+        self,
+    ):
         """test_persistent_query_keyword_get_by_id_raises_model_error_if_not_found"""
 
         # Arrange
@@ -53,7 +55,9 @@ class TestPersistentQueryKeywordGetById(TestCase):
         """test_persistent_query_keyword_get_by_id_raises_does_not_exist_error_if_not_found"""
 
         # Arrange
-        mock_get_by_id.side_effect = exceptions.DoesNotExist(message="mock error")
+        mock_get_by_id.side_effect = exceptions.DoesNotExist(
+            message="mock error"
+        )
         mock_user = create_mock_user("1")
 
         # Act # Assert
@@ -88,7 +92,9 @@ class TestsPersistentQueryKeywordGetByName(TestCase):
         """test_persistent_query_keyword_get_by_name_raises_does_not_exist_error_if_not_found"""
 
         # Arrange
-        mock_get_by_name.side_effect = exceptions.DoesNotExist(message="mock error")
+        mock_get_by_name.side_effect = exceptions.DoesNotExist(
+            message="mock error"
+        )
         mock_user = create_mock_user("1")
 
         # Act # Assert
@@ -198,7 +204,8 @@ class TestsPersistentQueryKeywordGetAllByUser(TestCase):
 
         # Act # Assert
         self.assertEqual(
-            persistent_query_keyword_api.get_all_by_user(mock_user), expected_result
+            persistent_query_keyword_api.get_all_by_user(mock_user),
+            expected_result,
         )
 
 
@@ -218,7 +225,8 @@ class TestKeywordSearch(TestCase):
 
         # assert
         self.assertEqual(
-            main_query, '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
+            main_query,
+            '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}',
         )
 
     def test_build_query_content_with_hyphens(self):
@@ -271,7 +279,8 @@ class TestKeywordSearch(TestCase):
 
         # assert
         self.assertEqual(
-            main_query, '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
+            main_query,
+            '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}',
         )
 
     def test_build_query_content_with_blank_and_hyphens(self):
@@ -299,7 +308,9 @@ class TestKeywordSearch(TestCase):
         """test_parse_simple_query_content"""
 
         # set query
-        query_content = '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
+        query_content = (
+            '{"$text": {"$search": "\\"FirstTest\\" \\"SecondTest\\""}}'
+        )
 
         # Act
         keyword_list = keyword_search_views.KeywordSearchView._parse_query(
@@ -313,9 +324,7 @@ class TestKeywordSearch(TestCase):
         """test_parse_query_content_with_hyphens"""
 
         # set query
-        query_content = (
-            '{"$text": {"$search": "\\"first-hyphen\\" \\"more-hyphen-keywords\\""}}'
-        )
+        query_content = '{"$text": {"$search": "\\"first-hyphen\\" \\"more-hyphen-keywords\\""}}'
 
         # Act
         keyword_list = keyword_search_views.KeywordSearchView._parse_query(
@@ -337,13 +346,17 @@ class TestKeywordSearch(TestCase):
         )
 
         # assert
-        self.assertEqual(keyword_list, "number-123,more-numbers-456,last-number-6")
+        self.assertEqual(
+            keyword_list, "number-123,more-numbers-456,last-number-6"
+        )
 
     def test_parse_query_content_with_blank(self):
         """test_parse_query_content_with_blank"""
 
         # set query
-        query_content = '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
+        query_content = (
+            '{"$text": {"$search": "\\"\\"blank between keywords\\"\\""}}'
+        )
 
         # Act
         keyword_list = keyword_search_views.KeywordSearchView._parse_query(

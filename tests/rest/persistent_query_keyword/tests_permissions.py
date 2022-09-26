@@ -365,7 +365,9 @@ class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
     @patch.object(persistent_query_keyword_api, "get_by_id")
     @patch.object(persistent_query_keyword_api, "delete")
     def test_authenticated_returns_http_200(
-        self, persistent_query_keyword_api_delete, persistent_query_keyword_get_by_id
+        self,
+        persistent_query_keyword_api_delete,
+        persistent_query_keyword_get_by_id,
     ):
         """test_authenticated_returns_http_200"""
 
@@ -384,7 +386,9 @@ class TestPersistentQueryKeywordDetailDelete(SimpleTestCase):
     @patch.object(persistent_query_keyword_api, "get_by_id")
     @patch.object(persistent_query_keyword_api, "delete")
     def test_superuser_returns_http_200(
-        self, persistent_query_keyword_api_delete, persistent_query_keyword_get_by_id
+        self,
+        persistent_query_keyword_api_delete,
+        persistent_query_keyword_get_by_id,
     ):
         """test_superuser_returns_http_200"""
 

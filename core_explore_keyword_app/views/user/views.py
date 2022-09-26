@@ -124,7 +124,9 @@ class KeywordSearchView(ResultsView):
 
             # parse all the sub_queries
             for sub_query in query_json["$and"]:
-                result.append(KeywordSearchView._parse_query(json.dumps(sub_query)))
+                result.append(
+                    KeywordSearchView._parse_query(json.dumps(sub_query))
+                )
 
             return ",".join(result)
 
@@ -176,7 +178,9 @@ class KeywordSearchView(ResultsView):
                     "user_id": user_id,
                     "keywords": keywords,
                     "global_templates": version_managers,
-                    "order_by_field": super().build_sorting_context_array(query),
+                    "order_by_field": super().build_sorting_context_array(
+                        query
+                    ),
                     "user_templates": version_managers,
                 }
                 # set the correct ordering for the context
@@ -212,22 +216,35 @@ class KeywordSearchView(ResultsView):
                 # get form values
                 query_id = search_form.cleaned_data.get("query_id", None)
                 keywords = search_form.cleaned_data.get("keywords", None)
-                global_templates = search_form.cleaned_data.get("global_templates", [])
-                user_templates = search_form.cleaned_data.get("user_templates", [])
+                global_templates = search_form.cleaned_data.get(
+                    "global_templates", []
+                )
+                user_templates = search_form.cleaned_data.get(
+                    "user_templates", []
+                )
                 order_by_field_array = (
                     search_form.cleaned_data.get("order_by_field", "")
                     .strip()
                     .split(";")
                 )
                 # get all template version manager ids
-                template_version_manager_ids = global_templates + user_templates
+                template_version_manager_ids = (
+                    global_templates + user_templates
+                )
                 # from ids, get all version manager
-                version_manager_list = template_version_manager_api.get_by_id_list(
-                    template_version_manager_ids, request=request
+                version_manager_list = (
+                    template_version_manager_api.get_by_id_list(
+                        template_version_manager_ids, request=request
+                    )
                 )
                 # from all version manager, build a list of all version (template)
                 template_ids = []
-                list([template_ids.extend(x.versions) for x in version_manager_list])
+                list(
+                    [
+                        template_ids.extend(x.versions)
+                        for x in version_manager_list
+                    ]
+                )
                 if query_id is None or keywords is None:
                     error = "Expected parameters are not provided"
                 else:
@@ -245,7 +262,9 @@ class KeywordSearchView(ResultsView):
                         keywords_list = keywords.split(",") if keywords else []
                         query.content = self._build_query(keywords_list)
                         # set the data-sources filter value according to the POST request field
-                        for data_sources_index in range(len(query.data_sources)):
+                        for data_sources_index in range(
+                            len(query.data_sources)
+                        ):
                             # update the data-source filter only if it's not a new data-source
                             # (the default filter value is already added when the data-source
                             # is created)
@@ -258,9 +277,13 @@ class KeywordSearchView(ResultsView):
 
                         query_api.upsert(query, request.user)
             except DoesNotExist:
-                error = "An unexpected error occurred while retrieving the query."
+                error = (
+                    "An unexpected error occurred while retrieving the query."
+                )
             except Exception as exception:
-                error = "An unexpected error occurred: {}.".format(str(exception))
+                error = "An unexpected error occurred: {}.".format(
+                    str(exception)
+                )
         else:
             error = "An unexpected error occurred: the form is not valid."
 
@@ -289,7 +312,9 @@ class KeywordSearchView(ResultsView):
                     split_keyword = keyword.split(":")
 
                     main_query.append(
-                        build_search_operator_query(split_keyword[0], split_keyword[1])
+                        build_search_operator_query(
+                            split_keyword[0], split_keyword[1]
+                        )
                     )
                 except ApiError:
                     keyword_list.append(keyword)
@@ -305,7 +330,9 @@ class KeywordSearchView(ResultsView):
         # If the query is empty, match all documents
         if len(main_query) == 0:
             return json.dumps({})
-        if len(main_query) == 1:  # If there is one query item, match one this item.
+        if (
+            len(main_query) == 1
+        ):  # If there is one query item, match one this item.
             return json.dumps(main_query[0])
 
         # For multiple items, a "$and" query is needed.
@@ -416,22 +443,28 @@ class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
 
     @staticmethod
     def _get_persistent_query_by_id(persistent_query_id, user):
-        return persistent_query_keyword_api.get_by_id(persistent_query_id, user)
+        return persistent_query_keyword_api.get_by_id(
+            persistent_query_id, user
+        )
 
     @staticmethod
     def _get_persistent_query_by_name(persistent_query_name, user):
-        return persistent_query_keyword_api.get_by_name(persistent_query_name, user)
+        return persistent_query_keyword_api.get_by_name(
+            persistent_query_name, user
+        )
 
     @staticmethod
     def get_url_path():
         return reverse(
-            ResultQueryRedirectKeywordView.redirect_url, kwargs={"query_id": "query_id"}
+            ResultQueryRedirectKeywordView.redirect_url,
+            kwargs={"query_id": "query_id"},
         ).split("query_id")[0]
 
     @staticmethod
     def _get_reversed_url(query):
         return reverse(
-            ResultQueryRedirectKeywordView.redirect_url, kwargs={"query_id": query.id}
+            ResultQueryRedirectKeywordView.redirect_url,
+            kwargs={"query_id": query.id},
         )
 
     @staticmethod

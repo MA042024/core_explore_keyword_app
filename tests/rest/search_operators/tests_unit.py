@@ -7,14 +7,20 @@ from django.test import SimpleTestCase
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
-from core_main_app.commons.exceptions import DoesNotExist, ModelError, NotUniqueError
+from core_main_app.commons.exceptions import (
+    DoesNotExist,
+    ModelError,
+    NotUniqueError,
+)
 from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_main_app.utils.tests_tools.RequestMock import RequestMock
 
 from core_explore_keyword_app.components.search_operator import (
     api as search_operator_api,
 )
-from core_explore_keyword_app.components.search_operator.models import SearchOperator
+from core_explore_keyword_app.components.search_operator.models import (
+    SearchOperator,
+)
 from core_explore_keyword_app.rest.search_operators import (
     views as search_operator_views,
 )
@@ -56,8 +62,12 @@ class TestSearchOperatorListGet(SimpleTestCase):
         self.assertEqual(
             response.data,
             [
-                OrderedDict({"id": None, "name": "mock01", "xpath_list": ["x/path/a"]}),
-                OrderedDict({"id": None, "name": "mock02", "xpath_list": ["x/path/b"]}),
+                OrderedDict(
+                    {"id": None, "name": "mock01", "xpath_list": ["x/path/a"]}
+                ),
+                OrderedDict(
+                    {"id": None, "name": "mock02", "xpath_list": ["x/path/b"]}
+                ),
             ],
         )
 
@@ -82,7 +92,9 @@ class TestSearchOperatorListGet(SimpleTestCase):
             search_operator_views.SearchOperatorList.as_view(), self.mock_user
         )
 
-        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertTrue(
+            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 class TestSearchOperatorListPost(SimpleTestCase):
@@ -95,7 +107,10 @@ class TestSearchOperatorListPost(SimpleTestCase):
     @patch.object(SearchOperatorSerializer, "save")
     @patch.object(SearchOperatorSerializer, "data")
     def test_valid_search_operator_returns_201(
-        self, mock_serializer_data, mock_serializer_save, mock_serializer_is_valid
+        self,
+        mock_serializer_data,
+        mock_serializer_save,
+        mock_serializer_is_valid,
     ):
         """test_valid_search_operator_returns_201"""
 
@@ -114,7 +129,9 @@ class TestSearchOperatorListPost(SimpleTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @patch.object(SearchOperatorSerializer, "is_valid")
-    def test_invalid_search_operator_returns_400(self, mock_serializer_is_valid):
+    def test_invalid_search_operator_returns_400(
+        self, mock_serializer_is_valid
+    ):
         """test_invalid_search_operator_returns_400"""
 
         mock_serializer_is_valid.side_effect = ValidationError
@@ -199,7 +216,9 @@ class TestSearchOperatorListPost(SimpleTestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(
+            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 class TestSearchOperatorDetailGet(SimpleTestCase):
@@ -265,7 +284,9 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
             param={"pk": 1},
         )
 
-        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertTrue(
+            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 class TestSearchOperatorDetailPatch(SimpleTestCase):
@@ -344,7 +365,9 @@ class TestSearchOperatorDetailPatch(SimpleTestCase):
             param={"pk": 1},
         )
 
-        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertTrue(
+            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 class TestSearchOperatorDetailDelete(SimpleTestCase):
@@ -394,4 +417,6 @@ class TestSearchOperatorDetailDelete(SimpleTestCase):
             param={"pk": 1},
         )
 
-        self.assertTrue(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertTrue(
+            response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

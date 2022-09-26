@@ -53,7 +53,9 @@ class AdminPersistentQueryKeywordList(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def post(self, request):
         """Create a persistent query keyword
@@ -103,7 +105,9 @@ class AdminPersistentQueryKeywordList(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class PersistentQueryKeywordList(APIView):
@@ -129,7 +133,9 @@ class PersistentQueryKeywordList(APIView):
 
         try:
             # Get object
-            object_list = persistent_query_keyword_api.get_all_by_user(request.user)
+            object_list = persistent_query_keyword_api.get_all_by_user(
+                request.user
+            )
 
             # Serialize object
             serializer = self.serializer(object_list, many=True)
@@ -139,7 +145,9 @@ class PersistentQueryKeywordList(APIView):
 
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def post(self, request):
         """Create a new persistent query keyword
@@ -184,7 +192,9 @@ class PersistentQueryKeywordList(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class PersistentQueryKeywordDetail(APIView):
@@ -225,7 +235,9 @@ class PersistentQueryKeywordDetail(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def patch(self, request, pk):
         """Update a persistent query keyword
@@ -286,7 +298,9 @@ class PersistentQueryKeywordDetail(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def delete(self, request, pk):
         """Delete a persistent query keyword
@@ -312,7 +326,9 @@ class PersistentQueryKeywordDetail(APIView):
             )
 
             # delete object
-            persistent_query_keyword_api.delete(persistent_query_keyword, request.user)
+            persistent_query_keyword_api.delete(
+                persistent_query_keyword, request.user
+            )
 
             # Return response
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -324,7 +340,9 @@ class PersistentQueryKeywordDetail(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class PersistentQueryKeywordByName(APIView):
@@ -346,8 +364,8 @@ class PersistentQueryKeywordByName(APIView):
         """
         try:
             # Get object
-            persistent_query_keyword = persistent_query_keyword_api.get_by_name(
-                name, request.user
+            persistent_query_keyword = (
+                persistent_query_keyword_api.get_by_name(name, request.user)
             )
 
             # Serialize object
@@ -363,4 +381,6 @@ class PersistentQueryKeywordByName(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
         except Exception as api_exception:
             content = {"message": str(api_exception)}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -20,7 +20,9 @@ class TestSearchOperatorListGet(SimpleTestCase):
     """Test Search Operator List Get"""
 
     @patch.object(search_operator_api, "get_all")
-    def test_anonymous_returns_http_200(self, mock_search_operator_api_get_all):
+    def test_anonymous_returns_http_200(
+        self, mock_search_operator_api_get_all
+    ):
         """test_anonymous_returns_http_200"""
 
         mock_search_operator_api_get_all.return_value = []
@@ -31,7 +33,9 @@ class TestSearchOperatorListGet(SimpleTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @patch.object(search_operator_api, "get_all")
-    def test_authenticated_returns_http_200(self, mock_search_operator_api_get_all):
+    def test_authenticated_returns_http_200(
+        self, mock_search_operator_api_get_all
+    ):
         """test_authenticated_returns_http_200"""
 
         mock_user = create_mock_user("1")
@@ -46,7 +50,9 @@ class TestSearchOperatorListGet(SimpleTestCase):
     @patch.object(search_operator_api, "get_all")
     @patch.object(SearchOperatorSerializer, "data")
     def test_staff_returns_http_200(
-        self, mock_search_operator_serializer_data, mock_search_operator_api_get_all
+        self,
+        mock_search_operator_serializer_data,
+        mock_search_operator_api_get_all,
     ):
         """test_staff_returns_http_200"""
 
@@ -113,7 +119,9 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
     @patch.object(search_operator_api, "get_by_id")
     @patch.object(SearchOperatorSerializer, "data")
     def test_anonymous_returns_http_200(
-        self, mock_search_operator_serializer_data, mock_search_operator_api_get_by_id
+        self,
+        mock_search_operator_serializer_data,
+        mock_search_operator_api_get_by_id,
     ):
         """test_anonymous_returns_http_200"""
 
@@ -130,7 +138,9 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
     @patch.object(search_operator_api, "get_by_id")
     @patch.object(SearchOperatorSerializer, "data")
     def test_authenticated_returns_http_200(
-        self, mock_search_operator_serializer_data, mock_search_operator_api_get_by_id
+        self,
+        mock_search_operator_serializer_data,
+        mock_search_operator_api_get_by_id,
     ):
         """test_authenticated_returns_http_200"""
 
@@ -149,7 +159,9 @@ class TestSearchOperatorDetailGet(SimpleTestCase):
     @patch.object(search_operator_api, "get_by_id")
     @patch.object(SearchOperatorSerializer, "data")
     def test_staff_returns_http_200(
-        self, mock_search_operator_serializer_data, mock_search_operator_api_get_by_id
+        self,
+        mock_search_operator_serializer_data,
+        mock_search_operator_api_get_by_id,
     ):
         """test_staff_returns_http_200"""
 
@@ -249,7 +261,9 @@ class TestSearchOperatorDetailDelete(SimpleTestCase):
     @patch.object(search_operator_api, "get_by_id")
     @patch.object(search_operator_api, "delete")
     def test_staff_returns_http_200(
-        self, mock_search_operator_api_delete, mock_search_operator_api_get_by_id
+        self,
+        mock_search_operator_api_delete,
+        mock_search_operator_api_get_by_id,
     ):
         """test_staff_returns_http_200"""
 

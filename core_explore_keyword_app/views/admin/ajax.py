@@ -29,7 +29,9 @@ class SearchOperatorConfigModalView(View):
         action = "created"
         if "document_id" in request.POST and request.POST["document_id"] != "":
             action = "edited"
-            instance = search_operator_api.get_by_id(request.POST["document_id"])
+            instance = search_operator_api.get_by_id(
+                request.POST["document_id"]
+            )
 
         operator_form = SearchOperatorForm(request.POST, instance=instance)
 
@@ -67,7 +69,9 @@ class SearchOperatorConfigModalView(View):
         """
         try:
 
-            operator = search_operator_api.get_by_id(request.GET["document_id"])
+            operator = search_operator_api.get_by_id(
+                request.GET["document_id"]
+            )
             xpath_list = "\n".join(operator.xpath_list)
             operator_form = SearchOperatorForm(
                 initial={"xpath_list": xpath_list, "document_id": operator.id},
@@ -81,7 +85,9 @@ class SearchOperatorConfigModalView(View):
             )
         except ApiError as exception:
             messages.add_message(
-                request, messages.ERROR, "Failed to find operator: %s." % str(exception)
+                request,
+                messages.ERROR,
+                "Failed to find operator: %s." % str(exception),
             )
 
 
@@ -98,7 +104,9 @@ class SearchOperatorDeleteModalView(View):
         Returns:
         """
         if "id" not in request.POST:
-            messages.add_message(request, messages.ERROR, "Invalid delete request.")
+            messages.add_message(
+                request, messages.ERROR, "Invalid delete request."
+            )
             return JsonResponse({}, status=400)
 
         try:
