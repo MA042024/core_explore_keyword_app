@@ -69,7 +69,7 @@ class SearchOperatorList(APIView):
             serializer = SearchOperatorSerializer(data=request.data)
 
             # Validate data
-            serializer.is_valid(True)
+            serializer.is_valid(raise_exception=True)
 
             # Save data
             serializer.save()
@@ -159,7 +159,7 @@ class SearchOperatorDetail(APIView):
             )
 
             # Validate and save search operator
-            search_operator_serializer.is_valid(True)
+            search_operator_serializer.is_valid(raise_exception=True)
             search_operator_serializer.save()
 
             return Response(search_operator_serializer.data, status=status.HTTP_200_OK)

@@ -92,7 +92,7 @@ class AdminPersistentQueryKeywordList(APIView):
             )
 
             # Validate data
-            serializer.is_valid(True)
+            serializer.is_valid(raise_exception=True)
             # Save data
             serializer.save()
 
@@ -173,7 +173,7 @@ class PersistentQueryKeywordList(APIView):
             )
 
             # Validate data
-            serializer.is_valid(True)
+            serializer.is_valid(raise_exception=True)
             # Save data
             serializer.save()
 
@@ -268,7 +268,7 @@ class PersistentQueryKeywordDetail(APIView):
             )
 
             # Validate and save persistent query keyword
-            serializer.is_valid(True)
+            serializer.is_valid(raise_exception=True)
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_200_OK)
