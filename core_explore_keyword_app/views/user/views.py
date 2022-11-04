@@ -59,6 +59,7 @@ class KeywordSearchView(ResultsView):
 
         # assets / modals / forms
         context = self._get(request, query_id)
+        context.update({"page_title": "Search By Keyword"})
 
         return render(
             request,
@@ -87,6 +88,9 @@ class KeywordSearchView(ResultsView):
 
         # assets / modals / forms
         context = self._post(request)
+
+        # Set page title
+        context.update({"page_title": "Search By Keyword"})
 
         # if any errors or warning detected
         if context["error"] or context["warning"]:
