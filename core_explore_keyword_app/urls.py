@@ -1,6 +1,5 @@
 """ Url router for the explore keyword application
 """
-
 from django.urls import re_path, include
 
 from core_explore_keyword_app.views.user import (

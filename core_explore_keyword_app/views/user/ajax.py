@@ -4,7 +4,7 @@ import json
 import logging
 import re
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -30,7 +30,7 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
     PersistentQueryKeyword,
 )
 from core_explore_keyword_app.forms import KeywordForm
-
+from core_main_app.utils.query.mongo.prepare import sanitize_value
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
@@ -88,69 +88,71 @@ class SuggestionsKeywordSearchView(View):
         search_form = KeywordForm(data=request.POST, request=request)
         keywords = request.POST.get("term")
 
-        if search_form.is_valid():
-            try:
-                # get form values
-                query_id = search_form.cleaned_data.get("query_id", None)
-                global_templates = search_form.cleaned_data.get(
-                    "global_templates", []
-                )
-                user_templates = search_form.cleaned_data.get(
-                    "user_templates", []
-                )
+        if not search_form.is_valid():
+            error_message = (
+                "Exception while generating suggestions: Search form is "
+                "invalid"
+            )
+            logger.error(error_message)
+            return HttpResponseBadRequest(error_message)
 
-                # get all template version manager ids
-                template_version_manager_ids = (
-                    global_templates + user_templates
-                )
+        try:
+            sanitize_value(keywords)  # Ensure only valid keywords are passed
 
-                # from ids, get all version manager
-                version_manager_list = (
-                    template_version_manager_api.get_by_id_list(
-                        template_version_manager_ids, request=request
+            # get form values
+            query_id = search_form.cleaned_data.get("query_id", None)
+            global_templates = search_form.cleaned_data.get(
+                "global_templates", []
+            )
+            user_templates = search_form.cleaned_data.get("user_templates", [])
+
+            # get all template version manager ids
+            template_version_manager_ids = global_templates + user_templates
+
+            # from ids, get all version manager
+            version_manager_list = template_version_manager_api.get_by_id_list(
+                template_version_manager_ids, request=request
+            )
+
+            # from all version manager, build a list of all version (template)
+            template_ids = []
+            list(
+                [template_ids.extend(x.versions) for x in version_manager_list]
+            )
+
+            if query_id is not None and keywords is not None:
+                # get query
+                query = query_api.get_by_id(query_id, request.user)
+
+                # Check the selected data sources
+                if check_data_source(query):
+
+                    # Prepare query
+                    query = self._get_query_prepared(
+                        keywords, query, request, template_ids
                     )
-                )
 
-                # from all version manager, build a list of all version (template)
-                template_ids = []
-                list(
-                    [
-                        template_ids.extend(x.versions)
-                        for x in version_manager_list
-                    ]
-                )
+                    # Send query
+                    dict_results = send(
+                        request, query, len(query.data_sources) - 1, 1
+                    )
 
-                if query_id is not None and keywords is not None:
-                    # get query
-                    query = query_api.get_by_id(query_id, request.user)
-
-                    # Check the selected data sources
-                    if check_data_source(query):
-
-                        # Prepare query
-                        query = self._get_query_prepared(
-                            keywords, query, request, template_ids
+                    if dict_results["count"] > 0:
+                        self._extract_suggestion_from_results(
+                            dict_results, keywords, suggestions
                         )
 
-                        # Send query
-                        dict_results = send(
-                            request, query, len(query.data_sources) - 1, 1
-                        )
-
-                        if dict_results["count"] > 0:
-                            self._extract_suggestion_from_results(
-                                dict_results, keywords, suggestions
-                            )
-
-            except Exception as exception:
-                logger.error(
-                    "Exception while generating suggestions: " + str(exception)
-                )
-
-        return HttpResponse(
-            json.dumps({"suggestions": suggestions}),
-            content_type="application/javascript",
-        )
+            return HttpResponse(
+                json.dumps({"suggestions": suggestions}),
+                content_type="application/javascript",
+            )
+        except Exception as exception:
+            error_message = (
+                "Exception while generating suggestions: %s",
+                str(exception),
+            )
+            logger.error(error_message)
+            return HttpResponseBadRequest(error_message)
 
     def _get_query_prepared(self, keywords, query, request, template_ids):
         """Prepare the query for suggestions.

@@ -1,19 +1,13 @@
 """Core Explore Keyword App views
 """
 import json
-from typing import Dict, Any, List
-
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
+from typing import Dict, Any, List
 
-from core_main_app.commons.exceptions import DoesNotExist, ApiError
-from core_main_app.components.template import api as template_api
-from core_main_app.settings import DATA_SORTING_FIELDS
-from core_main_app.utils.rendering import render
+import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_main_app.components.template_version_manager.api as template_version_manager_api
-from core_main_app.utils import decorators
-
 from core_explore_common_app.components.query import api as query_api
 from core_explore_common_app.settings import DEFAULT_DATE_TOGGLE_VALUE
 from core_explore_common_app.views.user.views import (
@@ -23,14 +17,18 @@ from core_explore_common_app.views.user.views import (
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
-import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
-from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.forms import KeywordForm
+from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.settings import EXPLORE_KEYWORD_APP_EXTRAS
 from core_explore_keyword_app.utils.search_operators import (
     build_search_operator_query,
     get_keywords_from_search_operator_query,
 )
+from core_main_app.commons.exceptions import DoesNotExist, ApiError
+from core_main_app.components.template import api as template_api
+from core_main_app.settings import DATA_SORTING_FIELDS
+from core_main_app.utils import decorators
+from core_main_app.utils.rendering import render
 
 
 class KeywordSearchView(ResultsView):

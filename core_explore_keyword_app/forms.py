@@ -1,10 +1,13 @@
 """ Explore by Keyword forms
 """
 from django import forms
+from django.core.exceptions import ValidationError
 
+from core_main_app.commons.exceptions import QueryError
 from core_main_app.components.template_version_manager import (
     api as template_version_manager_api,
 )
+from core_main_app.utils.query.mongo.prepare import sanitize_value
 
 
 class KeywordForm(forms.Form):
@@ -45,3 +48,9 @@ class KeywordForm(forms.Form):
         ]
         self.fields["global_templates"].choices = global_templates
         self.fields["user_templates"].choices = user_templates
+
+    def clean_keywords(self):
+        try:
+            return sanitize_value(self.cleaned_data["keywords"])
+        except QueryError as error:
+            raise ValidationError(str(error))
