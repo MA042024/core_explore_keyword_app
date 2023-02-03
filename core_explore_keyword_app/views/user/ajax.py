@@ -9,33 +9,33 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-from core_main_app.components.template import api as template_api
-from core_main_app.utils.databases.mongo.pymongo_database import (
-    get_full_text_query,
-)
 import core_main_app.components.template_version_manager.api as template_version_manager_api
-from core_main_app.utils import decorators
-
 from core_explore_common_app.components.query import api as query_api
-from core_explore_common_app.constants import LOCAL_QUERY_NAME
+from core_explore_common_app.rest.query.views import execute_local_query
 from core_explore_common_app.utils.query.query import (
-    send,
     create_local_data_source,
+    serialize_query,
+    is_local_data_source,
 )
 from core_explore_common_app.views.user.ajax import (
     CreatePersistentQueryUrlView,
 )
-from core_explore_keyword_app.permissions import rights
 from core_explore_keyword_app.components.persistent_query_keyword.models import (
     PersistentQueryKeyword,
 )
 from core_explore_keyword_app.forms import KeywordForm
+from core_explore_keyword_app.permissions import rights
+from core_main_app.components.template import api as template_api
+from core_main_app.utils import decorators
+from core_main_app.utils.databases.mongo.pymongo_database import (
+    get_full_text_query,
+)
 from core_main_app.utils.query.mongo.prepare import sanitize_value
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
 
 
-def _is_local_in_data_source(query):
+def _get_local_data_source(query):
     """Check if there is a data source that is local.
 
     Args:
@@ -46,21 +46,9 @@ def _is_local_in_data_source(query):
     # If we find a data source that is local
     for data_source in query.data_sources:
         # find local data source
-        if data_source["name"] == LOCAL_QUERY_NAME:
-            return True
-    return False
-
-
-def check_data_source(query):
-    """Check the data sources. We will not provide suggestions if there are data sources selected but none of them is local.
-
-    Args:
-        query:
-
-    Returns:
-    """
-
-    return len(query.data_sources) == 0 or _is_local_in_data_source(query)
+        if is_local_data_source(data_source):
+            return data_source
+    return None
 
 
 class SuggestionsKeywordSearchView(View):
@@ -124,8 +112,10 @@ class SuggestionsKeywordSearchView(View):
                 # get query
                 query = query_api.get_by_id(query_id, request.user)
 
-                # Check the selected data sources
-                if check_data_source(query):
+                # Get local data source
+                local_data_source = _get_local_data_source(query)
+
+                if local_data_source:
 
                     # Prepare query
                     query = self._get_query_prepared(
@@ -133,13 +123,12 @@ class SuggestionsKeywordSearchView(View):
                     )
 
                     # Send query
-                    dict_results = send(
-                        request, query, len(query.data_sources) - 1, 1
-                    )
+                    json_query = serialize_query(query, local_data_source)
+                    dict_results = execute_local_query(json_query, 1, request)
 
-                    if dict_results["count"] > 0:
+                    if dict_results.paginator.count > 0:
                         self._extract_suggestion_from_results(
-                            dict_results, keywords, suggestions
+                            dict_results.object_list, keywords, suggestions
                         )
 
             return HttpResponse(
@@ -177,19 +166,17 @@ class SuggestionsKeywordSearchView(View):
         query.data_sources = [create_local_data_source(request)]
         return query
 
-    def _extract_suggestion_from_results(
-        self, dict_results, keywords, suggestions
-    ):
+    @staticmethod
+    def _extract_suggestion_from_results(results, keywords, suggestions):
         """Extract suggestion from
 
         Args:
-            dict_results:
+            results:
             keywords:
             suggestions:
 
         Returns:
         """
-        results = dict_results["results"]
         # Prepare keywords
         word_list = re.sub(r"[^\w]", " ", keywords).split()
         word_list = [x + "|" + x + r"\w+" for x in word_list]
@@ -198,7 +185,7 @@ class SuggestionsKeywordSearchView(View):
             # Extract suggestions from data
             list_whole_keywords = re.findall(
                 "\\b(" + word_list + ")\\b",
-                result["xml_content"],
+                result.xml_content,
                 flags=re.IGNORECASE,
             )
             labels = list(set(list_whole_keywords))
