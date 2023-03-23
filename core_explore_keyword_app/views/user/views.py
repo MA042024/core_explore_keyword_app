@@ -1,10 +1,11 @@
 """Core Explore Keyword App views
 """
 import json
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
 from typing import Dict, Any, List
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 
 import core_explore_keyword_app.components.persistent_query_keyword.api as persistent_query_keyword_api
 import core_main_app.components.template_version_manager.api as template_version_manager_api
@@ -40,7 +41,6 @@ class KeywordSearchView(ResultsView):
         decorators.permission_required(
             content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
             permission=rights.EXPLORE_KEYWORD_ACCESS,
-            login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def get(self, request, **kwargs):
@@ -71,7 +71,6 @@ class KeywordSearchView(ResultsView):
         decorators.permission_required(
             content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
             permission=rights.EXPLORE_KEYWORD_ACCESS,
-            login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def post(self, request):
@@ -437,7 +436,6 @@ class ResultQueryRedirectKeywordView(ResultQueryRedirectView):
         decorators.permission_required(
             content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
             permission=rights.EXPLORE_KEYWORD_ACCESS,
-            login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def get(self, request, *args, **kwargs):

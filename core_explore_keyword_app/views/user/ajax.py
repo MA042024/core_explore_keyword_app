@@ -5,7 +5,6 @@ import logging
 import re
 
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -58,7 +57,6 @@ class SuggestionsKeywordSearchView(View):
         decorators.permission_required(
             content_type=rights.EXPLORE_KEYWORD_CONTENT_TYPE,
             permission=rights.EXPLORE_KEYWORD_ACCESS,
-            login_url=reverse_lazy("core_main_app_login"),
         )
     )
     def post(self, request, *args, **kwargs):
