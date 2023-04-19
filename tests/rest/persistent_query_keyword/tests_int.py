@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 
 from core_main_app.utils.integration_tests.integration_base_test_case import (
-    MongoIntegrationBaseTestCase,
+    IntegrationBaseTestCase,
 )
 from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_main_app.utils.tests_tools.RequestMock import RequestMock
@@ -20,7 +20,7 @@ from tests.components.persistent_query_keyword.fixtures.fixtures import (
 fixture_data_structure = PersistentQueryKeywordFixtures()
 
 
-class TestPersistentQueryKeywordListAdmin(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordListAdmin(IntegrationBaseTestCase):
     """Test Persistent Query Keyword List Admin"""
 
     fixture = fixture_data_structure
@@ -65,7 +65,7 @@ class TestPersistentQueryKeywordListAdmin(MongoIntegrationBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
-class TestPersistentQueryKeywordList(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordList(IntegrationBaseTestCase):
     """Test Persistent Query Keyword List"""
 
     fixture = fixture_data_structure
@@ -108,7 +108,7 @@ class TestPersistentQueryKeywordList(MongoIntegrationBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
-class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordDetail(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Detail"""
 
     fixture = fixture_data_structure
@@ -298,7 +298,7 @@ class TestPersistentQueryKeywordDetail(MongoIntegrationBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class TestPersistentQueryKeywordByName(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordByName(IntegrationBaseTestCase):
     """Test Persistent Query Keyword By Name"""
 
     fixture = fixture_data_structure

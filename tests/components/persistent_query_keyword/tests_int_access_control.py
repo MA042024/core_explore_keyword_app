@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from core_main_app.access_control.exceptions import AccessControlError
 from core_main_app.utils.integration_tests.integration_base_test_case import (
-    MongoIntegrationBaseTestCase,
+    IntegrationBaseTestCase,
 )
 from core_main_app.utils.tests_tools.MockUser import create_mock_user
 from core_explore_common_app.settings import (
@@ -23,7 +23,7 @@ from tests.components.persistent_query_keyword.fixtures.fixtures import (
 fixture_persistent_query_keyword = PersistentQueryKeywordFixtures()
 
 
-class TestPersistentQueryKeywordGetById(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordGetById(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Get By Id"""
 
     fixture = fixture_persistent_query_keyword
@@ -112,7 +112,7 @@ class TestPersistentQueryKeywordGetById(MongoIntegrationBaseTestCase):
         )
 
 
-class TestPersistentQueryKeywordGetByName(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordGetByName(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Get By Name"""
 
     fixture = fixture_persistent_query_keyword
@@ -200,7 +200,7 @@ class TestPersistentQueryKeywordGetByName(MongoIntegrationBaseTestCase):
                 )
 
 
-class TestPersistentQueryKeywordDelete(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordDelete(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Delete"""
 
     fixture = fixture_persistent_query_keyword
@@ -261,7 +261,7 @@ class TestPersistentQueryKeywordDelete(MongoIntegrationBaseTestCase):
             )
 
 
-class TestPersistentQueryKeywordUpdate(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordUpdate(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Update"""
 
     fixture = fixture_persistent_query_keyword
@@ -329,7 +329,7 @@ class TestPersistentQueryKeywordUpdate(MongoIntegrationBaseTestCase):
             )
 
 
-class TestPersistentQueryKeywordCreate(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordCreate(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Create"""
 
     fixture = fixture_persistent_query_keyword
@@ -395,7 +395,7 @@ class TestPersistentQueryKeywordCreate(MongoIntegrationBaseTestCase):
                 )
 
 
-class TestPersistentQueryKeywordGetAll(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordGetAll(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Get All"""
 
     fixture = fixture_persistent_query_keyword
@@ -430,7 +430,7 @@ class TestPersistentQueryKeywordGetAll(MongoIntegrationBaseTestCase):
             persistent_query_keyword_api.get_all(AnonymousUser())
 
 
-class TestPersistentQueryKeywordGetAllByUser(MongoIntegrationBaseTestCase):
+class TestPersistentQueryKeywordGetAllByUser(IntegrationBaseTestCase):
     """Test Persistent Query Keyword Get All By User"""
 
     fixture = fixture_persistent_query_keyword
