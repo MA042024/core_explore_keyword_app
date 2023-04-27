@@ -186,3 +186,11 @@ ul.tagit li.operator-bg-success-color input {
 ul.tagit li.operator-bg-error-color input{
     margin-top: 3px;
 }
+
+.row-template{
+    margin-top:0px;
+}
+
+.col-template{
+    padding-top: 0px;
+}
