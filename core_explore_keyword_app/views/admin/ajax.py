@@ -114,7 +114,9 @@ class SearchOperatorDeleteModalView(View):
             search_operator_api.delete(operator)
 
             messages.add_message(
-                request, messages.INFO, "Operator %s deleted." % operator.name
+                request,
+                messages.SUCCESS,
+                "Operator %s deleted." % operator.name,
             )
             return JsonResponse({}, status=200)
 
