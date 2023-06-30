@@ -15,7 +15,7 @@
         >
             {{ field.label_tag }}
             {% if field.help_text %}
-                <em class="float-right">{{ field.help_text|safe }}</em>
+                <em class="{% if BOOTSTRAP_VERSION == "4.6.2" %}float-right{% elif BOOTSTRAP_VERSION == "5.1.3" %}float-end{% endif %}">{{ field.help_text|safe }}</em>
             {% endif %}
             {{ field }}
         </div>
