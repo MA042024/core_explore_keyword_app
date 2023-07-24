@@ -6,7 +6,7 @@
         {{data.search_form.order_by_field}}
         {%if data.error%}<div class="text-danger">{{data.error}}</div>{% endif %}
     </div>
-    <div class="{% if BOOTSTRAP_VERSION == "4.6.2" %}ml-3{% elif BOOTSTRAP_VERSION == "5.1.3" %}ms-3{% endif %}" id="search_btn">
+    <div class="{% if BOOTSTRAP_VERSION|first == "4" %}ml-3{% elif BOOTSTRAP_VERSION|first == "5"  %}ms-3{% endif %}" id="search_btn">
         <button type="submit" value="Search" class="button primary search_button" >
             Search
         </button>
