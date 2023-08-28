@@ -183,7 +183,7 @@ class SuggestionsKeywordSearchView(View):
             # Extract suggestions from data
             list_whole_keywords = re.findall(
                 "\\b(" + word_list + ")\\b",
-                result.xml_content,
+                result.content,
                 flags=re.IGNORECASE,
             )
             labels = list(set(list_whole_keywords))
