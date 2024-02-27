@@ -6,7 +6,7 @@
             <div class="col-md-8 col-template">
                 Filter by Template
             </div>
-            <div class="pl-0 col-md-4 col-template">
+            <div class="{% if BOOTSTRAP_VERSION|first == "4" %}pl-0{% elif BOOTSTRAP_VERSION|first == "5"  %}ps-0{% endif %} col-md-4 col-template">
                 <div class="{% if BOOTSTRAP_VERSION|first == "4" %}float-right{% elif BOOTSTRAP_VERSION|first == "5"  %}float-end{% endif %}">
                     <a class="selectAllGlobalTemplateButton" href="javascript:void(0)">
                         Select All
@@ -27,7 +27,7 @@
             <div class="col-md-9 col-template">
                 Filter by User Template
             </div>
-            <div class="pl-0 col-md-3 col-template">
+            <div class="{% if BOOTSTRAP_VERSION|first == "4" %}pl-0{% elif BOOTSTRAP_VERSION|first == "5"  %}ps-0{% endif %} col-md-3 col-template">
                 <div class="{% if BOOTSTRAP_VERSION|first == "4" %}float-right{% elif BOOTSTRAP_VERSION|first == "5"  %}float-end{% endif %}">
                     <a class="selectAllUserTemplateButton" href="javascript:void(0)">
                         Select All
