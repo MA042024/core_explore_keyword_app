@@ -53,7 +53,7 @@ class SearchOperatorConfigModalView(View):
             )
 
         messages.add_message(
-            request, messages.SUCCESS, "Operator successfully %s!" % action
+            request, messages.SUCCESS, "Operator  %s!" % action
         )
 
         return JsonResponse({})
