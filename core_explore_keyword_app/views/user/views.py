@@ -57,7 +57,7 @@ class KeywordSearchView(ResultsView):
 
         # assets / modals / forms
         context = self._get(request, query_id)
-        context.update({"page_title": "Search By Keyword"})
+        context.update({"page_title": "Database"})
 
         return render(
             request,
