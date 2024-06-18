@@ -38,6 +38,6 @@ setup(
         "django-simple-menu",
         "djangorestframework",
         "core-main-app==2.9.*",
-        "git+https://github.com/MA042024/core-explore-common-app.git",
+        "-e git+https://github.com/MA042024/core_explore_common_app.git#egg=core_explore_common_app",
     ],
 )
