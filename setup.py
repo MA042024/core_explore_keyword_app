@@ -6,16 +6,17 @@ from os.path import join, exists, dirname, normpath, abspath
 
 from setuptools import find_packages, setup
 
-#reqs_default = join(dirname(__file__), "requirements.txt")
-#reqs_core = join(dirname(__file__), "requirements.core.txt")
+reqs_default = join(dirname(__file__), "requirements.txt")
+reqs_core = join(dirname(__file__), "requirements.core.txt")
+required =[]
 
-#if exists(reqs_default):
-#    with open(reqs_default) as f:
-#        required += f.read().splitlines()
+if exists(reqs_default):
+    with open(reqs_default) as f:
+        required += f.read().splitlines()
 
-#if exists(reqs_core):
-#    with open(reqs_core) as f:
-#        required += f.read().splitlines()
+if exists(reqs_core):
+    with open(reqs_core) as f:
+        required += f.read().splitlines()
 
 with open(join(dirname(__file__), "README.rst")) as f:
     long_desc = f.read()
@@ -33,11 +34,5 @@ setup(
     url="https://github.com/MA042024/core_explore_keyword_app",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        "Django",
-        "django-simple-menu",
-        "djangorestframework",
-        "core-main-app==2.9.*",
-        "core-explore-common-app @ git+https://github.com/MA042024/core_explore_common_app.git",
-    ],
+    install_requires=required,
 )
