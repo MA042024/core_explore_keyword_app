@@ -31,7 +31,7 @@ setup(
     long_description=long_desc,
     author="NIST IT Lab",
     author_email="itl_inquiries@nist.gov",
-    url="https://github.com/MA042024/core-explore-keyword_app",
+    url="https://github.com/usnistgov/core_explore_keyword_app",
     packages=find_packages(),
     include_package_data=True,
     install_requires=required,
