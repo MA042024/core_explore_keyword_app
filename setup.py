@@ -8,7 +8,6 @@ from setuptools import find_packages, setup
 
 reqs_default = join(dirname(__file__), "requirements.txt")
 reqs_core = join(dirname(__file__), "requirements.core.txt")
-required = []
 
 if exists(reqs_default):
     with open(reqs_default) as f:
@@ -31,8 +30,11 @@ setup(
     long_description=long_desc,
     author="NIST IT Lab",
     author_email="itl_inquiries@nist.gov",
-    url="https://github.com/usnistgov/core_explore_keyword_app",
+    url="https://github.com/MA042024/core_explore_keyword_app",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=required,
+    install_requires=[
+        "core-main-app==2.9.*",
+        "-e git+https://github.com/MA042024/core-explore-common-app.git#egg=core-explore-common-app",
+    ],
 )
