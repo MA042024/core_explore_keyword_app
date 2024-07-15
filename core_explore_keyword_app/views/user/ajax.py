@@ -176,7 +176,7 @@ class SuggestionsKeywordSearchView(View):
         Returns:
         """
         # Prepare keywords
-        word_list = re.sub(r"[^\w\d]", " ", keywords).split()
+        word_list = re.sub(r"[^\w]", " ", keywords).split()
         word_list = [x + "|" + x + r"\w+" for x in word_list]
         word_list = "|".join(word_list)
         for result in results:
